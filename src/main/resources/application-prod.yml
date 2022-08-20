@@ -1,0 +1,19 @@
+server:
+  port: 8001
+
+spring:
+  sql:
+    init:
+      platform: h2
+  datasource:    
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver 
+    username: sa
+    password:
+  
+aws:
+  sqs:
+    queue:
+      name: SampleQueue      
+    region: ap-northeast-1
+    concurrency: 3-10     
