@@ -18,3 +18,13 @@ aws:
     concurrency: 3-10
   sqslocal:    
     port: 18001
+    
+logging:
+  level:
+    org.springframework: INFO
+    org.springframework.jdbc: INFO
+    com.example: DEBUG    
+
+api:
+  backend:
+    url: http://localhost:8000    
