@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 //WebClient（WebFulx）版のTodoRepository実装を使用しているためコメントアウト
 //@Repository
 @RequiredArgsConstructor
-public class TodoRepositoryImplByRestTemplate implements TodoRepository {
+public class TodoRepositoryImplForBatchByRestTemplate implements TodoRepository {
 
 	private final RestTemplate restTemplate;
 
@@ -30,6 +30,9 @@ public class TodoRepositoryImplByRestTemplate implements TodoRepository {
 	@SuppressWarnings("rawtypes")
 	private final CircuitBreakerFactory cbFactory;
 
+	@Value("${api.backend.url}/api/v1/todos/batch")
+	private String urlTodosForCreateBatch;
+	
 	@Value("${api.backend.url}/api/v1/todos")
 	private String urlTodos;
 
@@ -55,7 +58,8 @@ public class TodoRepositoryImplByRestTemplate implements TodoRepository {
 
 	@Override
 	public void create(Todo todo) {
-		cbFactory.create("todo_create").run(() -> restTemplate.postForObject(urlTodos, todo, Todo.class),
+		//バッチ処理のサンプル実行向けに件数チェックされない、create APIのURLを呼び出し
+		cbFactory.create("todo_create").run(() -> restTemplate.postForObject(urlTodosForCreateBatch, todo, Todo.class),
 				CircutiBreakerErrorFallback.throwBusinessException());
 	}
 

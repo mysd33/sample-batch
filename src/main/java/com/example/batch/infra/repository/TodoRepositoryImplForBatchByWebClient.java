@@ -25,7 +25,7 @@ import reactor.core.publisher.Mono;
  */
 @Repository
 @RequiredArgsConstructor
-public class TodoRepositoryImplByWebClient implements TodoRepository {
+public class TodoRepositoryImplForBatchByWebClient implements TodoRepository {	
 	private final WebClientLoggingFilter loggingFilter;
 	private final WebClientResponseErrorHandler responseErrorHandler;
 
@@ -34,6 +34,8 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 	@SuppressWarnings("rawtypes")
 	private final ReactiveCircuitBreakerFactory cbFactory;
 	
+	@Value("${api.backend.url}/api/v1/todos/batch")
+	private String urlTodosForCreateBatch;
 	
 	@Value("${api.backend.url}/api/v1/todos")
 	private String urlTodos;
@@ -86,7 +88,8 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 	@Override
 	public void create(Todo todo) {
 		WebClient.builder().filter(loggingFilter.filter()).build()
-				.post().uri(urlTodos)
+				//バッチ処理のサンプル実行向けに件数チェックされない、create APIのURLを呼び出し
+				.post().uri(urlTodosForCreateBatch)
 				.contentType(MediaType.APPLICATION_JSON).bodyValue(todo)
 				.retrieve()
 				.onStatus(HttpStatus::is4xxClientError,  response -> {

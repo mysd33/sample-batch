@@ -37,7 +37,7 @@ public class AsyncMessageListener {
 			log.info("ジョブ実行依頼受信[MessageId:{}][JobId:{}][JobParameter:{}]", messageId,jobId, jobParameters);			
 			try {
 				Long jobExecutionId = jobOperator.start(jobId, jobParameters);
-				log.info("ジョブ実行完了[MessageId:{}][JobId:{}][JobExecutionId:{}]", messageId, jobId, jobExecutionId);			
+				log.info("ジョブ実行終了[MessageId:{}][JobId:{}][JobExecutionId:{}]", messageId, jobId, jobExecutionId);			
 			} catch (JobInstanceAlreadyExistsException e) {
 				log.warn("すでにこのジョブは実行されています。[SQS MessageId:{}][Jobid:{}][JobParameter:{}]", messageId, jobId, jobParameters);
 			} catch (NoSuchJobException e) {

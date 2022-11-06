@@ -12,7 +12,6 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.support.JobRepositoryFactoryBean;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
-import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -20,7 +19,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
 
 import com.example.batch.domain.common.record.TodoRecord;
-import com.example.batch.domain.common.record.TodoRecordFieldSetMapper;
 import com.example.fw.batch.async.listener.AsyncMessageListener;
 
 /**
@@ -77,8 +75,10 @@ public class BatchConfig extends DefaultBatchConfigurer {
 		return new FlatFileItemReaderBuilder<TodoRecord>()
 				.name("todoListReader")
 				.resource(new FileSystemResource(filename))
-				.lineTokenizer(new DelimitedLineTokenizer())
-				.fieldSetMapper(new TodoRecordFieldSetMapper())				
+				.delimited()
+				.delimiter(",")
+				.names("todoTitle")
+				.targetType(TodoRecord.class)
 				.encoding("UTF-8")
 				.build();
 	}
