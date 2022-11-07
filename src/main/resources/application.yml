@@ -11,4 +11,4 @@ spring:
 resilience4j.timelimiter:
   configs:
     default:
-      timeoutDuration: 2s      
+      timeoutDuration: 3s      

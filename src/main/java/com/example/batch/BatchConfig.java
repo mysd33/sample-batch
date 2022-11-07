@@ -10,6 +10,7 @@ import org.springframework.batch.core.configuration.support.JobRegistryBeanPostP
 import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.support.JobRepositoryFactoryBean;
+import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,6 +82,6 @@ public class BatchConfig extends DefaultBatchConfigurer {
 				.targetType(TodoRecord.class)
 				.encoding("UTF-8")
 				.build();
-	}
+	}	
 
 }
