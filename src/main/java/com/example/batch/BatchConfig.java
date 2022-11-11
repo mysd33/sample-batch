@@ -2,6 +2,7 @@ package com.example.batch;
 
 import javax.sql.DataSource;
 
+import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.configuration.annotation.DefaultBatchConfigurer;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -20,7 +21,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
 
 import com.example.batch.domain.common.record.TodoRecord;
-import com.example.fw.batch.async.listener.AsyncMessageListener;
+import com.example.fw.batch.async.messagelistener.AsyncMessageListener;
+import com.example.fw.batch.exception.DefaultExceptionHandler;
+import com.example.fw.batch.exception.ExceptionHandler;
+import com.example.fw.batch.listener.DefaultJobExecutionListener;
+import com.example.fw.common.message.FrameworkMessageIds;
 
 /**
  * 
@@ -33,6 +38,10 @@ public class BatchConfig extends DefaultBatchConfigurer {
 	@Autowired
 	private DataSource dataSource;
 
+	/**
+	 * SQSからメッセージを取得するMessageListener
+	 * @param jobOperator {@link JobOperator}
+	 */
 	@Bean
 	public AsyncMessageListener asyncMessageListener(JobOperator jobOperator) {
 		return new AsyncMessageListener(jobOperator);
@@ -41,7 +50,7 @@ public class BatchConfig extends DefaultBatchConfigurer {
 	/**
 	 * Bean定義されたジョブをJobRegistryに登録する設定
 	 * 
-	 * @param jobRegistry JobRegistry
+	 * @param jobRegistry {@link JobRegistry}
 	 */
 	@Bean
 	public JobRegistryBeanPostProcessor jobRegistryBeanPostProcessor(JobRegistry jobRegistry) {
@@ -65,17 +74,37 @@ public class BatchConfig extends DefaultBatchConfigurer {
 		factory.afterPropertiesSet();
 		return factory.getObject();
 	}
+	
+	/**
+	 * ジョブの実行に関わる例外ハンドリング、ログ出力機能の設定
+	 */
+	@Bean
+	public JobExecutionListener defaultJobExecutionListener() {
+		DefaultJobExecutionListener listener = new DefaultJobExecutionListener();
+		return listener;
+	}
+	
+	/**
+	 * 集約例外ハンドリングクラス
+	 */
+	@Bean
+	public ExceptionHandler defaultExceptionHandler() {
+		DefaultExceptionHandler defaultExceptionHandler = new DefaultExceptionHandler();
+		defaultExceptionHandler.setDefaultExceptionMessageId(FrameworkMessageIds.E_FW_9001);
+		return defaultExceptionHandler;
+	}
 
 	/**
 	 * TodoListの読み込みクラス
+	 *  @param filePathName ファイルパス名
 	 */
 	@StepScope
 	@Bean
 	public FlatFileItemReader<TodoRecord> todoListFileReader(
-			@Value("#{jobExecutionContext['input.file.name']}") String filename) {		
+			@Value("#{jobExecutionContext['input.file.name']}") String filePathName) {		
 		return new FlatFileItemReaderBuilder<TodoRecord>()
 				.name("todoListReader")
-				.resource(new FileSystemResource(filename))
+				.resource(new FileSystemResource(filePathName))
 				.delimited()
 				.delimiter(",")
 				.names("todoTitle")

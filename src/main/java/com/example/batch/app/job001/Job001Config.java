@@ -7,7 +7,6 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -23,11 +22,9 @@ public class Job001Config {
 
 	@Autowired
 	private StepBuilderFactory stepBuilderFactory;
-	
-	//TODO:
-	//@Qualifier("defaultJobExecutionListener")
-	//@Autowired
-	//private JobExecutionListener listener;
+			
+	@Autowired
+	private JobExecutionListener listener;
 
 	/**
 	 * Job
@@ -35,6 +32,7 @@ public class Job001Config {
 	@Bean
 	public Job job001() {
 		return jobBuilderFactory.get("job001")
+				.listener(listener)
 				.start(step001_01())
 				.build();
 	}

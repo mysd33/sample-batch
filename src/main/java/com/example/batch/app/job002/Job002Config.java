@@ -8,7 +8,6 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.repeat.RepeatStatus;
@@ -33,10 +32,8 @@ public class Job002Config {
 	@Autowired
 	private StepBuilderFactory stepBuilderFactory;
 
-	//TODO:
-	//@Qualifier("defaultJobExecutionListener")
-	//@Autowired
-	//private JobExecutionListener listener;
+	@Autowired
+	private JobExecutionListener listener;
 	
 	@Qualifier("todoListFileReader")
 	@Autowired
@@ -52,6 +49,7 @@ public class Job002Config {
 	@Bean
 	public Job job002() {
 		return jobBuilderFactory.get("job002")
+				.listener(listener)
 				.start(step002_01())
 				.next(step002_02())
 				.build();
