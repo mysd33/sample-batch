@@ -15,6 +15,9 @@
         * デフォルトでは「spring.profiles.active」プロパティが「dev」になっていて、プロファイルdevの場合は、AP起動時にSQSの代わりにElasticMQを組み込みで起動し、リッスンするようになっている。
 
 ## 動作手順
+1. Backend AP（sample-backend）の起動
+    * sample-backendをSpringBoot Applicationとして起動。
+
 1. Web AP（sample-bff）の起動
     * sample-bffをSpringBoot Applicationとして起動。
 
@@ -26,10 +29,12 @@
     * GETメソッドの場合
     ```
     「http://localhost:8080/api/v1/async/(Job ID)?param01=(任意文字列)&param02=（任意の文字列）」
-    #現状Job ID job001にする
+    #現状Job ID job001またはjob002にする
 
     #ローカル実行の場合の例
     http://localhost:8080/api/v1/async/job001?param01=aaa&param02=bbb
+    
+    http://localhost:8080/api/v1/async/job002?param01=aaa&param02=bbb
 
     #実行後、ブラウザに、以下の応答が返却
     {
@@ -47,15 +52,22 @@
         "param02" : "bbb"
     }
     
+    {
+        "job_id" : "job002",
+        "param01" : "aaa",
+        "param02" : "bbb"
+    }
+
     #実行後、APIクライアントに以下の応答が返却
     {
         result: "accept"
     }    
     ``` 
 1. 動作結果の確認
-    * sample-batchのAPが、SQS(ElastiqMQ)を介してsample-webから受け取ったメッセージ（Job IDとparam01、param02の値）を処理する。
-        * 現状は、受け取ったメッセージをもとにロジック実行しますが、簡単なサンプルなので、ログ出力のみである。
-        * 今後、ファイルを読み込み、sample-backendのREST APIを呼び出すといったサンプルアプリの実装を予定。
+    * sample-batchのAPが、SQS(ElastiqMQ)を介してsample-webから受け取ったメッセージ（Job IDとparam01、param02の値）を処理する。        
+        * TODOリストが書かれたファイル(files/input/todolist.csv)を読み込み、リストに対して一件ずつ、sample-backendのREST APIを呼び出し、TODOリストを一括登録する。
+            * job001は、タスクレットモデルで実装している。
+            * job002は、チャンクモデルでjob001と同じ処理を実装している。
 
 ## AWS SQSと連携したAP動作確認
 * デフォルトでは、「spring.profiles.active」プロパティが「dev」になっていて、プロファイルdevの場合、ElasticMQを使用するようになっている。
@@ -72,10 +84,16 @@
 
 | 分類 | 機能 | 機能概要と実現方式 | 拡張実装 | 拡張実装の格納パッケージ |
 | ---- | ---- | ---- | ---- | ---- |
-| バッチ | TBD:整理中 | |  |  |
+| バッチ | バッチAP制御 | Spring JMSとAmazon SQS Java Messaging Libraryを利用しSQSの標準キューを介した非同期実行依頼のメッセージを受信し、SpringBatchにより対象のジョブを起動する機能を提供する | ○ | com.example.fw.batch.async |
+| | 大量データアクセス | SpringBatchのItemReader、ItemWriterを利用し、大容量のファイルやDBのレコードを逐次読み書きする機能を提供する。 | - | - |
+| | 集約例外ハンドリング | エラー（例外）発生時、SpringBatchの機能によりDBのロールバックするとともに、JobExecutionListenerを利用しエラーログの出力といった共通的なエラーハンドリングを実施する。 | ○ | com.example.fw.batch.exeption、com.example.fw.batch.listener |
+| | トランザクション管理機能 | Spring Frameworkのトランザクション管理機能を利用して、タスクレットやチャンクに対するトランザクション管理を実現する機能を提供する。 | - | - |
 | オン・バッチ共通 | RDBアクセス | MyBatisやSpringとの統合機能を利用し、DBコネクション取得、SQLの実行等のRDBへのアクセスのため定型的な処理を実施し、ORマッピングやSQLマッピングと呼ばれるドメイン層とインフラ層のインピーダンスミスマッチを吸収する機能を提供する。 | - | - |
+| | DynamoDBアクセス | AWS SDK for Java 2.xのDynamoDB拡張クライアント（DynamoDbEnhancedClient)を使って、DBへのアクセス機能を提供する。 | - | - |
 | | HTTPクライアント | WebClientやRestTemplateを利用してREST APIの呼び出しやサーバエラー時の例外の取り扱いを制御する。 | ○ | com.example.fw.common.httpclient |
-| | 非同期実行依頼 | Spring JMS、AWS SQS Java Messaging Libraryを利用し、SQSの標準キューを介した非同期実行依頼のメッセージを送信する。 | - | - |
+| | リトライ・サーキットブレーカ | Spring Cloud Circuit Breaker（Resillience4j）を利用し、REST APIの呼び出しでの一時的な障害に対するリトライやフォールバック処理等を制御する。なお、AWSリソースのAPI呼び出しは、AWS SDKにてエクスポネンシャルバックオフによるリトライ処理を提供済。 | - | - |
+| | 非同期実行依頼 | Spring JMS、Amazon SQS Java Messaging Libraryを利用し、SQSの標準キューを介した非同期実行依頼のメッセージを送信する。 | - | - |
+| | 入力チェック| Java BeanValidationとSpringのValidation機能を利用し、単項目チェックや相関項目チェックといった画面の入力項目に対する形式的なチェックを実施する。 | ○ | com.example.fw.common.validation |
 | | メッセージ管理 | MessageResourceで画面やログに出力するメッセージを管理する。 | ○ | com.example.fw.common.message |
 | | 例外 | RuntimeExceptionを継承し、エラーコード（メッセージID）やメッセージを管理可能な共通的なビジネス例外、システム例外を提供する。 | ○ | com.example.fw.common.exception |
 | | ロギング | Slf4jとLogback、SpringBootのLogback拡張の機能を利用し、プロファイルによって動作環境に応じたログレベルや出力先（ファイルや標準出力）、出力形式（タブ区切りやJSON）に切替可能とする。またメッセージIDをもとにログ出力可能な汎用的なAPIを提供する。 | ○ | com.example.fw.common.logging |
@@ -90,6 +108,5 @@
 
 | 分類 | 機能 | 機能概要と実現方式 | 拡張実装 | 拡張実装の格納パッケージ |
 | ---- | ---- | ---- | ---- | ---- |
-| オン・バッチ共通 | リトライ・サーキットブレーカ | Spring Cloud Circuit Breaker（Resillience4j）を利用し、REST APIの呼び出しでの一時的な障害に対するリトライやフォールバック処理等を制御する。なお、AWSリソースのAPI呼び出しは、AWS SDKにてエクスポネンシャルバックオフによるリトライ処理を提供済。 | - | - |
-| | プロパティ管理（SSM） | Spring Cloud for AWS機能により、APから環境依存のパラメータをAWSのSSMパラメータストアに切り出し、プロファイルによって動作環境に応じたパラメータ値に置き換え可能とする。 | - | - |
+| オンバッチ共通 | プロパティ管理（SSM） | Spring Cloud for AWS機能により、APから環境依存のパラメータをAWSのSSMパラメータストアに切り出し、プロファイルによって動作環境に応じたパラメータ値に置き換え可能とする。 | - | - |
 | | テストコード作成支援 | JUnit、Mockito、Springのテスト機能を利用して、単体テストコードや結合テストコードの実装を支援する機能を提供する。 | - | - |
