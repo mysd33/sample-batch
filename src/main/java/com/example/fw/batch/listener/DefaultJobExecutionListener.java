@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.example.fw.batch.exception.ExceptionHandler;
 import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;
-import com.example.fw.common.message.FrameworkMessageIds;
+import com.example.fw.batch.message.BatchFrameworkMessageIds;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,7 +23,7 @@ public class DefaultJobExecutionListener implements JobExecutionListener {
 
 	@Override
 	public void beforeJob(JobExecution jobExecution) {
-		appLoger.info(FrameworkMessageIds.I_FW_0004, jobExecution.getJobId(), jobExecution.getId());
+		appLoger.info(BatchFrameworkMessageIds.I_BT_FW_0003, jobExecution.getJobId(), jobExecution.getId());
 
 		//TODO: メッセージをACKし、キュー（SQS）からメッセージ削除
 		
@@ -32,7 +32,7 @@ public class DefaultJobExecutionListener implements JobExecutionListener {
 	@Override
 	public void afterJob(JobExecution jobExecution) {		
 		long elapsedTime = jobExecution.getEndTime().getTime() - jobExecution.getStartTime().getTime();
-		appLoger.info(FrameworkMessageIds.I_FW_0005, elapsedTime, jobExecution.getJobId(), jobExecution.getId(), jobExecution.getExitStatus().getExitCode());
+		appLoger.info(BatchFrameworkMessageIds.I_BT_FW_0004, elapsedTime, jobExecution.getJobId(), jobExecution.getId(), jobExecution.getExitStatus().getExitCode());
 		//例外発生時に集約例外ハンドリング
 		defaultExceptionHandler.handle(jobExecution);		
 	}

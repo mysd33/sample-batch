@@ -11,7 +11,7 @@ import org.springframework.messaging.handler.annotation.Header;
 import com.example.fw.common.async.model.JobRequest;
 import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;
-import com.example.fw.common.message.FrameworkMessageIds;
+import com.example.fw.batch.message.BatchFrameworkMessageIds;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,15 +38,15 @@ public class AsyncMessageListener {
 			throws JobParametersInvalidException {
 			String jobId = request.getJobId();
 			String jobParameters = request.toParameterString();
-			appLogger.info(FrameworkMessageIds.I_FW_0001, messageId,jobId, jobParameters);			
+			appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0001, messageId,jobId, jobParameters);			
 			try {
 				Long jobExecutionId = jobOperator.start(jobId, jobParameters);
-				appLogger.info(FrameworkMessageIds.I_FW_0002, messageId, jobId, jobExecutionId);			
+				appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0002, messageId, jobId, jobExecutionId);			
 			} catch (JobInstanceAlreadyExistsException e) {
-				appLogger.warn(FrameworkMessageIds.W_FW_8003, messageId, jobId, jobParameters);
+				appLogger.warn(BatchFrameworkMessageIds.W_BT_FW_8001, messageId, jobId, jobParameters);
 			} catch (NoSuchJobException e) {
 				//サンプルAPのためキャッチして正常終了しているが、要件によってはthrows句にしてキューからメッセージを消さない
-				appLogger.warn(FrameworkMessageIds.W_FW_8004, messageId, jobId);
+				appLogger.warn(BatchFrameworkMessageIds.W_BT_FW_8002, messageId, jobId);
 			}
 	}
 }

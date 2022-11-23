@@ -25,7 +25,7 @@ import com.example.fw.batch.async.messagelistener.AsyncMessageListener;
 import com.example.fw.batch.exception.DefaultExceptionHandler;
 import com.example.fw.batch.exception.ExceptionHandler;
 import com.example.fw.batch.listener.DefaultJobExecutionListener;
-import com.example.fw.common.message.FrameworkMessageIds;
+import com.example.fw.common.message.CommonFrameworkMessageIds;
 
 /**
  * 
@@ -90,7 +90,7 @@ public class BatchConfig extends DefaultBatchConfigurer {
 	@Bean
 	public ExceptionHandler defaultExceptionHandler() {
 		DefaultExceptionHandler defaultExceptionHandler = new DefaultExceptionHandler();
-		defaultExceptionHandler.setDefaultExceptionMessageId(FrameworkMessageIds.E_FW_9001);
+		defaultExceptionHandler.setDefaultExceptionMessageId(CommonFrameworkMessageIds.E_CM_FW_9001);
 		return defaultExceptionHandler;
 	}
 
