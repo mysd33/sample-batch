@@ -48,14 +48,18 @@
     #リクエストボディの例
     {
         "job_id" : "job001",
-        "param01" : "aaa",
-        "param02" : "bbb"
+        "parameters" : {
+            "param01" : "aaa",
+            "param02" : "bbb"
+        }
     }
     
     {
         "job_id" : "job002",
-        "param01" : "aaa",
-        "param02" : "bbb"
+        "parameters" : {
+            "param01" : "aaa",
+            "param02" : "bbb"
+        }
     }
 
     #実行後、APIクライアントに以下の応答が返却
