@@ -2,6 +2,8 @@ package com.example.fw.batch.exception;
 
 import java.util.List;
 
+import javax.validation.ValidationException;
+
 import org.springframework.batch.core.JobExecution;
 import org.springframework.validation.BindException;
 
@@ -9,8 +11,6 @@ import com.example.fw.common.exception.BusinessException;
 import com.example.fw.common.exception.SystemException;
 import com.example.fw.common.logging.LoggerFactory;
 import com.example.fw.common.logging.MonitoringLogger;
-
-import io.micrometer.core.instrument.config.validate.ValidationException;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
