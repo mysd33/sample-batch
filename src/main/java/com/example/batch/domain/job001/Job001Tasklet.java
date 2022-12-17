@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class Job001Tasklet implements Tasklet {
-	private final static ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
+	private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
 	@Qualifier("todoListFileReader")
 	@Autowired
 	private FlatFileItemReader<TodoRecord> todoListFileReader;
