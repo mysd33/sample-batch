@@ -11,7 +11,6 @@ import org.springframework.batch.core.configuration.support.JobRegistryBeanPostP
 import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.support.JobRepositoryFactoryBean;
-import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +21,10 @@ import org.springframework.core.io.FileSystemResource;
 
 import com.example.batch.domain.common.record.TodoRecord;
 import com.example.fw.batch.async.messagelistener.AsyncMessageListener;
+import com.example.fw.batch.async.store.DefaultJmsMessageManager;
+import com.example.fw.batch.async.store.JmsMessageManager;
+import com.example.fw.batch.async.store.JmsMessageStore;
+import com.example.fw.batch.async.store.ThreadLocalJmsMessageStore;
 import com.example.fw.batch.exception.DefaultExceptionHandler;
 import com.example.fw.batch.exception.ExceptionHandler;
 import com.example.fw.batch.listener.DefaultJobExecutionListener;
@@ -39,12 +42,28 @@ public class BatchConfig extends DefaultBatchConfigurer {
 	private DataSource dataSource;
 
 	/**
+	 * JMSのメッセージストアクラス
+	 */
+	@Bean
+	public JmsMessageStore jmsMessageStore() {
+		return new ThreadLocalJmsMessageStore();
+	}
+	
+	/**
+	 * JMSのメッセージ管理クラス
+	 */
+	@Bean
+	public JmsMessageManager jmsMessageManager(JmsMessageStore jmsMessageStore) {
+		return new DefaultJmsMessageManager(jmsMessageStore);
+	}
+	
+	/**
 	 * SQSからメッセージを取得するMessageListener
 	 * @param jobOperator {@link JobOperator}
 	 */
 	@Bean
-	public AsyncMessageListener asyncMessageListener(JobOperator jobOperator) {
-		return new AsyncMessageListener(jobOperator);
+	public AsyncMessageListener asyncMessageListener(JobOperator jobOperator, JmsMessageManager jmsMessageManager) {
+		return new AsyncMessageListener(jobOperator, jmsMessageManager);
 	}
 
 	/**
@@ -94,6 +113,7 @@ public class BatchConfig extends DefaultBatchConfigurer {
 		return defaultExceptionHandler;
 	}
 
+	
 	/**
 	 * TodoListの読み込みクラス
 	 *  @param filePathName ファイルパス名

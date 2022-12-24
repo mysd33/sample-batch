@@ -12,7 +12,8 @@ public final class BatchFrameworkMessageIds {
 	public static final String W_BT_FW_8002 = "w.bt.fw.8002";
 	public static final String W_BT_FW_8003 = "w.bt.fw.8003";	
 	public static final String W_BT_FW_8004 = "w.bt.fw.8004";
-	public static final String W_BT_FW_8005 = "w.bt.fw.8005";	
+	public static final String W_BT_FW_8005 = "w.bt.fw.8005";
+	public static final String W_BT_FW_8006 = "w.bt.fw.8006";	
 	public static final String E_BT_FW_9001 = "e.bt.fw.9001";	
 	public static final String E_BT_FW_9002 = "e.bt.fw.9002";
 	public static final String E_BT_FW_9003 = "e.bt.fw.9003";

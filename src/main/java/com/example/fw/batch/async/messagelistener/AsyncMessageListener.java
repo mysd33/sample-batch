@@ -15,6 +15,7 @@ import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.support.JmsHeaders;
 import org.springframework.messaging.handler.annotation.Headers;
 
+import com.example.fw.batch.async.store.JmsMessageManager;
 import com.example.fw.batch.message.BatchFrameworkMessageIds;
 import com.example.fw.common.async.model.JobRequest;
 import com.example.fw.common.logging.ApplicationLogger;
@@ -33,10 +34,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class AsyncMessageListener {
 	private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
-	private static final MonitoringLogger monitoringLogger = LoggerFactory.getMonitoringLogger(log);
-
+	private static final MonitoringLogger monitoringLogger = LoggerFactory.getMonitoringLogger(log);	
 	private final JobOperator jobOperator;
-
+	private final JmsMessageManager jmsMessageManager;
 	/**
 	 * キューからジョブの要求情報を受信
 	 * 
@@ -45,33 +45,37 @@ public class AsyncMessageListener {
 	 */
 	@JmsListener(destination = "${aws.sqs.queue.name}")
 	public void onMessage(@Headers final Map<String, String> headers, Message message, final JobRequest request) {
-		String messageId = headers.get(JmsHeaders.MESSAGE_ID);
 		// メッセージが有効な形式かチェック
 		if (!request.isValid()) {
 			monitoringLogger.error(BatchFrameworkMessageIds.E_BT_FW_9001, null, request);
 			return;
 		}
+		//メッセージID取得
+		String messageId = headers.get(JmsHeaders.MESSAGE_ID);
+		//メッセージをJmsMessageManagerの管理下におく
+		jmsMessageManager.manage(message);
+		
 		Long jobExecutionId = null;
 		if (request.isRestart()) {
-			// ジョブ再実行
-			Long preExecutionId = request.getJobExecutionId();
-			// SpringBatchで前回ジョブ実行IDを用いてジョブ再実行
+			// ジョブ再実行の場合
+			Long preExecutionId = request.getJobExecutionId();			
 			try {
+				// SpringBatchで前回ジョブ実行IDを用いてジョブ再実行
 				jobExecutionId = jobOperator.restart(preExecutionId);
 			} catch (NoSuchJobExecutionException e) {
 				appLogger.warn(BatchFrameworkMessageIds.W_BT_FW_8003, e, messageId, preExecutionId);
 			} catch (NoSuchJobException e) {
-				appLogger.warn(BatchFrameworkMessageIds.W_BT_FW_8004, e, messageId, preExecutionId);
+				appLogger.warn(BatchFrameworkMessageIds.W_BT_FW_8004, e, messageId, preExecutionId);				
 			} catch (JobInstanceAlreadyCompleteException e) {
-				appLogger.warn(BatchFrameworkMessageIds.W_BT_FW_8005, e, messageId, preExecutionId);
+				appLogger.warn(BatchFrameworkMessageIds.W_BT_FW_8005, e, messageId, preExecutionId);				
 			} catch (JobParametersInvalidException e) {
-				monitoringLogger.error(BatchFrameworkMessageIds.E_BT_FW_9003, e, messageId, preExecutionId);
+				monitoringLogger.error(BatchFrameworkMessageIds.E_BT_FW_9003, e, messageId, preExecutionId);				
 			} catch (JobRestartException e) {
-				monitoringLogger.error(BatchFrameworkMessageIds.E_BT_FW_9004, e, messageId, preExecutionId);
+				monitoringLogger.error(BatchFrameworkMessageIds.E_BT_FW_9004, e, messageId, preExecutionId);				
 			}
 			return;
 		}
-		// ジョブ初回実行
+		// ジョブ初回実行の場合
 		String jobId = request.getJobId();
 		String jobParameters = request.toParameterString();
 		try {
