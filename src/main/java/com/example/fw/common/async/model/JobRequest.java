@@ -25,6 +25,11 @@ public class JobRequest implements Serializable {
 	private String jobId;
 	// ジョブパラメータ
 	private Map<String, String> parameters;
+	// ジョブ実行ID（再実行の場合）
+	private Long jobExecutionId;
+	
+	// 再実行かどうか（Taskletモデルはリラン、Chunkモデルはリスタート）
+	private boolean restart;
 
 	/**
 	 * パラメータ文字列を返却する
@@ -39,4 +44,17 @@ public class JobRequest implements Serializable {
 		return sj.toString();
 	}
 
+	/**
+	 * 
+	 * JobRequestが有効な値かを返却する
+	 * 
+	 */
+	public boolean isValid() {
+		if (restart) {
+			//リスタートの場合はジョブ実行IDが指定されていること
+			return jobExecutionId != null;
+		}
+		//初回実行はジョブが指定されていること
+		return jobId != null;		
+	}
 }
