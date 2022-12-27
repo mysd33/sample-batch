@@ -1,4 +1,4 @@
-package com.example.fw.batch.sqslocal;
+package com.example.fw.batch.async.sqslocal;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
