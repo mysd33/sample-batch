@@ -10,12 +10,11 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.example.batch.infra.httpclient.CircutiBreakerErrorFallback;
-import com.example.batch.infra.httpclient.WebClientResponseErrorHandler;
 import com.example.batch.domain.common.model.Todo;
 import com.example.batch.domain.common.model.TodoList;
 import com.example.batch.domain.common.repository.TodoRepository;
-import com.example.fw.common.httpclient.WebClientLoggingFilter;
+import com.example.batch.infra.httpclient.CircutiBreakerErrorFallback;
+import com.example.batch.infra.httpclient.WebClientResponseErrorHandler;
 
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
@@ -25,8 +24,8 @@ import reactor.core.publisher.Mono;
  */
 @Repository
 @RequiredArgsConstructor
-public class TodoRepositoryImplForBatchByWebClient implements TodoRepository {	
-	private final WebClientLoggingFilter loggingFilter;
+public class TodoRepositoryImplForBatchByWebClient implements TodoRepository {
+	private final WebClient webClient;	
 	private final WebClientResponseErrorHandler responseErrorHandler;
 
 	//サーキットブレーカ
@@ -51,7 +50,7 @@ public class TodoRepositoryImplForBatchByWebClient implements TodoRepository {
 
 	@Override
 	public Optional<Todo> findById(String todoId) {
-		Mono<Todo> todoMono = WebClient.builder().filter(loggingFilter.filter()).build().get()
+		Mono<Todo> todoMono = webClient.get()
 				.uri(urlTodoById, todoId)				
 				.retrieve()
 				.onStatus(HttpStatus::is4xxClientError,  response -> {
@@ -68,8 +67,7 @@ public class TodoRepositoryImplForBatchByWebClient implements TodoRepository {
 
 	@Override
 	public Collection<Todo> findAll() {
-		Mono<TodoList> todoListMono = WebClient.builder().filter(loggingFilter.filter()).build()
-				.get().uri(urlTodos)
+		Mono<TodoList> todoListMono = webClient.get().uri(urlTodos)
 				.retrieve()
 				.onStatus(HttpStatus::is4xxClientError,  response -> {
 					return  responseErrorHandler.createClientErrorException(response);
@@ -87,9 +85,8 @@ public class TodoRepositoryImplForBatchByWebClient implements TodoRepository {
 
 	@Override
 	public void create(Todo todo) {
-		WebClient.builder().filter(loggingFilter.filter()).build()
-				//バッチ処理のサンプル実行向けに件数チェックされない、create APIのURLを呼び出し
-				.post().uri(urlTodosForCreateBatch)
+		//バッチ処理のサンプル実行向けに件数チェックされない、create APIのURLを呼び出し
+		webClient.post().uri(urlTodosForCreateBatch)
 				.contentType(MediaType.APPLICATION_JSON).bodyValue(todo)
 				.retrieve()
 				.onStatus(HttpStatus::is4xxClientError,  response -> {
@@ -106,8 +103,7 @@ public class TodoRepositoryImplForBatchByWebClient implements TodoRepository {
 
 	@Override
 	public boolean update(Todo todo) {
-		WebClient.builder().filter(loggingFilter.filter()).build()
-				.put().uri(urlTodoById, todo.getTodoId())
+		webClient.put().uri(urlTodoById, todo.getTodoId())
 				.retrieve()
 				.onStatus(HttpStatus::is4xxClientError,  response -> {
 					return  responseErrorHandler.createClientErrorException(response);
@@ -124,8 +120,7 @@ public class TodoRepositoryImplForBatchByWebClient implements TodoRepository {
 
 	@Override
 	public void delete(Todo todo) {
-		WebClient.builder().filter(loggingFilter.filter()).build()
-				.delete().uri(urlTodoById, todo.getTodoId())
+		webClient.delete().uri(urlTodoById, todo.getTodoId())
 				.retrieve()
 				.onStatus(HttpStatus::is4xxClientError,  response -> {
 					return  responseErrorHandler.createClientErrorException(response);

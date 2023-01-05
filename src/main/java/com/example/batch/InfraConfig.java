@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.example.batch.infra.httpclient.RestTemplateResponseErrorHandler;
 import com.example.batch.infra.httpclient.WebClientResponseErrorHandler;
@@ -21,6 +22,19 @@ import com.example.fw.common.httpclient.WebClientLoggingFilter;
  */
 @Configuration
 public class InfraConfig {
+	
+	/**
+	 * 
+	 * WebClientクラス
+	 * 	 
+	 */
+	@Bean
+	public WebClient webClientWithoutXRay(WebClientLoggingFilter loggingFilter) {
+		return WebClient.builder()
+				.filter(loggingFilter.filter())				
+				.build();
+	}
+	
 	/**
 	 * WebClientでのログ出力クラス
 	 */
