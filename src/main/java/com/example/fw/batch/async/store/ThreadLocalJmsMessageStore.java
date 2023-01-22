@@ -7,21 +7,21 @@ import javax.jms.Message;
  *
  */
 public class ThreadLocalJmsMessageStore implements JmsMessageStore {
-	private final ThreadLocal<Message> messageStore = new ThreadLocal<>();
+    private final ThreadLocal<Message> messageStore = new ThreadLocal<>();
 
-	@Override
-	public Message get() {
-		return messageStore.get();
-	}
+    @Override
+    public Message get() {
+        return messageStore.get();
+    }
 
-	@Override
-	public void set(Message message) {
-		messageStore.set(message);
-	}
+    @Override
+    public void set(Message message) {
+        messageStore.set(message);
+    }
 
-	@Override
-	public void remove() {
-		messageStore.remove();
-	}
+    @Override
+    public void remove() {
+        messageStore.remove();
+    }
 
 }

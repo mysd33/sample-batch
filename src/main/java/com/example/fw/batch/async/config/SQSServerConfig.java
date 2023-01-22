@@ -15,23 +15,24 @@ import org.springframework.jms.support.destination.DynamicDestinationResolver;
  */
 @Configuration
 public class SQSServerConfig {
-	@Value("${aws.sqs.concurrency}")
-	private String concurrency;
+    @Value("${aws.sqs.concurrency}")
+    private String concurrency;
 
-	/**
-	 * JMSListenerContainerFactoryの定義
-	 */
-	@Bean
-	public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(ConnectionFactory connectionFactory, MessageConverter jacksonJmsMessageConverter) {
-		DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-		factory.setConnectionFactory(connectionFactory);
-		factory.setDestinationResolver(new DynamicDestinationResolver());
-		factory.setConcurrency(concurrency);
-		factory.setMessageConverter(jacksonJmsMessageConverter);
-		//CLIENT_ACKNOWLEDGEモード：正常終了時のみ確認応答を返しメッセージをSQSから削除
-		//エラー時は、SQSにメッセージが残る
-		factory.setSessionAcknowledgeMode(Session.CLIENT_ACKNOWLEDGE);
-		return factory;
-	}
+    /**
+     * JMSListenerContainerFactoryの定義
+     */
+    @Bean
+    public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(ConnectionFactory connectionFactory,
+            MessageConverter jacksonJmsMessageConverter) {
+        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+        factory.setConnectionFactory(connectionFactory);
+        factory.setDestinationResolver(new DynamicDestinationResolver());
+        factory.setConcurrency(concurrency);
+        factory.setMessageConverter(jacksonJmsMessageConverter);
+        // CLIENT_ACKNOWLEDGEモード：正常終了時のみ確認応答を返しメッセージをSQSから削除
+        // エラー時は、SQSにメッセージが残る
+        factory.setSessionAcknowledgeMode(Session.CLIENT_ACKNOWLEDGE);
+        return factory;
+    }
 
 }

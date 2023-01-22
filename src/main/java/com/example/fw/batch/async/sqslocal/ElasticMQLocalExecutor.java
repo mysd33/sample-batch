@@ -18,45 +18,45 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class ElasticMQLocalExecutor {
-	private static final String ELASTICMQ = "elasticmq";
-	private static final String HTTP_LOCALHOST = "http://localhost:";
-	private static final String LOCAL_HOST = "localhost";
-	private SQSRestServer server;
-	private String queueUrl;
-	private AmazonSQS amazonSQS;
-	
-	@Value("${aws.sqslocal.port}")
-	private String port;
+    private static final String ELASTICMQ = "elasticmq";
+    private static final String HTTP_LOCALHOST = "http://localhost:";
+    private static final String LOCAL_HOST = "localhost";
+    private SQSRestServer server;
+    private String queueUrl;
+    private AmazonSQS amazonSQS;
 
-	@Value("${aws.sqs.queue.name}")
-	private String queueName;
-	
-	
-	/**
-	 * ElasticMQ 起動
-	 * @throws Exception
-	 */
-	@PostConstruct
-	public void startup() throws Exception {		
-		server = SQSRestServerBuilder.withPort(Integer.valueOf(port)).withInterface(LOCAL_HOST).start();
-		log.info("ElasticMQ start");
-		
-		amazonSQS = AmazonSQSClientBuilder.standard()
-				.withEndpointConfiguration(new EndpointConfiguration(HTTP_LOCALHOST + port, ELASTICMQ))
-				.build();
-		queueUrl = amazonSQS.createQueue(queueName).getQueueUrl();
-		log.info("ElasticMQ queueUrl:" + queueUrl);
-	}
+    @Value("${aws.sqslocal.port}")
+    private String port;
 
-	/**
-	 * ElasticMQ 終了
-	 * @throws Exception
-	 */
-	@PreDestroy
-	public void shutdown() throws Exception {
-		if (server != null) {
-			amazonSQS.deleteQueue(queueUrl);
-			server.stopAndWait();
-		}
-	}
+    @Value("${aws.sqs.queue.name}")
+    private String queueName;
+
+    /**
+     * ElasticMQ 起動
+     * 
+     * @throws Exception
+     */
+    @PostConstruct
+    public void startup() throws Exception {
+        server = SQSRestServerBuilder.withPort(Integer.valueOf(port)).withInterface(LOCAL_HOST).start();
+        log.info("ElasticMQ start");
+
+        amazonSQS = AmazonSQSClientBuilder.standard()
+                .withEndpointConfiguration(new EndpointConfiguration(HTTP_LOCALHOST + port, ELASTICMQ)).build();
+        queueUrl = amazonSQS.createQueue(queueName).getQueueUrl();
+        log.info("ElasticMQ queueUrl:" + queueUrl);
+    }
+
+    /**
+     * ElasticMQ 終了
+     * 
+     * @throws Exception
+     */
+    @PreDestroy
+    public void shutdown() {
+        if (server != null) {
+            amazonSQS.deleteQueue(queueUrl);
+            server.stopAndWait();
+        }
+    }
 }

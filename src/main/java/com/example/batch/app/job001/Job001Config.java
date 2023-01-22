@@ -17,42 +17,46 @@ import com.example.batch.domain.job001.Job001Tasklet;
  */
 @Configuration
 public class Job001Config {
-	@Autowired
-	private JobBuilderFactory jobBuilderFactory;
+    @Autowired
+    private JobBuilderFactory jobBuilderFactory;
 
-	@Autowired
-	private StepBuilderFactory stepBuilderFactory;
-			
-	@Autowired
-	private JobExecutionListener listener;
+    @Autowired
+    private StepBuilderFactory stepBuilderFactory;
 
-	/**
-	 * Job
-	 */
-	@Bean
-	public Job job001() {
-		return jobBuilderFactory.get("job001")
-				.listener(listener)
-				.start(step001_01())
-				.build();
-	}
+    @Autowired
+    private JobExecutionListener listener;
 
-	/**
-	 * Step
-	 */
-	@Bean
-	public Step step001_01() {
-		return stepBuilderFactory.get("step001_01")
-				.tasklet(tasklet001())
-				.build();
-	}
+    /**
+     * Job
+     */
+    @Bean
+    public Job job001() {
+        // @formatter:off 
+        return jobBuilderFactory.get("job001")
+                .listener(listener)
+                .start(step00101())
+                .build();
+        // @formatter:on        
+    }
 
-	/**
-	 * Tasklet
-	 */
-	@Bean
-	protected Tasklet tasklet001() {
-		return new Job001Tasklet();
-	}
+    /**
+     * Step
+     */
+    @Bean
+    public Step step00101() {
+        // @formatter:off         
+        return stepBuilderFactory.get("step001_01")
+                .tasklet(tasklet001()).
+                build();
+        // @formatter:on        
+    }
+
+    /**
+     * Tasklet
+     */
+    @Bean
+    protected Tasklet tasklet001() {
+        return new Job001Tasklet();
+    }
 
 }

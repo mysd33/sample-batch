@@ -20,86 +20,94 @@ import org.springframework.context.annotation.Configuration;
 import com.example.batch.domain.common.record.TodoRecord;
 import com.example.batch.domain.job002.Job002ItemProcessor;
 import com.example.fw.batch.writer.NoOpItemWriter;
+import com.example.fw.common.logging.ApplicationLogger;
+import com.example.fw.common.logging.LoggerFactory;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Configuration
 @Slf4j
 public class Job002Config {
-	@Autowired
-	private JobBuilderFactory jobBuilderFactory;
+    private static ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
+    
+    @Autowired
+    private JobBuilderFactory jobBuilderFactory;
 
-	@Autowired
-	private StepBuilderFactory stepBuilderFactory;
+    @Autowired
+    private StepBuilderFactory stepBuilderFactory;
 
-	@Autowired
-	private JobExecutionListener listener;
-	
-	@Qualifier("todoListFileReader")
-	@Autowired
-	private FlatFileItemReader<TodoRecord> todoListFileReader;
+    @Autowired
+    private JobExecutionListener listener;
 
-	// TODO:チャンクサイズの設定ファイル化
-	@Value("${job002.chunkSize:5}")
-	private int chunkSize;
+    @Qualifier("todoListFileReader")
+    @Autowired
+    private FlatFileItemReader<TodoRecord> todoListFileReader;
 
-	/**
-	 * Job
-	 */
-	@Bean
-	public Job job002() {
+    @Value("${job002.chunkSize:5}")
+    private int chunkSize;
+
+
+    /**
+     * Job
+     */
+    @Bean
+    public Job job002() {
+        // @formatter:off 
 		return jobBuilderFactory.get("job002")
 				.listener(listener)
-				.start(step002_01())
-				.next(step002_02())
+				.start(step00201())
+				.next(step00202())
 				.build();
-	}
+		// @formatter:on
+    }
 
-	/**
-	 * Step1 パラメータから入出力ファイルパスを取得する前処理
-	 */
-	@Bean
-	public Step step002_01() {
+    /**
+     * Step1 パラメータから入出力ファイルパスを取得する前処理
+     */
+    @Bean
+    public Step step00201() {
+        // @formatter:off 
 		return stepBuilderFactory.get("step002_01").tasklet((contribution, chunkContext) -> {
 			StepExecution stepExecution = chunkContext.getStepContext().getStepExecution();
 			String param01 = stepExecution.getJobParameters().getString("param01");
 			String param02 = stepExecution.getJobParameters().getString("param02");
-			//TODO: ApplicationLogger化
-			log.debug("param01:{}, param02:{}", param01, param02);
+			appLogger.debug("param01:{}, param02:{}", param01, param02);
 			ExecutionContext jobExecutionContext = stepExecution.getJobExecution().getExecutionContext();
 			jobExecutionContext.put("input.file.name","files/input/todolist.csv");			
 			return RepeatStatus.FINISHED;
 		}).build();
-	}
+		// @formatter:on 
+    }
 
-	/**
-	 * Step2 本処理
-	 */
-	@Bean
-	public Step step002_02() {
+    /**
+     * Step2 本処理
+     */
+    @Bean
+    public Step step00202() {
+        // @formatter:off 
 		return stepBuilderFactory.get("step002_02")
 				.<TodoRecord, TodoRecord>chunk(chunkSize)
 				.reader(todoListFileReader)
 				.processor(processor002())
 				.writer(noOpItemWriter())
 				.build();
-	}
+		// @formatter:on
+    }
 
-	/**
-	 * ItemProcessor
-	 */
-	@Bean
-	public ItemProcessor<TodoRecord, TodoRecord> processor002() {
-		return new Job002ItemProcessor();
-	}
-	
-	/**
-	 * 何もしないItemWriter
-	 */
-	@Bean
-	public ItemWriter<TodoRecord> noOpItemWriter() {
-		return new NoOpItemWriter<>();
-	}
-	
-	
+    /**
+     * ItemProcessor
+     */
+    @Bean
+    public ItemProcessor<TodoRecord, TodoRecord> processor002() {
+        return new Job002ItemProcessor();
+    }
+
+    /**
+     * 何もしないItemWriter
+     */
+    @Bean
+    public ItemWriter<TodoRecord> noOpItemWriter() {
+        return new NoOpItemWriter<>();
+    }
+
 }

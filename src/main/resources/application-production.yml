@@ -23,7 +23,11 @@ logging:
     org.springframework: INFO
     org.springframework.jdbc: INFO
     com.example: DEBUG    
+    org.springframework.context.support.ResourceBundleMessageSource: ERROR
     
 api:
   backend:
     url: http://localhost:8000    
+
+job002:
+  chunkSize: 5     

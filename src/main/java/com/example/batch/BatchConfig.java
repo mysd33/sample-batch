@@ -38,99 +38,93 @@ import com.example.fw.common.message.CommonFrameworkMessageIds;
 @Configuration
 @EnableBatchProcessing
 public class BatchConfig extends DefaultBatchConfigurer {
-	@Autowired
-	private DataSource dataSource;
+    @Autowired
+    private DataSource dataSource;
 
-	/**
-	 * JMSのメッセージストアクラス
-	 */
-	@Bean
-	public JmsMessageStore jmsMessageStore() {
-		return new ThreadLocalJmsMessageStore();
-	}
-	
-	/**
-	 * JMSのメッセージ管理クラス
-	 */
-	@Bean
-	public JmsMessageManager jmsMessageManager(JmsMessageStore jmsMessageStore) {
-		return new DefaultJmsMessageManager(jmsMessageStore);
-	}
-	
-	/**
-	 * SQSからメッセージを取得するMessageListener
-	 * @param jobOperator {@link JobOperator}
-	 */
-	@Bean
-	public AsyncMessageListener asyncMessageListener(JobOperator jobOperator, JmsMessageManager jmsMessageManager) {
-		return new AsyncMessageListener(jobOperator, jmsMessageManager);
-	}
+    /**
+     * JMSのメッセージストアクラス
+     */
+    @Bean
+    public JmsMessageStore jmsMessageStore() {
+        return new ThreadLocalJmsMessageStore();
+    }
 
-	/**
-	 * Bean定義されたジョブをJobRegistryに登録する設定
-	 * 
-	 * @param jobRegistry {@link JobRegistry}
-	 */
-	@Bean
-	public JobRegistryBeanPostProcessor jobRegistryBeanPostProcessor(JobRegistry jobRegistry) {
-		JobRegistryBeanPostProcessor postProcessor = new JobRegistryBeanPostProcessor();
-		postProcessor.setJobRegistry(jobRegistry);
-		return postProcessor;
-	}
+    /**
+     * JMSのメッセージ管理クラス
+     */
+    @Bean
+    public JmsMessageManager jmsMessageManager(JmsMessageStore jmsMessageStore) {
+        return new DefaultJmsMessageManager(jmsMessageStore);
+    }
 
-	/**
-	 * ジョブ管理テーブル群へアクセスするJobRepositoryの設定
-	 */
-	@Override
-	protected JobRepository createJobRepository() throws Exception {
-		JobRepositoryFactoryBean factory = new JobRepositoryFactoryBean();
-		factory.setDataSource(dataSource);
-		factory.setTransactionManager(getTransactionManager());
-		// Spring BatchはSERIALIZABLEがデフォルト値
-		// 複数のジョブを同時に実行した際にJobRepositoryの更新で例外が発生してしまうため
-		// トランザクション分離レベルをREAD_COMMITTEDに設定
-		factory.setIsolationLevelForCreate("ISOLATION_READ_COMMITTED");
-		factory.afterPropertiesSet();
-		return factory.getObject();
-	}
-	
-	/**
-	 * ジョブの実行に関わる例外ハンドリング、ログ出力機能の設定
-	 */
-	@Bean
-	public JobExecutionListener defaultJobExecutionListener() {
-		DefaultJobExecutionListener listener = new DefaultJobExecutionListener();
-		return listener;
-	}
-	
-	/**
-	 * 集約例外ハンドリングクラス
-	 */
-	@Bean
-	public ExceptionHandler defaultExceptionHandler() {
-		DefaultExceptionHandler defaultExceptionHandler = new DefaultExceptionHandler();
-		defaultExceptionHandler.setDefaultExceptionMessageId(CommonFrameworkMessageIds.E_CM_FW_9001);
-		return defaultExceptionHandler;
-	}
+    /**
+     * SQSからメッセージを取得するMessageListener
+     * 
+     * @param jobOperator {@link JobOperator}
+     */
+    @Bean
+    public AsyncMessageListener asyncMessageListener(JobOperator jobOperator, JmsMessageManager jmsMessageManager) {
+        return new AsyncMessageListener(jobOperator, jmsMessageManager);
+    }
 
-	
-	/**
-	 * TodoListの読み込みクラス
-	 *  @param filePathName ファイルパス名
-	 */
-	@StepScope
-	@Bean
-	public FlatFileItemReader<TodoRecord> todoListFileReader(
-			@Value("#{jobExecutionContext['input.file.name']}") String filePathName) {		
-		return new FlatFileItemReaderBuilder<TodoRecord>()
-				.name("todoListReader")
-				.resource(new FileSystemResource(filePathName))
-				.delimited()
-				.delimiter(",")
-				.names("todoTitle")
-				.targetType(TodoRecord.class)
-				.encoding("UTF-8")
-				.build();
-	}	
+    /**
+     * Bean定義されたジョブをJobRegistryに登録する設定
+     * 
+     * @param jobRegistry {@link JobRegistry}
+     */
+    @Bean
+    public JobRegistryBeanPostProcessor jobRegistryBeanPostProcessor(JobRegistry jobRegistry) {
+        JobRegistryBeanPostProcessor postProcessor = new JobRegistryBeanPostProcessor();
+        postProcessor.setJobRegistry(jobRegistry);
+        return postProcessor;
+    }
+
+    /**
+     * ジョブ管理テーブル群へアクセスするJobRepositoryの設定
+     */
+    @Override
+    protected JobRepository createJobRepository() throws Exception {
+        JobRepositoryFactoryBean factory = new JobRepositoryFactoryBean();
+        factory.setDataSource(dataSource);
+        factory.setTransactionManager(getTransactionManager());
+        // Spring BatchはSERIALIZABLEがデフォルト値
+        // 複数のジョブを同時に実行した際にJobRepositoryの更新で例外が発生してしまうため
+        // トランザクション分離レベルをREAD_COMMITTEDに設定
+        factory.setIsolationLevelForCreate("ISOLATION_READ_COMMITTED");
+        factory.afterPropertiesSet();
+        return factory.getObject();
+    }
+
+    /**
+     * ジョブの実行に関わる例外ハンドリング、ログ出力機能の設定
+     */
+    @Bean
+    public JobExecutionListener defaultJobExecutionListener() {
+        return new DefaultJobExecutionListener();
+    }
+
+    /**
+     * 集約例外ハンドリングクラス
+     */
+    @Bean
+    public ExceptionHandler defaultExceptionHandler() {
+        DefaultExceptionHandler defaultExceptionHandler = new DefaultExceptionHandler();
+        defaultExceptionHandler.setDefaultExceptionMessageId(CommonFrameworkMessageIds.E_CM_FW_9001);
+        return defaultExceptionHandler;
+    }
+
+    /**
+     * TodoListの読み込みクラス
+     * 
+     * @param filePathName ファイルパス名
+     */
+    @StepScope
+    @Bean
+    public FlatFileItemReader<TodoRecord> todoListFileReader(
+            @Value("#{jobExecutionContext['input.file.name']}") String filePathName) {
+        return new FlatFileItemReaderBuilder<TodoRecord>().name("todoListReader")
+                .resource(new FileSystemResource(filePathName)).delimited().delimiter(",").names("todoTitle")
+                .targetType(TodoRecord.class).encoding("UTF-8").build();
+    }
 
 }

@@ -20,32 +20,30 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class DefaultExceptionHandler implements ExceptionHandler {
-	private static final MonitoringLogger monitoringLogger = LoggerFactory.getMonitoringLogger(log);
-	
-	@Setter
-	private String defaultExceptionMessageId;
+    private static final MonitoringLogger monitoringLogger = LoggerFactory.getMonitoringLogger(log);
 
-	@Override
-	public void handle(final JobExecution jobExecution) {
-		// 例外の有無チェック
-		List<Throwable> exceptions = jobExecution.getAllFailureExceptions();
-		if (exceptions.isEmpty()) {
-			return;
-		}
-		for (Throwable ex : exceptions) {
-			if (ex instanceof SystemException) {
-				SystemException error = (SystemException) ex;
-				monitoringLogger.error(error.getCode(), error, error.getArgs());
-			} else if (ex instanceof BusinessException) {
-				BusinessException error = (BusinessException) ex;
-				monitoringLogger.error(error.getCode(), error, error.getArgs());
-			} else if (ex instanceof ValidationException) {
-				BindException error =  (BindException) ex.getCause();
-				monitoringLogger.error(defaultExceptionMessageId, error, error.getFieldError());
-			} else {
-				monitoringLogger.error(defaultExceptionMessageId, ex);
-			}
-		}
-	}
+    @Setter
+    private String defaultExceptionMessageId;
+
+    @Override
+    public void handle(final JobExecution jobExecution) {
+        // 例外の有無チェック
+        List<Throwable> exceptions = jobExecution.getAllFailureExceptions();
+        if (exceptions.isEmpty()) {
+            return;
+        }
+        for (Throwable ex : exceptions) {
+            if (ex instanceof SystemException error) {                
+                monitoringLogger.error(error.getCode(), error, (Object[]) error.getArgs());
+            } else if (ex instanceof BusinessException error) {                
+                monitoringLogger.error(error.getCode(), error, (Object[]) error.getArgs());
+            } else if (ex instanceof ValidationException) {
+                BindException error = (BindException) ex.getCause();
+                monitoringLogger.error(defaultExceptionMessageId, error, error.getFieldError());
+            } else {
+                monitoringLogger.error(defaultExceptionMessageId, ex);
+            }
+        }
+    }
 
 }

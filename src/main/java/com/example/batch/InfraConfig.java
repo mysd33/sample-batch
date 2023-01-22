@@ -22,45 +22,44 @@ import com.example.fw.common.httpclient.WebClientLoggingFilter;
  */
 @Configuration
 public class InfraConfig {
-	
-	/**
-	 * 
-	 * WebClientクラス
-	 * 	 
-	 */
-	@Bean
-	public WebClient webClientWithoutXRay(WebClientLoggingFilter loggingFilter) {
-		return WebClient.builder()
-				.filter(loggingFilter.filter())				
-				.build();
-	}
-	
-	/**
-	 * WebClientでのログ出力クラス
-	 */
-	@Bean 
-	public WebClientLoggingFilter webClientLoggingFilter() {
-		return new WebClientLoggingFilter();
-	}
 
-	/**
-	 * WebClientでのエラーハンドラークラス
-	 */
-	@Bean 
-	public WebClientResponseErrorHandler webClientResponseErrorHandler() {
-		return new WebClientResponseErrorHandler();
-	}
-	/**
-	 * RestTemplateの設定
-	 */
-	@Bean
-	public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
-		// ログ出力クラスの設定
-		List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
-		interceptors.add(new RestTemplateLoggingInterceptor());
-		return restTemplateBuilder
-				// エラーハンドラークラスの設定
-				.errorHandler(new RestTemplateResponseErrorHandler()).interceptors(interceptors).build();
-	}
+    /**
+     * 
+     * WebClientクラス
+     * 
+     */
+    @Bean
+    public WebClient webClientWithoutXRay(WebClientLoggingFilter loggingFilter) {
+        return WebClient.builder().filter(loggingFilter.filter()).build();
+    }
+
+    /**
+     * WebClientでのログ出力クラス
+     */
+    @Bean
+    public WebClientLoggingFilter webClientLoggingFilter() {
+        return new WebClientLoggingFilter();
+    }
+
+    /**
+     * WebClientでのエラーハンドラークラス
+     */
+    @Bean
+    public WebClientResponseErrorHandler webClientResponseErrorHandler() {
+        return new WebClientResponseErrorHandler();
+    }
+
+    /**
+     * RestTemplateの設定
+     */
+    @Bean
+    public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
+        // ログ出力クラスの設定
+        List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
+        interceptors.add(new RestTemplateLoggingInterceptor());
+        return restTemplateBuilder
+                // エラーハンドラークラスの設定
+                .errorHandler(new RestTemplateResponseErrorHandler()).interceptors(interceptors).build();
+    }
 
 }

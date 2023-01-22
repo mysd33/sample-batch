@@ -16,30 +16,30 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class DefaultJmsMessageManager implements JmsMessageManager {
-	private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
-	private final JmsMessageStore jmsMessageStore;	
-	
-	@Override
-	public void manage(Message message) { 
-		jmsMessageStore.set(message);
-	}
+    private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
+    private final JmsMessageStore jmsMessageStore;
 
-	@Override
-	public void acknowledge() {
-		// ジョブ管理テーブルには登録済みなので、メッセージをACKし、キューからメッセージ削除
-		Message message = jmsMessageStore.get();
-		if (message != null) {
-			String messageId = "";
-			try {
-				messageId = message.getJMSMessageID();
-				appLogger.debug("メッセージをACK:{}", messageId);
-				message.acknowledge();
-			} catch (JMSException e) {
-				// メッセージを削除できなくても例外はスローしない。
-				// メッセージ再受信する可能性があるが、AsyncMessageListenerでハンドリングし対処
-				appLogger.warn(BatchFrameworkMessageIds.W_BT_FW_8006, messageId);
-			}
-		}
-	}
+    @Override
+    public void manage(Message message) {
+        jmsMessageStore.set(message);
+    }
+
+    @Override
+    public void acknowledge() {
+        // ジョブ管理テーブルには登録済みなので、メッセージをACKし、キューからメッセージ削除
+        Message message = jmsMessageStore.get();
+        if (message != null) {
+            String messageId = "";
+            try {
+                messageId = message.getJMSMessageID();
+                appLogger.debug("メッセージをACK:{}", messageId);
+                message.acknowledge();
+            } catch (JMSException e) {
+                // メッセージを削除できなくても例外はスローしない。
+                // メッセージ再受信する可能性があるが、AsyncMessageListenerでハンドリングし対処
+                appLogger.warn(BatchFrameworkMessageIds.W_BT_FW_8006, messageId);
+            }
+        }
+    }
 
 }
