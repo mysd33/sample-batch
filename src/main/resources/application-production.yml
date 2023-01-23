@@ -15,8 +15,8 @@ aws:
   sqs:
     queue:
       name: SampleQueue      
-    region: ap-northeast-1
-    concurrency: 3-10     
+    numberOfMessagesToPrefetch: 0      
+    concurrency: 5   
 
 logging:
   level:

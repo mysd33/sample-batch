@@ -15,7 +15,8 @@ aws:
   sqs:
     queue:
       name: SampleQueue
-    concurrency: 3-10
+    numberOfMessagesToPrefetch: 0      
+    concurrency: 5
   sqslocal:    
     port: 18001
     
