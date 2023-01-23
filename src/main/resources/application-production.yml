@@ -10,6 +10,9 @@ spring:
     driver-class-name: org.h2.Driver 
     username: sa
     password:
+    # PostgreSQLはデフォルトautocommit=trueなので、カーソルがオンメモリ処理にならないようautocommit=false
+    hikari:
+      auto-commit: false
   
 aws:
   sqs:
