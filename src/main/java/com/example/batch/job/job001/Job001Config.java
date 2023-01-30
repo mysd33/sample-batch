@@ -1,4 +1,4 @@
-package com.example.batch.app.job001;
+package com.example.batch.job.job001;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecutionListener;
@@ -9,8 +9,6 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import com.example.batch.domain.job001.Job001Tasklet;
 
 /**
  * Job001の定義

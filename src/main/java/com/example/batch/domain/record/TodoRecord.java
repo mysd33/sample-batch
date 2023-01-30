@@ -1,4 +1,4 @@
-package com.example.batch.domain.common.record;
+package com.example.batch.domain.record;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -18,7 +18,7 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.ResponseErrorHandler;
 
-import com.example.batch.domain.common.message.MessageIds;
+import com.example.batch.domain.message.MessageIds;
 import com.example.batch.infra.resource.ErrorResponse;
 import com.example.fw.common.exception.BusinessException;
 import com.example.fw.common.logging.ApplicationLogger;

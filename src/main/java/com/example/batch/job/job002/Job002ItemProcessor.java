@@ -1,11 +1,11 @@
-package com.example.batch.domain.job002;
+package com.example.batch.job.job002;
 
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.example.batch.domain.common.model.Todo;
-import com.example.batch.domain.common.record.TodoRecord;
-import com.example.batch.domain.common.repository.TodoRepository;
+import com.example.batch.domain.model.Todo;
+import com.example.batch.domain.record.TodoRecord;
+import com.example.batch.domain.repository.TodoRepository;
 import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;
 

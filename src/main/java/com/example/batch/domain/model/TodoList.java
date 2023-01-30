@@ -1,4 +1,4 @@
-package com.example.batch.domain.common.model;
+package com.example.batch.domain.model;
 
 import java.util.ArrayList;
 

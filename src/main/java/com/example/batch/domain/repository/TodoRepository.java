@@ -1,9 +1,9 @@
-package com.example.batch.domain.common.repository;
+package com.example.batch.domain.repository;
 
 import java.util.Collection;
 import java.util.Optional;
 
-import com.example.batch.domain.common.model.Todo;
+import com.example.batch.domain.model.Todo;
 
 /**
  * TodoのRepositoryインタフェース 

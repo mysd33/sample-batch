@@ -3,7 +3,7 @@ package com.example.batch.infra.httpclient;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.ClientResponse;
 
-import com.example.batch.domain.common.message.MessageIds;
+import com.example.batch.domain.message.MessageIds;
 import com.example.batch.infra.resource.ErrorResponse;
 import com.example.fw.common.exception.BusinessException;
 import com.example.fw.common.logging.ApplicationLogger;

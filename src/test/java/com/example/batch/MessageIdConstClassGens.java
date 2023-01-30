@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.regex.Pattern;
 
-import com.example.batch.domain.common.message.MessageIds;
+import com.example.batch.domain.message.MessageIds;
 
 
 /**

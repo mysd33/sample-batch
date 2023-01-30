@@ -10,9 +10,9 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.example.batch.domain.common.model.Todo;
-import com.example.batch.domain.common.model.TodoList;
-import com.example.batch.domain.common.repository.TodoRepository;
+import com.example.batch.domain.model.Todo;
+import com.example.batch.domain.model.TodoList;
+import com.example.batch.domain.repository.TodoRepository;
 import com.example.batch.infra.httpclient.CircutiBreakerErrorFallback;
 import com.example.batch.infra.httpclient.WebClientResponseErrorHandler;
 

@@ -2,7 +2,7 @@ package com.example.batch.infra.httpclient;
 
 import java.util.function.Function;
 
-import com.example.batch.domain.common.message.MessageIds;
+import com.example.batch.domain.message.MessageIds;
 import com.example.fw.common.exception.BusinessException;
 
 import reactor.core.publisher.Mono;

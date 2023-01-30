@@ -1,4 +1,4 @@
-package com.example.batch.app.job002;
+package com.example.batch.job.job002;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecutionListener;
@@ -17,8 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.example.batch.domain.common.record.TodoRecord;
-import com.example.batch.domain.job002.Job002ItemProcessor;
+import com.example.batch.domain.record.TodoRecord;
 import com.example.fw.batch.writer.NoOpItemWriter;
 import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;

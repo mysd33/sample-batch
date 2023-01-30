@@ -1,4 +1,4 @@
-package com.example.batch.domain.job001;
+package com.example.batch.job.job001;
 
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.StepExecution;
@@ -10,9 +10,9 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-import com.example.batch.domain.common.model.Todo;
-import com.example.batch.domain.common.record.TodoRecord;
-import com.example.batch.domain.common.repository.TodoRepository;
+import com.example.batch.domain.model.Todo;
+import com.example.batch.domain.record.TodoRecord;
+import com.example.batch.domain.repository.TodoRepository;
 import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;
 

@@ -1,4 +1,4 @@
-package com.example.batch.domain.common.message;
+package com.example.batch.domain.message;
 /**
  * Message Id
  * Auto-Generarted By MessageKeysGen Class

@@ -19,7 +19,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
 
-import com.example.batch.domain.common.record.TodoRecord;
+import com.example.batch.domain.record.TodoRecord;
 import com.example.fw.batch.async.messagelistener.AsyncMessageListener;
 import com.example.fw.batch.async.store.DefaultJmsMessageManager;
 import com.example.fw.batch.async.store.JmsMessageManager;
