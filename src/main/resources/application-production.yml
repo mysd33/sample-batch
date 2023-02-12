@@ -20,7 +20,10 @@ aws:
       name: SampleQueue      
     numberOfMessagesToPrefetch: 0      
     concurrency: 5   
-
+  s3:
+  　　bucket: mysd33bucket123
+  　　region: ap-northeast-1
+  
 logging:
   level:
     org.springframework: INFO

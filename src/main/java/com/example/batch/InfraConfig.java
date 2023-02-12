@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.web.client.RestTemplate;
@@ -14,6 +15,7 @@ import com.example.batch.infra.httpclient.RestTemplateResponseErrorHandler;
 import com.example.batch.infra.httpclient.WebClientResponseErrorHandler;
 import com.example.fw.common.httpclient.RestTemplateLoggingInterceptor;
 import com.example.fw.common.httpclient.WebClientLoggingFilter;
+import com.example.fw.common.objectstorage.config.S3ConfigPackage;
 
 /**
  * 
@@ -21,6 +23,7 @@ import com.example.fw.common.httpclient.WebClientLoggingFilter;
  *
  */
 @Configuration
+@ComponentScan(basePackageClasses = { S3ConfigPackage.class })
 public class InfraConfig {
 
     /**
