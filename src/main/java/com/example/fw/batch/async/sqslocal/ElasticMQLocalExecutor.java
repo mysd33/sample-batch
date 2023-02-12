@@ -25,7 +25,7 @@ public class ElasticMQLocalExecutor {
     private String queueUrl;
     private AmazonSQS amazonSQS;
 
-    @Value("${aws.sqslocal.port}")
+    @Value("${aws.sqs.sqslocal.port}")
     private String port;
 
     @Value("${aws.sqs.queue.name}")
