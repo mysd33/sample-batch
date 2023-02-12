@@ -79,7 +79,7 @@ public class Job003Tasklet implements Tasklet {
 			todoListFileReader.close();
 			
 			// 一時ファイルを削除
-			//Files.delete(tempFilePath);			
+			Files.delete(tempFilePath);			
 		}
 		
 		
