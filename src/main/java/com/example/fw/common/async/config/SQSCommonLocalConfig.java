@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Profile;
 
 import com.amazon.sqs.javamessaging.ProviderConfiguration;
 import com.amazon.sqs.javamessaging.SQSConnectionFactory;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 
@@ -31,12 +33,14 @@ public class SQSCommonLocalConfig {
     @Profile("!xray")
     @Bean
     public SQSConnectionFactory sqsConnectionFactoryLocalWithoutXRay(ProviderConfiguration providerConfiguration) {
+        // ダミーのクレデンシャル
+        BasicAWSCredentials awsCreds = new BasicAWSCredentials("dummy", "dummy");
         AmazonSQSClientBuilder builder = AmazonSQSClientBuilder.standard()
+                .withCredentials(new AWSStaticCredentialsProvider(awsCreds))
                 .withEndpointConfiguration(new EndpointConfiguration(HTTP_LOCALHOST + port, ELASTICMQ));
         return new SQSConnectionFactory(providerConfiguration, builder);        
     }
 
-    //TODO: X-Ray対応
     /**
      * ElastiqMQ(SQSLocal)起動する場合のSQSConnectionFactoryの定義(X-Rayトレーシングあり）
      */
@@ -44,11 +48,14 @@ public class SQSCommonLocalConfig {
     @Profile("xray")
     @Bean
     public SQSConnectionFactory sqsConnectionFactoryLocalWithXRay(ProviderConfiguration providerConfiguration) {
+        // ダミーのクレデンシャル
+        BasicAWSCredentials awsCreds = new BasicAWSCredentials("dummy", "dummy");
         AmazonSQSClientBuilder builder = AmazonSQSClientBuilder.standard()
                 // 個別にSQSへのAWS SDKの呼び出しをトレーシングできるように設定
                 .withRequestHandlers(new TracingHandler(AWSXRay.getGlobalRecorder()))
+                .withCredentials(new AWSStaticCredentialsProvider(awsCreds))
                 .withEndpointConfiguration(new EndpointConfiguration(HTTP_LOCALHOST + port, ELASTICMQ));
         return new SQSConnectionFactory(providerConfiguration, builder);
-    }*/
-
+    }
+    */
 }
