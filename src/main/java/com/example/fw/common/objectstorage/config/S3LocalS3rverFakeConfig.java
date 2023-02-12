@@ -43,10 +43,11 @@ public class S3LocalS3rverFakeConfig {
     }
 
     /**
-     * S3クライアント
+     * S3クライアント（X-Rayトレースなし）
      */
+    @Profile("!xray")
     @Bean
-    public S3Client s3Client() {
+    public S3Client s3ClientWithoutXRay() {
         // ダミーのクレデンシャル
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create("S3RVER", "S3RVER");
         // @formatter:off
@@ -62,12 +63,36 @@ public class S3LocalS3rverFakeConfig {
     }
 
     /**
+     * S3クライアント（X-Rayトレースあり）
+     */
+    /*
+    @Profile("xray")
+    @Bean
+    public S3Client s3ClientWithXRay() {
+        // ダミーのクレデンシャル
+        AwsBasicCredentials awsCreds = AwsBasicCredentials.create("S3RVER", "S3RVER");
+        // @formatter:off
+        return S3Client.builder()                
+                .region(Region.of(region))       
+                .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
+                .endpointOverride(URI.create("http://localhost:" + port))
+                //S3rverの場合、putしたファイルにchunk-signatureが入ってしまうため対処策として設定
+                .serviceConfiguration(S3Configuration.builder()
+                        .chunkedEncodingEnabled(false).build())
+                // 個別にDynamoDBへのAWS SDKの呼び出しをトレーシングできるように設定
+                .overrideConfiguration(
+                        ClientOverrideConfiguration.builder().addExecutionInterceptor(new TracingInterceptor()).build())
+                .build();        
+        // @formatter:on
+    } */       
+    
+    /**
      * バケット初期作成クラス
      * 
      */
     @Bean
-    public BucketCreateInitializer bucketCreateInitializer() {
-        return new BucketCreateInitializer(s3Client(), bucket);
+    public BucketCreateInitializer bucketCreateInitializer(S3Client s3Client) {
+        return new BucketCreateInitializer(s3Client, bucket);
     }
 
 }
