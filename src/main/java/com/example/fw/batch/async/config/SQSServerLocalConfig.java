@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Profile;
 
 import com.example.fw.batch.async.sqslocal.ElasticMQLocalExecutor;
 
+import software.amazon.awssdk.services.sqs.SqsClient;
+
 /**
  * SQS Local起動の設定クラス(開発時のみ)
  */
@@ -20,7 +22,7 @@ public class SQSServerLocalConfig {
      */
     @Bean
     @ConditionalOnClass(SQSRestServer.class)
-    public ElasticMQLocalExecutor elasticMQLocalExecutor() {
-        return new ElasticMQLocalExecutor();
+    public ElasticMQLocalExecutor elasticMQLocalExecutor(SqsClient sqsClient) {
+        return new ElasticMQLocalExecutor(sqsClient);
     }
 }

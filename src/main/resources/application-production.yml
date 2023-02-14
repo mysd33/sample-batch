@@ -18,8 +18,9 @@ aws:
   sqs:
     queue:
       name: SampleQueue      
-    numberOfMessagesToPrefetch: 0      
-    concurrency: 5   
+    numberOfMessagesToPrefetch: 0
+    listener:      
+      concurrency: 5
   s3:
   　　bucket: mysd33bucket123
   　　region: ap-northeast-1

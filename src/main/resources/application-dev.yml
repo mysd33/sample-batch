@@ -19,7 +19,8 @@ aws:
     queue:
       name: SampleQueue
     numberOfMessagesToPrefetch: 0      
-    concurrency: 5
+    listener:      
+      concurrency: 5
     sqslocal:    
       port: 18001
   s3:

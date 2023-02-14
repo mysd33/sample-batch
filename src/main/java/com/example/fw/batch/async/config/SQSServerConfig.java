@@ -15,7 +15,7 @@ import org.springframework.jms.support.destination.DynamicDestinationResolver;
  */
 @Configuration
 public class SQSServerConfig {
-    @Value("${aws.sqs.concurrency}")
+    @Value("${aws.sqs.listener.concurrency}")
     private String concurrency;
 
     /**
