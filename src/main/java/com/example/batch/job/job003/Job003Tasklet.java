@@ -1,7 +1,9 @@
 package com.example.batch.job.job003;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.apache.commons.io.FileUtils;
 import org.springframework.batch.core.StepContribution;
@@ -43,9 +45,6 @@ public class Job003Tasklet implements Tasklet {
 	@Autowired
 	private ObjectStorageFileAccessor objectStorageFileAccessor;
 		
-	@Value("${file.tempFileDir}")
-	private String tempFileDir;
-	
     private static final String TEMPDIR_RELATIVE_PATH = "files/input/";    
 
 	@Override
@@ -57,8 +56,8 @@ public class Job003Tasklet implements Tasklet {
 		appLogger.debug("targetFilePath:{}", targetFilePath);
 		// オブジェクトストレージからファイルパスのファイルをダウンロード
 		DownloadObject downloadObject = objectStorageFileAccessor.download(targetFilePath);		
-		// ファイルをローカルファイルシステムへ一時保存したファイルとしてへコピー				
-        Path tempFilePath = Path.of(tempFileDir, TEMPDIR_RELATIVE_PATH, downloadObject.getFileName());         
+		// ファイルをローカルファイルシステムへ一時保存したファイルとしてへコピー		
+        Path tempFilePath = Path.of(FileUtils.getTempDirectoryPath(), TEMPDIR_RELATIVE_PATH, downloadObject.getFileName());         
         FileUtils.copyInputStreamToFile(downloadObject.getInputStream(), tempFilePath.toFile());        
 		// FlatFileReaderに一時保存ファイルのパスを引き渡す
 		ExecutionContext jobExecutionContext = stepExecution.getJobExecution().getExecutionContext();

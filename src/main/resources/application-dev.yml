@@ -11,15 +11,11 @@ spring:
     username: sa
     password:
 
-file:
-  tempFileDir: c:\tmp
-
 aws:
-  sqs:
-    queue:
-      name: SampleQueue
+  sqs:    
     numberOfMessagesToPrefetch: 0      
-    listener:      
+    listener:
+      queueName: SampleQueue      
       concurrency: 5
     sqslocal:    
       port: 18001

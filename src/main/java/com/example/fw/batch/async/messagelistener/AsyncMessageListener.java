@@ -44,7 +44,7 @@ public class AsyncMessageListener {
      * @param request ジョブの要求情報
      * 
      */
-    @JmsListener(destination = "${aws.sqs.queue.name}")
+    @JmsListener(destination = "${aws.sqs.listener.queueName}")
     public void onMessage(@Headers final Map<String, String> headers, Message message, final JobRequest request) {
         // メッセージが有効な形式かチェック
         if (!request.isValid()) {
