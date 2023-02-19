@@ -88,12 +88,110 @@
             * job001は、タスクレットモデルで実装している。
             * job002は、チャンクモデルでjob001と同じ処理を実装している。
 
-## AWS SQSと連携したAP動作確認
-* デフォルトでは、「spring.profiles.active」プロパティが「dev」になっていて、プロファイルdevの場合、ElasticMQを使用するようになっている。
-* AWS上のSQSにアクセスする動作に変更する場合は、例えばJVM引数を「-Dspring.profiles.active=production」に変更するか、環境変数「SPRING_PROFILES_ACTIVE=production」を設定する等して、sample-web、sample-asyncの両方のプロジェクトのプロファイルを「production」に変えて実行する。
-* AP実行前に、AWS SQSで標準キューを作成しておく必要がある。application-production.ymlの設定上、 キュー名は「SampleQueue」、キューのリージョンは「ap-northeast-1」（東京）になっていますので、異なる名前、リージョンで作成したい場合は、sample-web、sample-asyncの両方のプロジェクトのapplication-production.ymlの設定も変更する。
-* APがSQSにアクセスする権限が必要なので、開発端末上での実行する場合はSQSのアクセス権限をもったIAMユーザのクレデンシャル情報が「%USERPROFILE%/.aws/credentials」や「~/.aws/credentials」に格納されている、もしくはEC2やECS等のAWS上のラインタイム環境で実行する場合は対象のAWSリソースにSQSのアクセス権限を持ったIAMロールが付与されている必要がある。
+## PostgreSQLのローカル起動
+* Profileが「dev」でSpringBootアプリケーションを実行する場合、H2DBが起動するので、何もしなくてよい。
+* Profileが「production」に切り替えてSpringBootアプリケーションを実行する場合、DBがPostgreSQLで動作する設定になっているため、事前にPostgreSQLを起動する必要がある。
+    * AWS上でAPを起動する場合はAurora for PostgreSQLや、RDS for PostgreSQLを起動しておくことを想定している。
+* Profile「procution」でAPをローカル実行する場合は、AP起動前にあらかじめ、PostgreSQLをDockerで起動しローカル実行しておく必要がある。以下で、PostgreSQLのローカル実行手順を示す。
+```sh
+#Postgres SQLの起動
+docker run --name test-postgres -p 5432:5432 -e POSTGRES_PASSWORD=password -d postgres
+#Postgresのコンテナにシェルで入って、psqlコマンドで接続
+docker exec -i -t test-postgres /bin/bash
+> psql -U postgres
 
+# psqlで、testdbデータベースを作成
+postgres> CREATE DATABASE testdb;
+```
+
+## SQSの設定
+* デフォルトでは、「spring.profiles.active」プロパティが「dev」になっていて、プロファイルdevの場合、ElasticMQを使用するようになっている。
+* Profileが「dev」でSpringBootアプリケーションを実行する場合、ElasitqMQが起動し、「SampleQueue」という名前のキューを作成するので、何もしなくてよい。
+* Profileが「production」に切り替えてSpringBootアプリケーションを実行する場合、事前にAWS上にSQSのバケットを作成する必要がある。
+    * 「production」に切り替えるには、例えばJVM引数を「-Dspring.profiles.active=production」に変更するか、環境変数「SPRING_PROFILES_ACTIVE=production」を設定する等して、sample-bff、sample-batchの両方のプロジェクトのプロファイルを「production」に変えて実行する。
+    * 「SampleQueue」という名前のキューを作成すればよいが、キュー名を変更したい場合はapplication-production.ymlの「delayed.batch.queue」プロパティを作成したキュー名に変更する。
+        * 「sample-batch」アプリケーション側も変更が必要
+    * APがSQSにアクセスする権限が必要なので、開発端末上でローカル実行する場合はSQSのアクセス権限をもったIAMユーザのクレデンシャル情報が「%USERPROFILE%/.aws/credentials」や「~/.aws/credentials」に格納されている、もしくはEC2やECS等のAWS上のラインタイム環境で実行する場合は対象のAWSリソースにSQSのアクセス権限を持ったIAMロールが付与されている必要がある。
+
+## S3の設定
+* Profileが「dev」でSpringBootアプリケーションを実行する場合、S3アクセスは無効化し、ローカルのファイルシステムアクセスする設定になっている。
+    * application-dev.ymlの「aws.s3.localfake.type」が「file」であり、「aws.s3.localfake.baseDir」を一時保存するファイルシステムのディレクトリパスが現状、C:\tmpになっているので、フォルダの変更が必要な場合は、変更する。
+        * 「sample-batch」アプリケーション側も変更が必要
+* Profileが「dev」でも、S3のローカル起動用のFake（MinIOやs3rver）を起動したい場合には、以下の通り
+    * MinIOの場合
+        * [MinIOのサイト](https://min.io/download#/windows)の手順に従い、インストールし、MinIOを起動
+        * 以下は、Windows版での起動例
+            * C:\minioフォルダにminio.exeを格納して、起動した例（デフォルトポート9000番ポートで起動、コンソールは9001番ポートで起動）
+        ```sh        
+        C:\minio\minio.exe server C:\minio\data --console-address ":9001"
+        ```
+        *  application-dev.ymlの「aws.s3.localfake.type」を「minio」に変更し、以下の通り設定
+        ```yaml
+        aws:
+          s3:
+            localfake:
+              type: minio
+              port: 9000
+              accessKeyId: minioadmin
+              secretAccessKey: minioadmin
+            bucket: mysd33bucket123
+        ```
+    * s3rverの場合
+        * [s3rverのサイト](https://github.com/jamhall/s3rver)の手順に従い、npmでインストールし、s3rverを起動
+        * 以下、起動例
+        ```
+        s3rver -d C:\s3rver
+        ```
+        *  application-dev.ymlの「aws.s3.localfake.type」を「s3rver」に変更し、以下の通り設定
+        ```yaml
+        aws:
+          s3:
+            localfake:
+              type: s3rver
+              port: 4568
+            bucket: mysd33bucket123
+        ```
+
+* Profileが「production」に切り替えてSpringBootアプリケーションを実行する場合、S3を使用する設定になっているため、事前にAWS上に、S3のバケットを作成する必要がある。
+    * application-production.ymlの「aws.s3.bucket」プロパティを作成したバケット名に変更する。
+    * APがS3にアクセスする権限が必要なので、開発端末上でローカル実行する場合はS3のアクセス権限をもったIAMユーザのクレデンシャル情報が「%USERPROFILE%/.aws/credentials」や「~/.aws/credentials」に格納されている、もしくはEC2やECS等のAWS上のラインタイム環境で実行する場合は対象のAWSリソースにSQSのアクセス権限を持ったIAMロールが付与されている必要がある。
+
+
+## Dockerでのアプリ起動
+* Mavenビルド
+```sh
+#Windows
+.\mvnw.cmd package
+#Linux/Mac
+./mvnw package
+```
+* ローカルでDockerビルド
+```sh
+docker build -t XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-batch:latest .
+```
+
+* ローカルでDocker実行（Profileを「dev」でSpringBoot実行）
+```sh
+docker run -d -p 8001:8001 --name samplebatch --env SPRING_PROFILES_ACTIVE=dev,log_default --env SERVER_PORT=8001 --env SPRING_DATASOURCE_URL=jdbc:postgresql://(ローカルPCのプライベートIP):5432/testdb --env API_BACKEND_URL=http://(ローカルPCのプライベートIP):8000 XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-batch:latest
+
+#logをjson形式に変更する場合
+docker run -d -p 8001:8001 --name samplebatch --env SPRING_PROFILES_ACTIVE=dev,log_container --env SERVER_PORT=8001 --env SPRING_DATASOURCE_URL=jdbc:postgresql://(ローカルPCのプライベートIP):5432/testdb --env API_BACKEND_URL=http://(ローカルPCのプライベートIP):8000 XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-batch:latest
+```
+
+* ローカルでDocker実行（Profileを「production」でSpringBoot実行）　
+    * ※Redisのローカル起動、PostgreSQLのローカル起動も必要
+```sh
+docker run -d -p 8001:8001 -v %USERPROFILE%\.aws\:/home/app/.aws/ --name samplebatch --env SPRING_PROFILES_ACTIVE=production,log_default --env SERVER_PORT=8001 --env API_BACKEND_URL=http://(ローカルPCのプライベートIP):8000 --env SPRING_DATASOURCE_URL=jdbc:postgresql://(ローカルPCのプライベートIP):5432/testdb XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-batch:latest
+
+#logをjson形式に変更する場合
+docker run -d -p 8001:8001 -v %USERPROFILE%\.aws\:/home/app/.aws/ --name samplebatch --env SPRING_PROFILES_ACTIVE=production,log_container --env SERVER_PORT=8001 --env API_BACKEND_URL=http://(ローカルPCのプライベートIP):8000 --env SPRING_DATASOURCE_URL=jdbc:postgresql://(ローカルPCのプライベートIP):5432/testdb XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-batch:latest
+```
+
+* ECRプッシュ
+```sh
+aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com
+docker push XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-batch:latest
+```
 
 ## ソフトウェアフレームワーク
 * 本サンプルアプリケーションでは、ソフトウェアフレームワーク実装例も同梱している。簡単のため、アプリケーションと同じプロジェクトでソース管理している。

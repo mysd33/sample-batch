@@ -11,7 +11,7 @@ spring:
     # PostgreSQLはデフォルトautocommit=trueなので、カーソルがオンメモリ処理にならないようautocommit=false
     hikari:
       auto-commit: false
-  #　簡単のためSpringBatchのテーブルのPostgreSQLのスキーマを起動時に作成
+  #　デモAPとして簡単のためSpringBatchのテーブルのPostgreSQLのスキーマを起動時に作成（本来は、DDLを実行し事前作成すべき）
   batch:
     jdbc:
       initialize-schema: always
