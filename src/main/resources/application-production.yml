@@ -1,18 +1,20 @@
-server:
-  port: 8001
-
 spring:
   sql:
     init:
-      platform: h2
+      platform: postgresql
+      mode: always      
   datasource:    
-    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-    driver-class-name: org.h2.Driver 
-    username: sa
-    password:
+    url: jdbc:postgresql://localhost:5432/testdb
+    driver-class-name: org.postgresql.Driver 
+    username: postgres
+    password: password	
     # PostgreSQLはデフォルトautocommit=trueなので、カーソルがオンメモリ処理にならないようautocommit=false
     hikari:
       auto-commit: false
+  #　簡単のためSpringBatchのテーブルのPostgreSQLのスキーマを起動時に作成
+  batch:
+    jdbc:
+      initialize-schema: always
 
 aws:
   sqs:    

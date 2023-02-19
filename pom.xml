@@ -23,7 +23,6 @@
 		<logstash-logback-encoder.version>7.2</logstash-logback-encoder.version>
 		<commons-io.version>2.11.0</commons-io.version>
 	</properties>
-
 	<dependencies>
 		<!-- Spring Boot Web -->
 		<dependency>
@@ -34,13 +33,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
-		
 		<!-- Spring Boot Webflux -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webflux</artifactId>
 		</dependency>
-
 		<!-- Spring Boot Devtools -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -48,14 +45,12 @@
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
-
 		<!-- Spring Boot Test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 		<!-- Spring Boot Actuator -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -65,64 +60,60 @@
 			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-registry-prometheus</artifactId>
 		</dependency>
-		
 		<!-- JAXB -->
 		<dependency>
 			<groupId>javax.xml.bind</groupId>
 			<artifactId>jaxb-api</artifactId>
 		</dependency>
-		
 		<!-- Lombok -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
-
 		<!-- H2DB -->
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-
+		<!-- PostgreSQL -->
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>runtime</scope>
+		</dependency>
 		<!-- Logstash Logback Encoder -->
 		<dependency>
 			<groupId>net.logstash.logback</groupId>
 			<artifactId>logstash-logback-encoder</artifactId>
 			<version>${logstash-logback-encoder.version}</version>
 		</dependency>
-		
 		<!-- Spring Cloud Sleuth -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-sleuth</artifactId>
 		</dependency>
-
-		<!-- Spring Cloud Circuit Breaker Resilience4J -->		
+		<!-- Spring Cloud Circuit Breaker Resilience4J -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-circuitbreaker-resilience4j</artifactId>
-		</dependency>	
-		 
-		<!-- Spring Cloud Circuit Breaker Reactive Resilience4J -->		
+		</dependency>
+		<!-- Spring Cloud Circuit Breaker Reactive Resilience4J -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-circuitbreaker-reactor-resilience4j</artifactId>
 		</dependency>
-				
 		<!-- SpringBatch -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-batch</artifactId>
 		</dependency>
-
 		<!-- Spring JMS -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-jms</artifactId>
 		</dependency>
-
 		<!-- Amazon SQS Java Messaging Library -->
 		<dependency>
 			<groupId>com.amazonaws</groupId>
@@ -130,41 +121,34 @@
 			<version>${amazon-sqs-java-messaging-lib.version}</version>
 			<type>jar</type>
 		</dependency>
-
 		<!-- AWS SDK SQS -->
 		<dependency>
 			<groupId>software.amazon.awssdk</groupId>
 			<artifactId>sqs</artifactId>
 		</dependency>
-
 		<!-- ElasticMQ (SQS Local) -->
 		<dependency>
 			<groupId>org.elasticmq</groupId>
 			<artifactId>elasticmq-rest-sqs_2.13</artifactId>
 			<version>${elasticmq.version}</version>
 		</dependency>
-
 		<!-- JMS API -->
 		<dependency>
 			<groupId>javax.jms</groupId>
-			<artifactId>javax.jms-api</artifactId>			
+			<artifactId>javax.jms-api</artifactId>
 		</dependency>
-		
 		<!-- AWS SDK S3 -->
 		<dependency>
 			<groupId>software.amazon.awssdk</groupId>
 			<artifactId>s3</artifactId>
 		</dependency>
-		
-		<!-- Apache Commons IO -->		
+		<!-- Apache Commons IO -->
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>${commons-io.version}</version>
-		</dependency>		
-		
+		</dependency>
 	</dependencies>
-
 	<dependencyManagement>
 		<dependencies>
 			<!-- AWS SDK -->
@@ -201,5 +185,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>
