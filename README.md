@@ -39,52 +39,64 @@
 1. 非同期AP（sample-batch）の起動
     * sample-batchをSpringBoot Applicationとして起動。
 
-1. 動作確認
+1. 動作確認その1
+    * sample-bffの「TODO一括登録」ユースケースにて、非同期処理の実行が使用されている。
+    * ブラウザで「http://localhost:8080」にアクセス
+    * ログイン後、メニュー画面「TODO一括登録」を選択
+    * 「ファイル選択」ボタンを押下し、TODOリストのファイルを選択
+        * テストデータとして、sample-bffプロジェクトのfilesフォルダにあるtodofile.csvを使用するとよい。
+    * 登録ボタンを押下すると、ファイルをS3（ローカル実行ではローカル起動用のFakeで動作）に保存し、sample-batch側がTODO一括登録処理ジョブ（job003）が動作する。
+        * TODOリストのファイルを読み込み、リストに対して一件ずつsample-backendのREST APIを呼び出し、TODOリストを一括登録する。
+1. 動作確認その2
+    * APIによるバッチの実行ユースケースがある
     * ブラウザやREST APIクライアント（Postman等）で、以下入力する。 sample-bffのAPがリクエストを受け取り、SQS(ElastiqMQ)へ非同期実行依頼のメッセージを送信する。
-    * GETメソッドの場合
-    ```
-    「http://localhost:8080/api/v1/async/(Job ID)?param01=(任意文字列)&param02=（任意の文字列）」
-    #現状Job ID job001またはjob002にする
+        * GETメソッドの場合
+        ```
+        「http://localhost:8080/api/v1/async/(Job ID)?param01=(任意文字列)&param02=（任意の文字列）」
+        #Job IDはjob001またはjob002を指定する
 
-    #ローカル実行の場合の例
-    http://localhost:8080/api/v1/async/job001?param01=aaa&param02=bbb
-    
-    http://localhost:8080/api/v1/async/job002?param01=aaa&param02=bbb
+        #ローカル実行の場合の例
+        http://localhost:8080/api/v1/async/job001?param01=aaa&param02=bbb
 
-    #実行後、ブラウザに、以下の応答が返却
-    {
-        result: "accept"
-    }    
-    ```
-    * POSTメソッドの場合（APIクライアントの使用が必要）
-    ```
-   「http://localhost:8080/api/v1/async/」
+        http://localhost:8080/api/v1/async/job002?param01=aaa&param02=bbb
 
-    #リクエストボディの例
-    {
-        "job_id" : "job001",
-        "parameters" : {
-            "param01" : "aaa",
-            "param02" : "bbb"
+        #実行後、ブラウザに、以下の応答が返却
+        {
+            result: "accept"
+        }    
+        ```
+
+        * POSTメソッドの場合（APIクライアントの使用が必要）
+        ```
+        「http://localhost:8080/api/v1/async/」
+        
+        #リクエストボディの例
+        #Job IDはjob001またはjob002を指定する  
+
+        {
+            "job_id" : "job001",
+            "parameters" : {
+                "param01" : "aaa",
+                "param02" : "bbb"
+            }
         }
-    }
-    
-    {
-        "job_id" : "job002",
-        "parameters" : {
-            "param01" : "aaa",
-            "param02" : "bbb"
+        
+        {
+            "job_id" : "job002",
+            "parameters" : {
+                "param01" : "aaa",
+                "param02" : "bbb"
+            }
         }
-    }
 
-    #実行後、APIクライアントに以下の応答が返却
-    {
-        result: "accept"
-    }    
-    ``` 
-1. 動作結果の確認
+        #実行後、APIクライアントに以下の応答が返却
+        {
+            result: "accept"
+        }    
+        ``` 
+
     * sample-batchのAPが、SQS(ElastiqMQ)を介してsample-webから受け取ったメッセージ（Job IDとparam01、param02の値）を処理する。        
-        * TODOリストが書かれたファイル(files/input/todolist.csv)を読み込み、リストに対して一件ずつ、sample-backendのREST APIを呼び出し、TODOリストを一括登録する。
+        * TODOリストが書かれたファイル(files/input/todolist.csv)を読み込み、リストに対して一件ずつsample-backendのREST APIを呼び出し、TODOリストを一括登録する。
             * job001は、タスクレットモデルで実装している。
             * job002は、チャンクモデルでjob001と同じ処理を実装している。
 
