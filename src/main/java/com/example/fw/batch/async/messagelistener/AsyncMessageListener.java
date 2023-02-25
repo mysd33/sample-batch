@@ -61,8 +61,11 @@ public class AsyncMessageListener {
             // ジョブ再実行の場合
             Long preExecutionId = request.getJobExecutionId();
             try {
+                appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0005, messageId, preExecutionId);
+                // SpringBatchでジョブ実行
                 // SpringBatchで前回ジョブ実行IDを用いてジョブ再実行
-                jobOperator.restart(preExecutionId);
+                jobExecutionId = jobOperator.restart(preExecutionId);
+                appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0006, messageId, preExecutionId, jobExecutionId);
             } catch (NoSuchJobExecutionException e) {
                 appLogger.warn(BatchFrameworkMessageIds.W_BT_FW_8003, e, messageId, preExecutionId);
             } catch (NoSuchJobException e) {
