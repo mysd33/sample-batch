@@ -20,6 +20,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
 
 import com.example.batch.domain.record.TodoRecord;
+import com.example.fw.batch.async.config.SQSServerConfigurationProperties;
 import com.example.fw.batch.async.messagelistener.AsyncMessageListener;
 import com.example.fw.batch.async.store.DefaultJmsMessageManager;
 import com.example.fw.batch.async.store.JmsMessageManager;
@@ -63,8 +64,9 @@ public class BatchConfig extends DefaultBatchConfigurer {
      * @param jobOperator {@link JobOperator}
      */
     @Bean
-    public AsyncMessageListener asyncMessageListener(JobOperator jobOperator, JmsMessageManager jmsMessageManager) {
-        return new AsyncMessageListener(jobOperator, jmsMessageManager);
+    public AsyncMessageListener asyncMessageListener(JobOperator jobOperator, JmsMessageManager jmsMessageManager,
+            SQSServerConfigurationProperties sqsServerConfigurationProperties) {
+        return new AsyncMessageListener(jobOperator, jmsMessageManager, sqsServerConfigurationProperties);
     }
 
     /**

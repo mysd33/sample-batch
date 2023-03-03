@@ -1,12 +1,16 @@
 package com.example.fw.batch.async.config;
 
 import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
+import javax.jms.Message;
 import javax.jms.Session;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
+import org.springframework.jms.config.JmsListenerEndpoint;
+import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
@@ -16,7 +20,7 @@ import com.example.fw.common.async.config.SQSCommonConfigurationProperties;
  * SQSのサーバ側設定クラス
  */
 @Configuration
-@EnableConfigurationProperties({SQSCommonConfigurationProperties.class, SQSServerConfigurationProperties.class})
+@EnableConfigurationProperties({ SQSCommonConfigurationProperties.class, SQSServerConfigurationProperties.class })
 public class SQSServerConfig {
 
     /**
@@ -24,10 +28,26 @@ public class SQSServerConfig {
      */
     @Bean
     public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(ConnectionFactory connectionFactory,
-            MessageConverter jacksonJmsMessageConverter, 
-            SQSServerConfigurationProperties sqsServerConfigurationProperties
-            ) {
-        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+            MessageConverter jacksonJmsMessageConverter,
+            SQSServerConfigurationProperties sqsServerConfigurationProperties) {        
+        DefaultJmsListenerContainerFactory factory;        
+        if (sqsServerConfigurationProperties.isAckOnJobStart()) {
+            factory = new DefaultJmsListenerContainerFactory() {
+                @Override
+                protected DefaultMessageListenerContainer createContainerInstance() {
+                    return new DefaultMessageListenerContainer() {
+                        @Override
+                        protected void commitIfNecessary(Session session, Message message) throws JMSException {
+                            // ackOnJobStart=trueの時は、DefaultJobExecutionListenerで明示的にacknowledgeするため
+                            //　何もしない（ただし、エラー時など、acknowledge漏れに注意）
+                        }
+                    };
+                }
+            };
+        } else {
+            factory = new DefaultJmsListenerContainerFactory();
+        }
+
         factory.setConnectionFactory(connectionFactory);
         factory.setDestinationResolver(new DynamicDestinationResolver());
         factory.setConcurrency(sqsServerConfigurationProperties.getConcurrency());

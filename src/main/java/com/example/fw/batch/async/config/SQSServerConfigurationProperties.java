@@ -14,4 +14,5 @@ import lombok.Data;
 public class SQSServerConfigurationProperties {
     private String concurrency;
     private String queueName;
+    private boolean ackOnJobStart;
 }

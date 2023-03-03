@@ -19,4 +19,6 @@ resilience4j.timelimiter:
 # 長時間バッチではSQSの可視性タイムアウトを短くするためtrueにするとよい
 aws:
   sqs:
-    ackOnJobStart: false            
+    listener:
+      ackOnJobStart: true               
+#      ackOnJobStart: false           

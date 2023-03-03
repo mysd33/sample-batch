@@ -15,6 +15,7 @@ import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.support.JmsHeaders;
 import org.springframework.messaging.handler.annotation.Headers;
 
+import com.example.fw.batch.async.config.SQSServerConfigurationProperties;
 import com.example.fw.batch.async.store.JmsMessageManager;
 import com.example.fw.batch.message.BatchFrameworkMessageIds;
 import com.example.fw.common.async.model.JobRequest;
@@ -37,6 +38,7 @@ public class AsyncMessageListener {
     private static final MonitoringLogger monitoringLogger = LoggerFactory.getMonitoringLogger(log);
     private final JobOperator jobOperator;
     private final JmsMessageManager jmsMessageManager;
+    private final SQSServerConfigurationProperties sqsServerConfigurationProperties;
 
     /**
      * キューからジョブの要求情報を受信
@@ -61,21 +63,25 @@ public class AsyncMessageListener {
             // ジョブ再実行の場合
             Long preExecutionId = request.getJobExecutionId();
             try {
-                appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0005, messageId, preExecutionId);
-                // SpringBatchでジョブ実行
                 // SpringBatchで前回ジョブ実行IDを用いてジョブ再実行
+                appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0005, messageId, preExecutionId);
                 jobExecutionId = jobOperator.restart(preExecutionId);
-                appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0006, messageId, preExecutionId, jobExecutionId);
+                appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0006, messageId, preExecutionId, jobExecutionId);                
             } catch (NoSuchJobExecutionException e) {
                 appLogger.warn(BatchFrameworkMessageIds.W_BT_FW_8003, e, messageId, preExecutionId);
+                acknowledgeExplicitlyIfAckOnJobStart();
             } catch (NoSuchJobException e) {
                 appLogger.warn(BatchFrameworkMessageIds.W_BT_FW_8004, e, messageId, preExecutionId);
+                acknowledgeExplicitlyIfAckOnJobStart();
             } catch (JobInstanceAlreadyCompleteException e) {
                 appLogger.warn(BatchFrameworkMessageIds.W_BT_FW_8005, e, messageId, preExecutionId);
+                acknowledgeExplicitlyIfAckOnJobStart();
             } catch (JobParametersInvalidException e) {
                 monitoringLogger.error(BatchFrameworkMessageIds.E_BT_FW_9003, e, messageId, preExecutionId);
+                acknowledgeExplicitlyIfAckOnJobStart();
             } catch (JobRestartException e) {
                 monitoringLogger.error(BatchFrameworkMessageIds.E_BT_FW_9004, e, messageId, preExecutionId);
+                acknowledgeExplicitlyIfAckOnJobStart();
             }
             return;
         }
@@ -86,13 +92,22 @@ public class AsyncMessageListener {
             appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0001, messageId, jobId, jobParameters);
             // SpringBatchでジョブ実行
             jobExecutionId = jobOperator.start(jobId, jobParameters);
-            appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0002, messageId, jobId, jobExecutionId);
+            appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0002, messageId, jobId, jobExecutionId);            
         } catch (JobInstanceAlreadyExistsException e) {
             appLogger.warn(BatchFrameworkMessageIds.W_BT_FW_8001, e, messageId, jobId, jobParameters);
+            acknowledgeExplicitlyIfAckOnJobStart();
         } catch (NoSuchJobException e) {
             appLogger.warn(BatchFrameworkMessageIds.W_BT_FW_8002, e, messageId, jobId);
+            acknowledgeExplicitlyIfAckOnJobStart();
         } catch (JobParametersInvalidException e) {
             monitoringLogger.error(BatchFrameworkMessageIds.E_BT_FW_9002, e, messageId, jobId);
+            acknowledgeExplicitlyIfAckOnJobStart();
+        }
+    }
+    
+    private void acknowledgeExplicitlyIfAckOnJobStart() {
+        if (sqsServerConfigurationProperties.isAckOnJobStart()) {
+            jmsMessageManager.acknowledge();
         }
     }
 }
