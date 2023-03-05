@@ -33,12 +33,12 @@ import com.example.fw.common.message.CommonFrameworkMessageIds;
 
 /**
  * 
- * SpringBatch設定クラス
+ * Job層のSpringBatchの設定クラス
  *
  */
 @Configuration
 @EnableBatchProcessing
-public class BatchConfig extends DefaultBatchConfigurer {
+public class JobConfig extends DefaultBatchConfigurer {
     @Autowired
     private DataSource dataSource;
 
