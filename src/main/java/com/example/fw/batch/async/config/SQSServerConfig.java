@@ -5,15 +5,20 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
 
+import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
-import org.springframework.jms.config.JmsListenerEndpoint;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
+import com.example.fw.batch.async.messagelistener.AsyncMessageListener;
+import com.example.fw.batch.async.store.DefaultJmsMessageManager;
+import com.example.fw.batch.async.store.JmsMessageManager;
+import com.example.fw.batch.async.store.JmsMessageStore;
+import com.example.fw.batch.async.store.ThreadLocalJmsMessageStore;
 import com.example.fw.common.async.config.SQSCommonConfigurationProperties;
 
 /**
@@ -21,7 +26,7 @@ import com.example.fw.common.async.config.SQSCommonConfigurationProperties;
  */
 @Configuration
 @EnableConfigurationProperties({ SQSCommonConfigurationProperties.class, SQSServerConfigurationProperties.class })
-public class SQSServerConfig {
+public class SQSServerConfig {    
 
     /**
      * JMSListenerContainerFactoryの定義
@@ -56,6 +61,33 @@ public class SQSServerConfig {
         // エラー時は、SQSにメッセージが残る
         factory.setSessionAcknowledgeMode(Session.CLIENT_ACKNOWLEDGE);
         return factory;
+    }
+
+    /**
+     * SQSからメッセージを取得するMessageListener
+     * 
+     * @param jobOperator {@link JobOperator}
+     */
+    @Bean
+    public AsyncMessageListener asyncMessageListener(JobOperator jobOperator, JmsMessageManager jmsMessageManager,
+            SQSServerConfigurationProperties sqsServerConfigurationProperties) {
+        return new AsyncMessageListener(jobOperator, jmsMessageManager, sqsServerConfigurationProperties);
+    }
+    
+    /**
+     * JMSのメッセージストアクラス
+     */
+    @Bean
+    public JmsMessageStore jmsMessageStore() {
+        return new ThreadLocalJmsMessageStore();
+    }
+
+    /**
+     * JMSのメッセージ管理クラス
+     */
+    @Bean
+    public JmsMessageManager jmsMessageManager(JmsMessageStore jmsMessageStore) {
+        return new DefaultJmsMessageManager(jmsMessageStore);
     }
 
 }
