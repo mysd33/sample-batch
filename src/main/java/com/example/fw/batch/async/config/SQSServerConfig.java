@@ -14,11 +14,11 @@ import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
-import com.example.fw.batch.async.messagelistener.AsyncMessageListener;
-import com.example.fw.batch.async.store.DefaultJmsMessageManager;
-import com.example.fw.batch.async.store.JmsMessageManager;
-import com.example.fw.batch.async.store.JmsMessageStore;
-import com.example.fw.batch.async.store.ThreadLocalJmsMessageStore;
+import com.example.fw.batch.async.messaging.AsyncMessageListener;
+import com.example.fw.batch.store.DefaultJmsMessageManager;
+import com.example.fw.batch.store.JmsMessageManager;
+import com.example.fw.batch.store.JmsMessageStore;
+import com.example.fw.batch.store.ThreadLocalJmsMessageStore;
 import com.example.fw.common.async.config.SQSCommonConfigurationProperties;
 
 /**
@@ -74,20 +74,4 @@ public class SQSServerConfig {
         return new AsyncMessageListener(jobOperator, jmsMessageManager, sqsServerConfigurationProperties);
     }
     
-    /**
-     * JMSのメッセージストアクラス
-     */
-    @Bean
-    public JmsMessageStore jmsMessageStore() {
-        return new ThreadLocalJmsMessageStore();
-    }
-
-    /**
-     * JMSのメッセージ管理クラス
-     */
-    @Bean
-    public JmsMessageManager jmsMessageManager(JmsMessageStore jmsMessageStore) {
-        return new DefaultJmsMessageManager(jmsMessageStore);
-    }
-
 }

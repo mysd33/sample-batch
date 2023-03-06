@@ -4,33 +4,28 @@ import java.util.Date;
 
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
 import com.example.fw.batch.async.config.SQSServerConfigurationProperties;
-import com.example.fw.batch.async.store.JmsMessageManager;
 import com.example.fw.batch.exception.ExceptionHandler;
 import com.example.fw.batch.message.BatchFrameworkMessageIds;
+import com.example.fw.batch.store.JmsMessageManager;
 import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * キューからメッセージ削除、例外ハンドリング、ログ出力を行うJobExecutionListener
  */
 @Slf4j
+@RequiredArgsConstructor
 public class DefaultJobExecutionListener implements JobExecutionListener {
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
-
-    @Autowired
-    private SQSServerConfigurationProperties sqsServerConfigurationProperties;
-
-    @Autowired
-    private JmsMessageManager jmsMessageManager;
-
-    @Autowired
-    private ExceptionHandler defaultExceptionHandler;
+    private final JmsMessageManager jmsMessageManager;    
+    private final ExceptionHandler defaultExceptionHandler;
+    private final SQSServerConfigurationProperties sqsServerConfigurationProperties;    
+    
 
     @Override
     public void beforeJob(JobExecution jobExecution) {
