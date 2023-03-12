@@ -51,11 +51,11 @@
     * 登録ボタンを押下すると、ファイルをS3（ローカル実行ではローカル起動用のFakeで動作）に保存し、sample-batch側でTODO一括登録処理ジョブ（job003）が動作する。
         * TODOリストのファイルを読み込み、リストに対して一件ずつsample-backendのREST APIを呼び出し、TODOリストを一括登録する。
 1. 動作確認その2
-    * sample-schedulelaunchを、スケジュール起動バッチ定義IDを指定してSpringBootアプリケーションを起動する。
-        * 起動引数に、-Dbatch.schedule.target-id=SB_001を指定する。
-    * sample-batch側がジョブjob001が動作する。
+    * ジョブのスケジュールバッチ起動を想定し、sample-schedulelaunchを、スケジュール起動バッチ定義IDを指定してSpringBootアプリケーションを起動する。
+        * 起動引数に、-Dbatch.schedule.target-id=SB_001（またはSB_002）を指定する。
+    * sample-batch側がジョブjob001（またはjob002）が動作する。
 1. 動作確認その3
-    * sample-bffのAPIによるバッチの実行ユースケースがある
+    * sample-bffのAPIによるバッチの実行ユースケースがある。
     * ブラウザやREST APIクライアント（Postman等）で、以下入力する。 sample-bffのAPがリクエストを受け取り、SQS(ElastiqMQ)へ非同期実行依頼のメッセージを送信する。
         * GETメソッドの場合
         ```
@@ -220,7 +220,7 @@ docker push XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-batch:lates
 
 | 分類 | 機能 | 機能概要と実現方式 | 拡張実装 | 拡張実装の格納パッケージ |
 | ---- | ---- | ---- | ---- | ---- |
-| バッチ | バッチAP制御 | Spring JMSとAmazon SQS Java Messaging Libraryを利用しSQSの標準キューを介した非同期実行依頼のメッセージを受信し、SpringBatchにより対象のジョブを起動する機能を提供する | ○ | com.example.fw.batch.async |
+| バッチ | バッチAP制御 | Spring JMSとAmazon SQS Java Messaging Libraryを利用しSQSの標準キューを介した非同期実行依頼のメッセージを受信し、SpringBatchにより対象のジョブを起動する機能を提供する | ○ | com.example.fw.batch.async、com.example.fw.batch.core、com.example.fw.batch.store |
 | | 大量データアクセス | SpringBatchのItemReader、ItemWriterを利用し、大容量のファイルやDBのレコードを逐次読み書きする機能を提供する。 | - | - |
 | | 集約例外ハンドリング | エラー（例外）発生時、SpringBatchの機能によりDBのロールバックするとともに、JobExecutionListenerを利用しエラーログの出力といった共通的なエラーハンドリングを実施する。 | ○ | com.example.fw.batch.exeption、com.example.fw.batch.listener |
 | | トランザクション管理機能 | Spring Frameworkのトランザクション管理機能を利用して、タスクレットやチャンクに対するトランザクション管理を実現する機能を提供する。 | - | - |
