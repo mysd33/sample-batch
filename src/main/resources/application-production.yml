@@ -18,9 +18,9 @@ spring:
 
 aws:
   sqs:    
-    numberOfMessagesToPrefetch: 0
+    number-of-messages-to-prefetch: 0
     listener:
-      queueName: SampleQueue      
+      queue-name: SampleQueue      
       concurrency: 5
   s3:
     bucket: mysd33bucket123
@@ -38,4 +38,4 @@ api:
     url: http://localhost:8000    
 
 job002:
-  chunkSize: 5     
+  chunk-size: 5     

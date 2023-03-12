@@ -20,5 +20,5 @@ resilience4j.timelimiter:
 aws:
   sqs:
     listener:
-#      ackOnJobStart: true               
-      ackOnJobStart: false           
+#      ack-on-job-start: true               
+      ack-on-job-start: false           

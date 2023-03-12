@@ -42,7 +42,7 @@ public class Job002Config {
     @Autowired
     private FlatFileItemReader<TodoRecord> todoListFileReader;
 
-    @Value("${job002.chunkSize:5}")
+    @Value("${job002.chunk-size:5}")
     private int chunkSize;
 
 
