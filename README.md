@@ -1,9 +1,8 @@
 # SpringBootの非同期/バッチアプリケーションサンプル
 
 ## 概要
-* Spring BootでSpring JMS + AWS SQS Messaging Libraryを使って、SQSを介在したメッセージング処理方式で、非同期実行依頼を実施するサンプルAPである。
-* 非同期実行処理アプリケーションは、Spring Batchを使用しており、非同期実行依頼メッセージで指定されたジョブIDとパラメータのジョブを実行するようになっている。
-* 開発端末ローカル実行時にAWS SQSがなくても動作するよう、AP起動時にSQSの代わりに取得したジョブ実行依頼のメッセージをもとに対象のジョブを、SQS互換のFakeとしてElasticMQを組み込みで起動して動作し、特にAWS環境がなくても単独実行可能である。
+* Spring BootでSpring JMS + AWS SQS Messaging Libraryを使って、SQSを介在したメッセージング処理方式で非同期でジョブ実行する、非同期/バッチのサンプルAPである。同期実行処理アプリケーションは、Spring Batchを使用しており、非同期実行依頼メッセージで指定されたジョブIDとパラメータのジョブを実行するようになっている。
+* 開発端末ローカル実行時にAWS SQSがなくても動作するよう、AP起動時にSQSの代わりにSQS互換のFakeとしてElasticMQを組み込みで起動して動作するため、特にAWS環境がなくても単独実行可能である。
 ![構成](img/sample-batch.png)
 
 ## プロジェクト構成
@@ -24,7 +23,7 @@
     * 別プロジェクト。当該名称のリポジトリを参照のこと。SpringBootのCLIアプリケーションで、実行時に引数または環境変数で指定したスケジュール起動バッチ定義IDに対応するジョブの非同期実行依頼を実施し、SQSを介して、sample-batchアプリケーションのジョブを実行する。スケジュールによるバッチ起動を想定したアプリケーション。
         * デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、SQS接続はsample-batch側で組み込みで起動するElasticMQへ送信するようになっている。
         * プロファイルproductionの場合は、SQS接続はSQSへ送信するようになっている。
-# 事前準備
+## 事前準備
 * 以下のライブラリを用いているので、EclipseのようなIDEを利用する場合には、プラグインのインストールが必要
     * [Lombok](https://projectlombok.org/)
         * [Eclipseへのプラグインインストール](https://projectlombok.org/setup/eclipse)
@@ -50,10 +49,15 @@
         * テストデータとして、sample-bffプロジェクトのfilesフォルダにあるtodofile.csvを使用するとよい。
     * 登録ボタンを押下すると、ファイルをS3（ローカル実行ではローカル起動用のFakeで動作）に保存し、sample-batch側でTODO一括登録処理ジョブ（job003）が動作する。
         * TODOリストのファイルを読み込み、リストに対して一件ずつsample-backendのREST APIを呼び出し、TODOリストを一括登録する。
+            * job003は、タスクレットモデルで実装している。(job001とほぼ同じ処理を実装している。)
 1. 動作確認その2
     * ジョブのスケジュールバッチ起動を想定し、sample-schedulelaunchを、スケジュール起動バッチ定義IDを指定してSpringBootアプリケーションを起動する。
         * 起動引数に、-Dbatch.schedule.target-id=SB_001（またはSB_002）を指定する。
     * sample-batch側がジョブjob001（またはjob002）が動作する。
+        * sample-batchのAPが、SQS(ElastiqMQ)を介してsample-webから受け取ったメッセージ（スケジュール起動バッチ定義に記載したJob IDとparam01、param02の値）を処理する。        
+        * TODOリストが書かれたファイル(files/input/todolist.csv)を読み込み、リストに対して一件ずつsample-backendのREST APIを呼び出し、TODOリストを一括登録する。
+            * job001は、タスクレットモデルで実装している。
+            * job002は、チャンクモデルでjob001と同じ処理を実装している。    
 1. 動作確認その3
     * sample-bffのAPIによるバッチの実行ユースケースがある。
     * ブラウザやREST APIクライアント（Postman等）で、以下入力する。 sample-bffのAPがリクエストを受け取り、SQS(ElastiqMQ)へ非同期実行依頼のメッセージを送信する。
