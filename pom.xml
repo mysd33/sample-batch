@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.9</version>
+		<version>3.0.6</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
@@ -16,10 +16,10 @@
 	<description>Spring Boot Async/Batch Sample</description>
 	<properties>
 		<java.version>17</java.version>
-		<spring.cloud-version>2021.0.5</spring.cloud-version>
-		<awssdk.bom.version>2.17.247</awssdk.bom.version>
-		<amazon-sqs-java-messaging-lib.version>2.0.3</amazon-sqs-java-messaging-lib.version>
-		<elasticmq.version>1.3.9</elasticmq.version>
+		<spring.cloud-version>2022.0.2</spring.cloud-version>
+		<awssdk.bom.version>2.20.55</awssdk.bom.version>
+		<amazon-sqs-java-messaging-lib.version>2.1.1</amazon-sqs-java-messaging-lib.version>
+		<elasticmq.version>1.3.14</elasticmq.version>
 		<logstash-logback-encoder.version>7.2</logstash-logback-encoder.version>
 		<commons-io.version>2.11.0</commons-io.version>
 	</properties>
@@ -62,8 +62,8 @@
 		</dependency>
 		<!-- JAXB -->
 		<dependency>
-			<groupId>javax.xml.bind</groupId>
-			<artifactId>jaxb-api</artifactId>
+			<groupId>jakarta.xml.bind</groupId>
+			<artifactId>jakarta.xml.bind-api</artifactId>
 		</dependency>
 		<!-- Lombok -->
 		<dependency>
@@ -89,10 +89,10 @@
 			<artifactId>logstash-logback-encoder</artifactId>
 			<version>${logstash-logback-encoder.version}</version>
 		</dependency>
-		<!-- Spring Cloud Sleuth -->
+		<!-- Micrometer Tracing -->
 		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-sleuth</artifactId>
+		    <groupId>io.micrometer</groupId>
+		    <artifactId>micrometer-tracing-bridge-brave</artifactId>
 		</dependency>
 		<!-- Spring Cloud Circuit Breaker Resilience4J -->
 		<dependency>
@@ -134,8 +134,8 @@
 		</dependency>
 		<!-- JMS API -->
 		<dependency>
-			<groupId>javax.jms</groupId>
-			<artifactId>javax.jms-api</artifactId>
+			<groupId>jakarta.jms</groupId>
+			<artifactId>jakarta.jms-api</artifactId>
 		</dependency>
 		<!-- AWS SDK S3 -->
 		<dependency>
@@ -167,6 +167,14 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+			<!-- Micrometer Tracing -->
+			<dependency>
+	            <groupId>io.micrometer</groupId>
+	            <artifactId>micrometer-tracing-bom</artifactId>
+	            <version>${micrometer-tracing.version}</version>
+	            <type>pom</type>
+	            <scope>import</scope>
+	        </dependency>			
 		</dependencies>
 	</dependencyManagement>
 	<build>

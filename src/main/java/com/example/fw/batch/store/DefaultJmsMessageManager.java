@@ -1,7 +1,7 @@
 package com.example.fw.batch.store;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
 
 import com.example.fw.batch.message.BatchFrameworkMessageIds;
 import com.example.fw.common.logging.ApplicationLogger;

@@ -2,8 +2,6 @@ package com.example.fw.batch.async.messaging;
 
 import java.util.Map;
 
-import javax.jms.Message;
-
 import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.launch.JobInstanceAlreadyExistsException;
 import org.springframework.batch.core.launch.JobOperator;
@@ -23,6 +21,7 @@ import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;
 import com.example.fw.common.logging.MonitoringLogger;
 
+import jakarta.jms.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -86,15 +85,14 @@ public class AsyncMessageListener {
             return;
         }
         // ジョブ初回実行の場合
-        String jobId = request.getJobId();
-        String jobParameters = request.toParameterString();
+        String jobId = request.getJobId();        
         try {
-            appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0001, messageId, jobId, jobParameters);
+            appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0001, messageId, jobId, request.toParameterString());
             // SpringBatchでジョブ実行
-            jobExecutionId = jobOperator.start(jobId, jobParameters);
+            jobExecutionId = jobOperator.start(jobId, request.toParameterProperties());
             appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0002, messageId, jobId, jobExecutionId);            
         } catch (JobInstanceAlreadyExistsException e) {
-            appLogger.warn(BatchFrameworkMessageIds.W_BT_FW_8001, e, messageId, jobId, jobParameters);
+            appLogger.warn(BatchFrameworkMessageIds.W_BT_FW_8001, e, messageId, jobId, request.toParameterString());
             acknowledgeExplicitlyOnExceptionIfAckOnJobStart();
         } catch (NoSuchJobException e) {
             appLogger.warn(BatchFrameworkMessageIds.W_BT_FW_8002, e, messageId, jobId);

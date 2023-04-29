@@ -1,9 +1,9 @@
 package com.example.fw.batch.async.config;
 
-import javax.jms.ConnectionFactory;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.Session;
 
 import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

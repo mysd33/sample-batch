@@ -4,8 +4,9 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.StepExecution;
-import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemWriter;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import com.example.batch.domain.record.TodoRecord;
 import com.example.fw.batch.writer.NoOpItemWriter;
@@ -28,16 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Job002Config {
     private static ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
-    
-    @Autowired
-    private JobBuilderFactory jobBuilderFactory;
-
-    @Autowired
-    private StepBuilderFactory stepBuilderFactory;
-
-    @Autowired
-    private JobExecutionListener listener;
-
     @Qualifier("todoListFileReader")
     @Autowired
     private FlatFileItemReader<TodoRecord> todoListFileReader;
@@ -50,12 +42,12 @@ public class Job002Config {
      * Job
      */
     @Bean
-    public Job job002() {
+    public Job job002(JobExecutionListener listener, JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         // @formatter:off 
-		return jobBuilderFactory.get("job002")
+		return new JobBuilder("job002", jobRepository)
 				.listener(listener)
-				.start(step00201())
-				.next(step00202())
+				.start(step00201(jobRepository, transactionManager))
+				.next(step00202(jobRepository, transactionManager))
 				.build();
 		// @formatter:on
     }
@@ -64,9 +56,10 @@ public class Job002Config {
      * Step1 パラメータから入出力ファイルパスを取得する前処理
      */
     @Bean
-    public Step step00201() {
+    public Step step00201(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         // @formatter:off 
-		return stepBuilderFactory.get("step002_01").tasklet((contribution, chunkContext) -> {
+		return new StepBuilder("step002_01", jobRepository)
+		        .tasklet((contribution, chunkContext) -> {
 			StepExecution stepExecution = chunkContext.getStepContext().getStepExecution();
 			String param01 = stepExecution.getJobParameters().getString("param01");
 			String param02 = stepExecution.getJobParameters().getString("param02");
@@ -74,7 +67,7 @@ public class Job002Config {
 			ExecutionContext jobExecutionContext = stepExecution.getJobExecution().getExecutionContext();
 			jobExecutionContext.put("input.file.name","files/input/todolist.csv");			
 			return RepeatStatus.FINISHED;
-		}).build();
+		}, transactionManager).build();
 		// @formatter:on 
     }
 
@@ -82,10 +75,10 @@ public class Job002Config {
      * Step2 本処理
      */
     @Bean
-    public Step step00202() {
+    public Step step00202(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         // @formatter:off 
-		return stepBuilderFactory.get("step002_02")
-				.<TodoRecord, TodoRecord>chunk(chunkSize)
+		return new StepBuilder("step002_02", jobRepository)
+				.<TodoRecord, TodoRecord>chunk(chunkSize, transactionManager)
 				.reader(todoListFileReader)
 				.processor(processor002())
 				.writer(noOpItemWriter())

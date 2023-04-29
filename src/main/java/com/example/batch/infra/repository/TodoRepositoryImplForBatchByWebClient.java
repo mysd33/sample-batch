@@ -6,7 +6,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreakerFactory;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -62,10 +62,10 @@ public class TodoRepositoryImplForBatchByWebClient implements TodoRepository {
         Mono<Todo> todoMono = webClient.get()
                 .uri(urlTodoById, todoId)               
                 .retrieve()
-                .onStatus(HttpStatus::is4xxClientError,  
+                .onStatus(HttpStatusCode::is4xxClientError,  
                         responseErrorHandler::createClientErrorException
                 )
-                .onStatus(HttpStatus::is5xxServerError,
+                .onStatus(HttpStatusCode::is5xxServerError,
                         responseErrorHandler::createServerErrorException
                 ) 
                 .bodyToMono(Todo.class)
@@ -84,10 +84,10 @@ public class TodoRepositoryImplForBatchByWebClient implements TodoRepository {
 
         Mono<TodoList> todoListMono = webClient.get().uri(urlTodos)
                 .retrieve()
-                .onStatus(HttpStatus::is4xxClientError,
+                .onStatus(HttpStatusCode::is4xxClientError,
                         responseErrorHandler::createClientErrorException
                 )
-                .onStatus(HttpStatus::is5xxServerError,
+                .onStatus(HttpStatusCode::is5xxServerError,
                         responseErrorHandler::createServerErrorException
                 ) 
                 .bodyToMono(TodoList.class)
@@ -108,10 +108,10 @@ public class TodoRepositoryImplForBatchByWebClient implements TodoRepository {
         webClient.post().uri(urlTodosForCreateBatch)
                 .contentType(MediaType.APPLICATION_JSON).bodyValue(todo)
                 .retrieve()
-                .onStatus(HttpStatus::is4xxClientError,
+                .onStatus(HttpStatusCode::is4xxClientError,
                         responseErrorHandler::createClientErrorException
                 )
-                .onStatus(HttpStatus::is5xxServerError,
+                .onStatus(HttpStatusCode::is5xxServerError,
                         responseErrorHandler::createServerErrorException
                 ) 
                 .bodyToMono(Todo.class)
@@ -129,10 +129,10 @@ public class TodoRepositoryImplForBatchByWebClient implements TodoRepository {
         // @formatter:off 
         webClient.put().uri(urlTodoById, todo.getTodoId())
                 .retrieve()
-                .onStatus(HttpStatus::is4xxClientError, 
+                .onStatus(HttpStatusCode::is4xxClientError, 
                         responseErrorHandler::createClientErrorException
                 )
-                .onStatus(HttpStatus::is5xxServerError,
+                .onStatus(HttpStatusCode::is5xxServerError,
                         responseErrorHandler::createServerErrorException
                 ) 
                 .bodyToMono(Todo.class)
@@ -151,10 +151,10 @@ public class TodoRepositoryImplForBatchByWebClient implements TodoRepository {
         // @formatter:off       
         webClient.delete().uri(urlTodoById, todo.getTodoId())
                 .retrieve()
-                .onStatus(HttpStatus::is4xxClientError,
+                .onStatus(HttpStatusCode::is4xxClientError,
                         responseErrorHandler::createClientErrorException
                 )
-                .onStatus(HttpStatus::is5xxServerError,
+                .onStatus(HttpStatusCode::is5xxServerError,
                         responseErrorHandler::createServerErrorException
                 )  
                 .bodyToMono(Void.class)

@@ -2,6 +2,7 @@ package com.example.fw.common.async.model;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Properties;
 import java.util.StringJoiner;
 
 import lombok.AllArgsConstructor;
@@ -43,6 +44,13 @@ public class JobRequest implements Serializable {
         }
         return sj.toString();
     }
+    
+    public Properties toParameterProperties() {
+        Properties properties = new Properties();
+        parameters.forEach(properties::put);        
+        return properties;
+    }
+    
 
     /**
      * 

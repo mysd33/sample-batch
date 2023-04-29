@@ -2,7 +2,7 @@ package com.example.fw.batch.exception;
 
 import java.util.List;
 
-import javax.validation.ValidationException;
+import jakarta.validation.ValidationException;
 
 import org.springframework.batch.core.JobExecution;
 import org.springframework.validation.BindException;

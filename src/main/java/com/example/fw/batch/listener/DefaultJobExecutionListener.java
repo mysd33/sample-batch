@@ -1,6 +1,7 @@
 package com.example.fw.batch.listener;
 
-import java.util.Date;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
@@ -40,10 +41,10 @@ public class DefaultJobExecutionListener implements JobExecutionListener {
 
     @Override
     public void afterJob(JobExecution jobExecution) {
-        Date startTime = jobExecution.getStartTime();
-        Date endTime = jobExecution.getEndTime();
+        LocalDateTime startTime = jobExecution.getStartTime();
+        LocalDateTime endTime = jobExecution.getEndTime();
         if (startTime != null && endTime != null) {
-            long elapsedTime = endTime.getTime() - startTime.getTime();
+            long elapsedTime = Duration.between(startTime, endTime).toMillis();
             appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0004, elapsedTime, jobExecution.getJobId(),
                     jobExecution.getId(), jobExecution.getExitStatus().getExitCode());
         }

@@ -21,4 +21,9 @@ aws:
   sqs:
     listener:
 #      ack-on-job-start: true               
-      ack-on-job-start: false           
+      ack-on-job-start: false       
+
+# Micrometer Tracing         
+logging:
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"          

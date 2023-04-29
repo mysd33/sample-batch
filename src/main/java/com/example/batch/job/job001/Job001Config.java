@@ -3,36 +3,28 @@ package com.example.batch.job.job001;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.core.step.tasklet.Tasklet;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.PlatformTransactionManager;
 
 /**
  * Job001の定義
  */
 @Configuration
 public class Job001Config {
-    @Autowired
-    private JobBuilderFactory jobBuilderFactory;
-
-    @Autowired
-    private StepBuilderFactory stepBuilderFactory;
-
-    @Autowired
-    private JobExecutionListener listener;
-
     /**
      * Job
      */
     @Bean
-    public Job job001() {
+    public Job job001(JobExecutionListener listener, JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         // @formatter:off 
-        return jobBuilderFactory.get("job001")
+        return new JobBuilder("job001", jobRepository)
                 .listener(listener)
-                .start(step00101())
+                .start(step00101(jobRepository, transactionManager))
                 .build();
         // @formatter:on        
     }
@@ -41,11 +33,11 @@ public class Job001Config {
      * Step
      */
     @Bean
-    public Step step00101() {
+    public Step step00101(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         // @formatter:off         
-        return stepBuilderFactory.get("step001_01")
-                .tasklet(tasklet001()).
-                build();
+        return new StepBuilder("step001_01", jobRepository)
+                .tasklet(tasklet001(), transactionManager)
+                .build();
         // @formatter:on        
     }
 

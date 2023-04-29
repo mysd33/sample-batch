@@ -1,6 +1,6 @@
 package com.example.fw.batch.store;
 
-import javax.jms.Message;
+import jakarta.jms.Message;
 
 /**
  * ThreadLocalを利用したJmsMessageStore実装クラス
