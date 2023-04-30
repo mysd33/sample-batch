@@ -5,10 +5,13 @@ spring:
     active:
     - dev
     - log_default  #logging in default format
-#    - log_container  #logging in json format    
+#    - log_container  #logging in json format
+# Spring Batch    
   batch:
     job:
-      enabled: false    
+      enabled: false
+    jdbc:
+      isolation-level-for-create: READ_COMMITTED   
       
 resilience4j.timelimiter:
   configs:
