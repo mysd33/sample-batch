@@ -1,6 +1,5 @@
 package com.example.batch.infra.httpclient;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.web.reactive.function.client.ClientResponse;
 
