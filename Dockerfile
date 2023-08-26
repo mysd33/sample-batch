@@ -4,13 +4,18 @@ ARG USERNAME=app
 ARG GROUPNAME=app
 ARG UID=1000
 ARG GID=1000
+ARG JAR=sample-batch-0.1.0-SNAPSHOT.jar
+
 RUN groupadd -g $GID $GROUPNAME && \
     useradd -m -s /bin/bash -u $UID -g $GID $USERNAME
+RUN chown -R $USERNAME:$GROUPNAME /tmp
+
 USER $USERNAME
+VOLUME [ "/tmp" ]
 WORKDIR /home/$USERNAME/
 
-COPY target/sample-batch-0.1.0-SNAPSHOT.jar /home/$USERNAME
-
+COPY target/$JAR /home/$USERNAME/
 COPY files/ /home/$USERNAME/files/
-
-CMD java -jar /home/app/sample-batch-0.1.0-SNAPSHOT.jar
+ENTRYPOINT [ "java" ]
+CMD [ "-jar", "echo $JAR" ]
+EXPOSE 8080
