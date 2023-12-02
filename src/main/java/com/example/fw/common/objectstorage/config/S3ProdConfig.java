@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Profile;
 import com.example.fw.common.objectstorage.ObjectStorageFileAccessor;
 import com.example.fw.common.objectstorage.S3ObjectStorageFileAccessor;
 
+import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 
@@ -33,14 +34,33 @@ public class S3ProdConfig {
     } 
     
     /**
-     * S3クライアント
+     * S3クライアント（X-Rayトレースなし）
      */
+    @Profile("!xray")
     @Bean
-    public S3Client s3Client() {
+    public S3Client s3ClientWithoutXRay() {
         Region region = Region.of(s3ConfigurationProperties.getRegion());
         return S3Client.builder()
+                .httpClientBuilder((ApacheHttpClient.builder()))
                 .region(region)
                 .build();        
     }
-
+    
+    /**
+     * S3クライアント（X-Rayトレースあり）
+     */
+    /*
+    @Profile("xray")
+    @Bean
+    public S3Client s3ClientWithXRay() {
+        Region region = Region.of(s3ConfigurationProperties.getRegion());
+        return S3Client.builder()
+                .httpClientBuilder((ApacheHttpClient.builder()))
+                .region(region)
+                // 個別にDynamoDBへのAWS SDKの呼び出しをトレーシングできるように設定
+                .overrideConfiguration(
+                        ClientOverrideConfiguration.builder().addExecutionInterceptor(new TracingInterceptor()).build())                
+                .build();        
+    }
+    */
 }

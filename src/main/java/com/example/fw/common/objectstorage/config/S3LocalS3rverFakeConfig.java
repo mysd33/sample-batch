@@ -15,6 +15,7 @@ import com.example.fw.common.objectstorage.S3ObjectStorageFileAccessor;
 
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3Configuration;
@@ -51,7 +52,8 @@ public class S3LocalS3rverFakeConfig {
         
         Region region = Region.of(s3ConfigurationProperties.getRegion());
         // @formatter:off
-        return S3Client.builder()                
+        return S3Client.builder()      
+                .httpClientBuilder((ApacheHttpClient.builder()))                 
                 .region(region)       
                 .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
                 .endpointOverride(URI.create("http://localhost:" + s3ConfigurationProperties.getLocalfake().getPort()))
@@ -74,8 +76,9 @@ public class S3LocalS3rverFakeConfig {
         
         Region region = Region.of(s3ConfigurationProperties.getRegion());
         // @formatter:off
-        return S3Client.builder()                
-                .region(region)       
+        return S3Client.builder() 
+                .httpClientBuilder((ApacheHttpClient.builder()))                        
+                .region(region)                   
                 .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
                 .endpointOverride(URI.create("http://localhost:" + s3ConfigurationProperties.getLocalfake().getPort()))
                 //S3rverの場合、putしたファイルにchunk-signatureが入ってしまうため対処策として設定

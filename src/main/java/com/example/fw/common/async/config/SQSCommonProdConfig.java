@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
+import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sqs.SqsClient;
 
@@ -26,7 +27,10 @@ public class SQSCommonProdConfig {
     @Bean
     public SqsClient sqsClientWithoutXRay() {
         Region region = Region.of(sqsCommonConfigurationProperties.getRegion());
-        return SqsClient.builder().region(region).build();
+        return SqsClient.builder()//
+                .httpClientBuilder((ApacheHttpClient.builder())) //
+                .region(region)//
+                .build();
     }
 
     /**
@@ -41,6 +45,7 @@ public class SQSCommonProdConfig {
                 // 個別にSQSへのAWS SDKの呼び出しをトレーシングできるように設定
                 .overrideConfiguration(
                         ClientOverrideConfiguration.builder().addExecutionInterceptor(new TracingInterceptor()).build())
+                .httpClientBuilder((ApacheHttpClient.builder()))                            
                 .region(region)
                 .build();
     }*/
