@@ -11,6 +11,11 @@ spring:
     username: sa
     password:
 
+resilience4j:
+  timelimiter:
+    configs:
+      default:
+        timeoutDuration: 3s
 aws:
   sqs:    
     numberOfMessagesToPrefetch: 0      
