@@ -1,8 +1,6 @@
 package com.example.fw.batch.core.config;
 
 import org.springframework.batch.core.JobExecutionListener;
-import org.springframework.batch.core.configuration.JobRegistry;
-import org.springframework.batch.core.configuration.support.JobRegistryBeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -21,19 +19,6 @@ import com.example.fw.batch.store.ThreadLocalJmsMessageStore;
  */
 @Configuration
 public class SpringBatchConfig {
-
-    /**
-     * Bean定義されたジョブをJobRegistryに登録する設定
-     * 
-     * @param jobRegistry {@link JobRegistry}
-     */
-    @Bean
-    public JobRegistryBeanPostProcessor jobRegistryBeanPostProcessor(JobRegistry jobRegistry) {
-        JobRegistryBeanPostProcessor postProcessor = new JobRegistryBeanPostProcessor();
-        postProcessor.setJobRegistry(jobRegistry);
-        return postProcessor;
-    }
-
     /**
      * ジョブの実行に関わる例外ハンドリング、ログ出力機能の設定
      */
