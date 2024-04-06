@@ -12,7 +12,11 @@ spring:
       enabled: false
     jdbc:
       isolation-level-for-create: READ_COMMITTED   
-      
+# Virtual Thread                  
+  threads:
+    virtual:
+      enabled: true
+            
 resilience4j.timelimiter:
   configs:
     default:
