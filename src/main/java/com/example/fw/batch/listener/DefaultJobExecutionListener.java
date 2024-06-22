@@ -1,6 +1,5 @@
 package com.example.fw.batch.listener;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 
 import org.springframework.batch.core.JobExecution;
@@ -12,6 +11,7 @@ import com.example.fw.batch.message.BatchFrameworkMessageIds;
 import com.example.fw.batch.store.JmsMessageManager;
 import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;
+import com.example.fw.common.systemdate.SystemDateUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,33 +22,32 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class DefaultJobExecutionListener implements JobExecutionListener {
-    private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
-    private final JmsMessageManager jmsMessageManager;    
-    private final ExceptionHandler defaultExceptionHandler;
-    private final SQSServerConfigurationProperties sqsServerConfigurationProperties;    
-    
+	private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
+	private final JmsMessageManager jmsMessageManager;
+	private final ExceptionHandler defaultExceptionHandler;
+	private final SQSServerConfigurationProperties sqsServerConfigurationProperties;
 
-    @Override
-    public void beforeJob(JobExecution jobExecution) {
-        appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0003, jobExecution.getJobId(), jobExecution.getId());
-        // ジョブ開始後即時にキューメッセージをACK（削除）するかどうか
-        // 長時間バッチではSQSの可視性タイムアウトを短くするためtrueにするとよい
-        if (sqsServerConfigurationProperties.isAckOnJobStart()) {
-            // ACKしキューからメッセージを削除
-            jmsMessageManager.acknowledge();
-        }
-    }
+	@Override
+	public void beforeJob(JobExecution jobExecution) {
+		appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0003, jobExecution.getJobId(), jobExecution.getId());
+		// ジョブ開始後即時にキューメッセージをACK（削除）するかどうか
+		// 長時間バッチではSQSの可視性タイムアウトを短くするためtrueにするとよい
+		if (sqsServerConfigurationProperties.isAckOnJobStart()) {
+			// ACKしキューからメッセージを削除
+			jmsMessageManager.acknowledge();
+		}
+	}
 
-    @Override
-    public void afterJob(JobExecution jobExecution) {
-        LocalDateTime startTime = jobExecution.getStartTime();
-        LocalDateTime endTime = jobExecution.getEndTime();
-        if (startTime != null && endTime != null) {
-            long elapsedTime = Duration.between(startTime, endTime).toMillis();
-            appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0004, elapsedTime, jobExecution.getJobId(),
-                    jobExecution.getId(), jobExecution.getExitStatus().getExitCode());
-        }
-        // 例外発生時に集約例外ハンドリング
-        defaultExceptionHandler.handle(jobExecution);
-    }
+	@Override
+	public void afterJob(JobExecution jobExecution) {
+		LocalDateTime startTime = jobExecution.getStartTime();
+		LocalDateTime endTime = jobExecution.getEndTime();
+		if (startTime != null && endTime != null) {
+			double elapsedTime = SystemDateUtils.calcElaspedTimeByMilliSecounds(startTime, endTime);
+			appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0004, elapsedTime, startTime, jobExecution.getJobId(),
+					jobExecution.getId(), jobExecution.getExitStatus().getExitCode());
+		}
+		// 例外発生時に集約例外ハンドリング
+		defaultExceptionHandler.handle(jobExecution);
+	}
 }
