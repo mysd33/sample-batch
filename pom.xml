@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.3.2</version>
+		<version>3.3.6</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
@@ -17,9 +17,9 @@
 	<properties>
 		<java.version>21</java.version>
 		<spring.cloud-version>2023.0.3</spring.cloud-version>
-		<awssdk.bom.version>2.20.144</awssdk.bom.version>
-		<amazon-sqs-java-messaging-lib.version>2.1.1</amazon-sqs-java-messaging-lib.version>
-		<elasticmq.version>1.4.4</elasticmq.version>
+		<awssdk.bom.version>2.29.19</awssdk.bom.version>
+		<amazon-sqs-java-messaging-lib.version>2.1.3</amazon-sqs-java-messaging-lib.version>
+		<elasticmq.version>1.6.9</elasticmq.version>
 		<logstash-logback-encoder.version>7.4</logstash-logback-encoder.version>
 		<commons-io.version>2.11.0</commons-io.version>
 	</properties>
@@ -140,7 +140,7 @@
 		<!-- ElasticMQ (SQS Local) -->
 		<dependency>
 			<groupId>org.elasticmq</groupId>
-			<artifactId>elasticmq-rest-sqs_2.13</artifactId>
+			<artifactId>elasticmq-rest-sqs_3</artifactId>
 			<version>${elasticmq.version}</version>
 		</dependency>
 		<!-- JMS API -->
