@@ -11,6 +11,12 @@ spring:
     username: sa
     password:
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*" 
+
 resilience4j:
   timelimiter:
     configs:
