@@ -56,7 +56,8 @@ logging:
     org.springframework: INFO
     org.springframework.jdbc: INFO
     com.example: DEBUG   
-    org.springframework.context.support.ResourceBundleMessageSource: ERROR     
+    org.springframework.context.support.ResourceBundleMessageSource: ERROR
+　　　　com.example.fw.batch.aspect.LogAspect: TRACE   
 
 api:
   backend:

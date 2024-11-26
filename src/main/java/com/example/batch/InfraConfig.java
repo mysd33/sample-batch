@@ -5,6 +5,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 import com.example.batch.infra.httpclient.WebClientResponseErrorHandler;
+import com.example.fw.batch.aspect.LogAspect;
 import com.example.fw.common.httpclient.config.WebClientConfigPackage;
 import com.example.fw.common.objectstorage.config.S3ConfigPackage;
 
@@ -23,6 +24,14 @@ public class InfraConfig {
     @Bean
     public WebClientResponseErrorHandler webClientResponseErrorHandler() {
         return new WebClientResponseErrorHandler();
+    }
+    
+    /**
+     * Repositoryの性能ログ用のロギングクラス
+     */
+    @Bean
+    public LogAspect logAspect() {
+    	return new LogAspect();
     }
 
     /**

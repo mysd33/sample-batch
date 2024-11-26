@@ -3,7 +3,8 @@ package com.example.fw.batch.message;
 public final class BatchFrameworkMessageIds {
     private BatchFrameworkMessageIds() {
     }
-
+    public static final String T_BT_FW_0001 = "t.bt.fw.0001";
+    public static final String T_BT_FW_0002 = "t.bt.fw.0002";
     public static final String I_BT_FW_0001 = "i.bt.fw.0001";
     public static final String I_BT_FW_0002 = "i.bt.fw.0002";
     public static final String I_BT_FW_0003 = "i.bt.fw.0003";
