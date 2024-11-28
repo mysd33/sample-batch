@@ -23,24 +23,35 @@ import lombok.extern.slf4j.Slf4j;
 @Aspect
 @RequiredArgsConstructor
 public class LogAspect {
-	private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
+    private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
 
-	
-	//TODO: 現状、なぜかAOPの処理が通らない
-	@Around("@within(org.springframework.stereotype.Repository) || @within(org.apache.ibatis.annotations.Mapper)")
-	public Object aroundRepositoryLog(final ProceedingJoinPoint jp) throws Throwable {
-		appLogger.trace(BatchFrameworkMessageIds.T_BT_FW_0001, jp.getSignature(), Arrays.asList(jp.getArgs()));
-		// 処理時間を計測しログ出力
-		long startTime = System.nanoTime();
-		try {
-			return jp.proceed();
-		} finally {
-			// 呼び出し処理実行後、処理時間を計測しログ出力
-			long endTime = System.nanoTime();
-			double elapsedTime = SystemDateUtils.calcElaspedTimeByMilliSecounds(startTime, endTime);
-			appLogger.trace(BatchFrameworkMessageIds.T_BT_FW_0002, //
-					jp.getSignature(), Arrays.asList(jp.getArgs()), elapsedTime);
-		}
-	}
+    @Around("@within(org.springframework.stereotype.Repository)")
+    public Object aroundRepositoryLog(final ProceedingJoinPoint jp) throws Throwable {
+        return doAroundRepositoryLog(jp);
+    }
 
+    @Around("@within(org.apache.ibatis.annotations.Mapper)")
+    public Object aroundMybatisMapperRepositoryLog(final ProceedingJoinPoint jp) throws Throwable {
+        return doAroundRepositoryLog(jp);
+    }
+
+    @Around("execution(void org.mybatis.spring.batch.MyBatisBatchItemWriter.write(..))")
+    public Object aroundMybatisItemWriterLog(final ProceedingJoinPoint jp) throws Throwable {
+        return doAroundRepositoryLog(jp);
+    }
+
+    private Object doAroundRepositoryLog(final ProceedingJoinPoint jp) throws Throwable {
+        appLogger.trace(BatchFrameworkMessageIds.T_BT_FW_0001, jp.getSignature(), Arrays.asList(jp.getArgs()));
+        // 処理時間を計測しログ出力
+        long startTime = System.nanoTime();
+        try {
+            return jp.proceed();
+        } finally {
+            // 呼び出し処理実行後、処理時間を計測しログ出力
+            long endTime = System.nanoTime();
+            double elapsedTime = SystemDateUtils.calcElaspedTimeByMilliSecounds(startTime, endTime);
+            appLogger.trace(BatchFrameworkMessageIds.T_BT_FW_0002, //
+                    jp.getSignature(), Arrays.asList(jp.getArgs()), elapsedTime);
+        }
+    }
 }

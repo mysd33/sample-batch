@@ -25,13 +25,13 @@ public class InfraConfig {
     public WebClientResponseErrorHandler webClientResponseErrorHandler() {
         return new WebClientResponseErrorHandler();
     }
-    
+
     /**
      * Repositoryの性能ログ用のロギングクラス
      */
     @Bean
     public LogAspect logAspect() {
-    	return new LogAspect();
+        return new LogAspect();
     }
 
     /**
