@@ -6,47 +6,40 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
-import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * Job001の定義
  */
 @Configuration
+@RequiredArgsConstructor
 public class Job001Config {
+    private final Job001Tasklet job001Tasklet;
+
     /**
      * Job
      */
     @Bean
-    public Job job001(JobExecutionListener listener, JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        // @formatter:off 
-        return new JobBuilder("job001", jobRepository)
-                .listener(listener)
-                .start(step00101(jobRepository, transactionManager))
+    Job job001(JobExecutionListener listener, JobRepository jobRepository,
+            PlatformTransactionManager transactionManager) {
+        return new JobBuilder("job001", jobRepository)//
+                .listener(listener)//
+                .start(step00101(jobRepository, transactionManager))//
                 .build();
-        // @formatter:on        
     }
 
     /**
      * Step
      */
     @Bean
-    public Step step00101(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        // @formatter:off         
-        return new StepBuilder("step001_01", jobRepository)
-                .tasklet(tasklet001(), transactionManager)
+    Step step00101(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        return new StepBuilder("step001_01", jobRepository)//
+                .tasklet(job001Tasklet, transactionManager)//
                 .build();
-        // @formatter:on        
-    }
-
-    /**
-     * Tasklet
-     */
-    @Bean
-    protected Tasklet tasklet001() {
-        return new Job001Tasklet();
     }
 
 }

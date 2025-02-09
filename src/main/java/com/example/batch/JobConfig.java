@@ -28,7 +28,7 @@ public class JobConfig  {
      * 集約例外ハンドリングクラス
      */
     @Bean
-    public ExceptionHandler defaultExceptionHandler() {
+    ExceptionHandler defaultExceptionHandler() {
         DefaultExceptionHandler defaultExceptionHandler = new DefaultExceptionHandler();
         defaultExceptionHandler.setDefaultExceptionMessageId(CommonFrameworkMessageIds.E_CM_FW_9001);
         return defaultExceptionHandler;
@@ -41,7 +41,7 @@ public class JobConfig  {
      */
     @StepScope
     @Bean
-    public FlatFileItemReader<TodoRecord> todoListFileReader(
+    FlatFileItemReader<TodoRecord> todoListFileReader(
             @Value("#{jobExecutionContext['input.file.name']}") String filePathName) {
         return new FlatFileItemReaderBuilder<TodoRecord>().name("todoListReader")
                 .resource(new FileSystemResource(filePathName)).delimited().delimiter(",").names("todoTitle")

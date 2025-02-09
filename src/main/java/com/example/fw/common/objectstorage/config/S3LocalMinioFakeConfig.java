@@ -13,6 +13,7 @@ import com.example.fw.common.objectstorage.BucketCreateInitializer;
 import com.example.fw.common.objectstorage.ObjectStorageFileAccessor;
 import com.example.fw.common.objectstorage.S3ObjectStorageFileAccessor;
 
+import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.http.apache.ApacheHttpClient;
@@ -27,17 +28,17 @@ import software.amazon.awssdk.services.s3.S3Configuration;
  */
 @Profile("dev")
 @ConditionalOnProperty(prefix = "aws.s3.localfake", name = "type", havingValue = "minio")
-@EnableConfigurationProperties({S3ConfigurationProperties.class})
+@EnableConfigurationProperties({ S3ConfigurationProperties.class })
 @Configuration
+@RequiredArgsConstructor
 public class S3LocalMinioFakeConfig {
-    @Autowired
-    private S3ConfigurationProperties s3ConfigurationProperties;    
+    private final S3ConfigurationProperties s3ConfigurationProperties;
 
     /**
      * オブジェクトストレージアクセスクラス
      */
     @Bean
-    public ObjectStorageFileAccessor objectStorageFileAccessor(S3Client s3Client) {
+    ObjectStorageFileAccessor objectStorageFileAccessor(S3Client s3Client) {
         return new S3ObjectStorageFileAccessor(s3Client, s3ConfigurationProperties.getBucket());
     }
 
@@ -46,11 +47,12 @@ public class S3LocalMinioFakeConfig {
      */
     @Profile("!xray")
     @Bean
-    public S3Client s3ClientWithoutXRay() {
+    S3Client s3ClientWithoutXRay() {
         // ダミーのクレデンシャル
-        AwsBasicCredentials awsCreds = AwsBasicCredentials.create(s3ConfigurationProperties.getLocalfake().getAccessKeyId(),
+        AwsBasicCredentials awsCreds = AwsBasicCredentials.create(
+                s3ConfigurationProperties.getLocalfake().getAccessKeyId(),
                 s3ConfigurationProperties.getLocalfake().getSecretAccessKey());
-        
+
         Region region = Region.of(s3ConfigurationProperties.getRegion());
         // @formatter:off
         return S3Client.builder()
@@ -71,7 +73,7 @@ public class S3LocalMinioFakeConfig {
     /*
     @Profile("xray")
     @Bean
-    public S3Client s3ClientWithXRay() {
+    S3Client s3ClientWithXRay() {
         // ダミーのクレデンシャル
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create(s3ConfigurationProperties.getLocalfake().getAccessKeyId(),
                 s3ConfigurationProperties.getLocalfake().getSecretAccessKey());
@@ -98,7 +100,7 @@ public class S3LocalMinioFakeConfig {
      * 
      */
     @Bean
-    public BucketCreateInitializer bucketCreateInitializer(S3Client s3Client) {
+    BucketCreateInitializer bucketCreateInitializer(S3Client s3Client) {
         return new BucketCreateInitializer(s3Client, s3ConfigurationProperties.getBucket());
     }
 

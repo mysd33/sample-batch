@@ -2,12 +2,12 @@ package com.example.fw.common.async.config;
 
 import java.net.URI;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
+import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.http.apache.ApacheHttpClient;
@@ -21,19 +21,19 @@ import software.amazon.awssdk.services.sqs.SqsClient;
  */
 @Profile("dev")
 @Configuration
+@RequiredArgsConstructor
 @EnableConfigurationProperties({ SQSCommonConfigurationProperties.class })
 public class SQSCommonLocalConfig {
     private static final String HTTP_LOCALHOST = "http://localhost:";
     
-    @Autowired
-    private SQSCommonConfigurationProperties sqsCommonConfigurationProperties;
+    private final SQSCommonConfigurationProperties sqsCommonConfigurationProperties;
 
     /**
      * ElastiqMQ(SQSLocal)起動する場合のSQSClientの定義(X-Rayトレーシングなし）
      */
     @Profile("!xray")
     @Bean
-    public SqsClient sqsClientWithoutXRay() {
+    SqsClient sqsClientWithoutXRay() {
         // ダミーのクレデンシャル
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create("dummy", "dummy");
         Region region = Region.of(sqsCommonConfigurationProperties.getRegion());
@@ -51,7 +51,7 @@ public class SQSCommonLocalConfig {
     /*
     @Profile("xray")
     @Bean
-    public SqsClient sqsClientFactoryWithXRay() {
+    SqsClient sqsClientFactoryWithXRay() {
         // ダミーのクレデンシャル
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create("dummy", "dummy");
         Region region = Region.of(sqsCommonConfigurationProperties.getRegion());

@@ -23,7 +23,7 @@ public class SpringBatchConfig {
      * ジョブの実行に関わる例外ハンドリング、ログ出力機能の設定
      */
     @Bean
-    public JobExecutionListener defaultJobExecutionListener(JmsMessageManager jmsMessageManager,
+    JobExecutionListener defaultJobExecutionListener(JmsMessageManager jmsMessageManager,
             ExceptionHandler defaultExceptionHandler,
             SQSServerConfigurationProperties sqsServerConfigurationProperties) {
         return new DefaultJobExecutionListener(jmsMessageManager, defaultExceptionHandler,
@@ -34,7 +34,7 @@ public class SpringBatchConfig {
      * JMSのメッセージストアクラス
      */
     @Bean
-    public JmsMessageStore jmsMessageStore() {
+    JmsMessageStore jmsMessageStore() {
         return new ThreadLocalJmsMessageStore();
     }
 
@@ -42,7 +42,7 @@ public class SpringBatchConfig {
      * JMSのメッセージ管理クラス
      */
     @Bean
-    public JmsMessageManager jmsMessageManager(JmsMessageStore jmsMessageStore) {
+    JmsMessageManager jmsMessageManager(JmsMessageStore jmsMessageStore) {
         return new DefaultJmsMessageManager(jmsMessageStore);
     }
 

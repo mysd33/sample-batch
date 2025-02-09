@@ -22,7 +22,7 @@ public class InfraConfig {
      * WebClientでのエラーハンドラークラス
      */
     @Bean
-    public WebClientResponseErrorHandler webClientResponseErrorHandler() {
+    WebClientResponseErrorHandler webClientResponseErrorHandler() {
         return new WebClientResponseErrorHandler();
     }
 
@@ -30,7 +30,7 @@ public class InfraConfig {
      * Repositoryの性能ログ用のロギングクラス
      */
     @Bean
-    public LogAspect logAspect() {
+    LogAspect logAspect() {
         return new LogAspect();
     }
 
@@ -38,7 +38,7 @@ public class InfraConfig {
      * RestTemplateの設定
      */
 //    @Bean
-//    public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
+//    RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
 //        // ログ出力クラスの設定
 //        List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
 //        interceptors.add(new RestTemplateLoggingInterceptor());

@@ -25,7 +25,7 @@ public class SQSServerLocalConfig {
      */
     @Bean
     @ConditionalOnClass(SQSRestServer.class)
-    public ElasticMQLocalExecutor elasticMQLocalExecutor(SqsClient sqsClient,             
+    ElasticMQLocalExecutor elasticMQLocalExecutor(SqsClient sqsClient,             
             SQSCommonConfigurationProperties sqsCommonConfigurationProperties,
             SQSServerConfigurationProperties sqsServerConfigurationProperties) {            
         return new ElasticMQLocalExecutor(sqsClient,                 

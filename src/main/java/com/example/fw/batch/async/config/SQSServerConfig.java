@@ -29,7 +29,7 @@ public class SQSServerConfig {
      * JMSListenerContainerFactoryの定義
      */
     @Bean
-    public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(ConnectionFactory connectionFactory,
+    DefaultJmsListenerContainerFactory jmsListenerContainerFactory(ConnectionFactory connectionFactory,
             MessageConverter jacksonJmsMessageConverter,
             SQSServerConfigurationProperties sqsServerConfigurationProperties) {        
         DefaultJmsListenerContainerFactory factory;        
@@ -66,7 +66,7 @@ public class SQSServerConfig {
      * @param jobOperator {@link JobOperator}
      */
     @Bean
-    public AsyncMessageListener asyncMessageListener(JobOperator jobOperator, JmsMessageManager jmsMessageManager,
+    AsyncMessageListener asyncMessageListener(JobOperator jobOperator, JmsMessageManager jmsMessageManager,
             SQSServerConfigurationProperties sqsServerConfigurationProperties) {
         return new AsyncMessageListener(jobOperator, jmsMessageManager, sqsServerConfigurationProperties);
     }
