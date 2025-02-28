@@ -44,7 +44,7 @@ public class DefaultJobExecutionListener implements JobExecutionListener {
         LocalDateTime startTime = jobExecution.getStartTime();
         LocalDateTime endTime = jobExecution.getEndTime();
         if (startTime != null && endTime != null) {
-            double elapsedTime = SystemDateUtils.calcElaspedTimeByMilliSecounds(startTime, endTime);
+            double elapsedTime = SystemDateUtils.calcElapsedTimeByMilliSeconds(startTime, endTime);
             appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0004, elapsedTime, startTime,
                     jobExecution.getJobInstance().getJobName(), jobExecution.getId(),
                     jobExecution.getExitStatus().getExitCode());
