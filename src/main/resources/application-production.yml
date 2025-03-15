@@ -20,7 +20,13 @@ management:
   endpoints:
     web:
       discovery:
-        enabled: false         
+        enabled: false
+        
+resilience4j:
+  timelimiter:
+    configs:
+      default:
+        timeoutDuration: 3s
 aws:
   sqs:    
     number-of-messages-to-prefetch: 0

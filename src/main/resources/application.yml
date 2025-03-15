@@ -16,11 +16,12 @@ spring:
   threads:
     virtual:
       enabled: true
-            
-resilience4j.timelimiter:
-  configs:
-    default:
-      timeoutDuration: 3s
+# Spring Cloud for AWS Parameter Store & Integration Secreters Manager Integration
+  config:
+    import: 
+    - optional:aws-parameterstore=/config/common
+    - optional:aws-parameterstore=/config/sample-batch
+    - optional:aws-secretsmanager=/secrets/database-secrets?prefix=spring.datasource.
 
 # ジョブ開始後即時にキューメッセージをACK（削除）するかどうか
 # 長時間バッチではSQSの可視性タイムアウトを短くするためtrueにするとよい
