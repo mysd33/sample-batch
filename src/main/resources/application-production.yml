@@ -19,7 +19,7 @@ spring:
   config:
     import:
       - 'aws-parameterstore:/config/common/;/config/sample-batch/'
-      - 'aws-secretsmanager:/secrets/database-secrets/?prefix=spring.datasource.'
+      - 'aws-secretsmanager:/secrets/database-secrets?prefix=spring.datasource.'
 
 management:
   endpoints:
