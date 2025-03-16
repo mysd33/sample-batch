@@ -5,9 +5,9 @@ spring:
       mode: always      
   datasource:    
 #    url: jdbc:postgresql://localhost:5432/testdb
-    driver-class-name: org.postgresql.Driver 
+    driver-class-name: org.postgresql.Driver
 #    username: postgres
-#    password: password	
+#    password: password
     # PostgreSQLはデフォルトautocommit=trueなので、カーソルがオンメモリ処理にならないようautocommit=false
     hikari:
       auto-commit: false
@@ -18,8 +18,9 @@ spring:
 # Spring Cloud for AWS Parameter Store & Integration Secreters Manager Integration
   config:
     import: 
-    - aws-parameterstore:/config/common;/config/sample-batch
-    - aws-secretsmanager:/secrets/database-secrets?prefix=spring.datasource.
+      - aws-parameterstore:/config/common
+      - aws-parameterstore:/config/sample-batch
+      - aws-secretsmanager:/secrets/database-secrets?prefix=spring.datasource.
 
 management:
   endpoints:
@@ -36,11 +37,11 @@ aws:
   sqs:    
     number-of-messages-to-prefetch: 0
     listener:
-      queue-name: SampleQueue      
+#      queue-name: SampleQueue      
       concurrency: 5
-  s3:
-    bucket: mysd33bucket123
-    region: ap-northeast-1
+#  s3:
+#    bucket: mysd33bucket123
+#    region: ap-northeast-1
 
 logging:
   level:
@@ -50,8 +51,8 @@ logging:
     org.springframework.context.support.ResourceBundleMessageSource: ERROR
     
 api:
-  backend:
-    url: http://localhost:8000    
+#  backend:
+#    url: http://localhost:8000    
   retry:
     max-attempts: 3
     min-backoff: 200
