@@ -18,8 +18,8 @@ spring:
 # Spring Cloud for AWS Parameter Store & Integration Secreters Manager Integration
   config:
     import:
-      - 'aws-parameterstore:/config/common;/config/sample-batch'
-      - 'aws-secretsmanager:/secrets/database-secrets?prefix=spring.datasource.'
+      - 'aws-parameterstore:/config/common/;/config/sample-batch/'
+      - 'aws-secretsmanager:/secrets/database-secrets/?prefix=spring.datasource.'
 
 management:
   endpoints:
