@@ -38,6 +38,8 @@ public class DefaultJmsMessageManager implements JmsMessageManager {
                 // メッセージを削除できなくても例外はスローしない。
                 // メッセージ再受信する可能性があるが、AsyncMessageListenerでハンドリングし対処
                 appLogger.warn(BatchFrameworkMessageIds.W_BT_FW_8006, messageId);
+            } finally {
+                jmsMessageStore.remove();
             }
         }
     }
