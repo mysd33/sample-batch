@@ -11,7 +11,6 @@ import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.repeat.RepeatStatus;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,7 +30,8 @@ import lombok.extern.slf4j.Slf4j;
 public class Job002Config {
     private static ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
     private final Job002ItemProcessor job002ItemProcessor;
-    @Qualifier("todoListFileReader")
+    private final JobRepository jobRepository;
+    private final PlatformTransactionManager transactionManager;
     private final FlatFileItemReader<TodoRecord> todoListFileReader;
 
     @Value("${job002.chunk-size:5}")
@@ -41,12 +41,11 @@ public class Job002Config {
      * Job
      */
     @Bean
-    Job job002(JobExecutionListener listener, JobRepository jobRepository,
-            PlatformTransactionManager transactionManager) {
+    Job job002(JobExecutionListener listener) {
         return new JobBuilder("job002", jobRepository)//
                 .listener(listener)//
-                .start(step00201(jobRepository, transactionManager))//
-                .next(step00202(jobRepository, transactionManager))//
+                .start(step00201())//
+                .next(step00202())//
                 .build();
     }
 
@@ -54,8 +53,7 @@ public class Job002Config {
      * Step1 パラメータから入出力ファイルパスを取得する前処理
      */
     @Bean
-    Step step00201(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-
+    Step step00201() {
         return new StepBuilder("step002_01", jobRepository)//
                 .tasklet((contribution, chunkContext) -> {
                     StepExecution stepExecution = chunkContext.getStepContext().getStepExecution();
@@ -72,8 +70,7 @@ public class Job002Config {
      * Step2 本処理
      */
     @Bean
-    Step step00202(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-
+    Step step00202() {
         return new StepBuilder("step002_02", jobRepository)//
                 .<TodoRecord, TodoRecord>chunk(chunkSize, transactionManager)//
                 .reader(todoListFileReader)//

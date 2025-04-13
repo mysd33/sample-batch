@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import org.apache.commons.io.FileUtils;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ExecutionContext;
@@ -30,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
  * Taskletのサンプル実装。 TodoListのCSVファイルを読み込み、一括でBackendアプリケーションへTodoの登録依頼を実施する。
  *
  */
+@StepScope
 @Component
 @RequiredArgsConstructor
 @Slf4j

@@ -19,16 +19,16 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class Job003Config {
     private final Job003Tasklet job003Tasklet;
-
+    private final JobRepository jobRepository;
+    private final PlatformTransactionManager transactionManager;
     /**
      * Job
      */
     @Bean
-    Job job003(JobExecutionListener listener, JobRepository jobRepository,
-            PlatformTransactionManager transactionManager) {
+    Job job003(JobExecutionListener listener) {
         return new JobBuilder("job003", jobRepository)//
                 .listener(listener)//
-                .start(step00301(jobRepository, transactionManager))//
+                .start(step00301())//
                 .build();
     }
 
@@ -36,7 +36,7 @@ public class Job003Config {
      * Step
      */
     @Bean
-    Step step00301(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+    Step step00301() {
         return new StepBuilder("step003_01", jobRepository)//
                 .tasklet(job003Tasklet, transactionManager)//
                 .build();

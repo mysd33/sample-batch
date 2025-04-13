@@ -1,7 +1,9 @@
 package com.example.batch.job.job002;
 
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
+
 import com.example.batch.domain.model.Todo;
 import com.example.batch.domain.record.TodoRecord;
 import com.example.batch.domain.repository.TodoRepository;
@@ -11,6 +13,8 @@ import com.example.fw.common.logging.LoggerFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+
+@StepScope
 @Component
 @Slf4j
 @RequiredArgsConstructor
