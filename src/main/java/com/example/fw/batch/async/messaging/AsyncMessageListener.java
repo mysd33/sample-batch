@@ -65,7 +65,7 @@ public class AsyncMessageListener {
                 // SpringBatchで前回ジョブ実行IDを用いてジョブ再実行
                 appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0005, messageId, preExecutionId);
                 jobExecutionId = jobOperator.restart(preExecutionId);
-                appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0006, messageId, preExecutionId, jobExecutionId);                
+                appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0006, messageId, preExecutionId, jobExecutionId);
             } catch (NoSuchJobExecutionException e) {
                 appLogger.warn(BatchFrameworkMessageIds.W_BT_FW_8003, e, messageId, preExecutionId);
                 acknowledgeExplicitlyOnExceptionIfAckOnJobStart();
@@ -85,12 +85,12 @@ public class AsyncMessageListener {
             return;
         }
         // ジョブ初回実行の場合
-        String jobId = request.getJobId();        
+        String jobId = request.getJobId();
         try {
             appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0001, messageId, jobId, request.toParameterString());
             // SpringBatchでジョブ実行
             jobExecutionId = jobOperator.start(jobId, request.toParameterProperties());
-            appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0002, messageId, jobId, jobExecutionId);            
+            appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0002, messageId, jobId, jobExecutionId);
         } catch (JobInstanceAlreadyExistsException e) {
             appLogger.warn(BatchFrameworkMessageIds.W_BT_FW_8001, e, messageId, jobId, request.toParameterString());
             acknowledgeExplicitlyOnExceptionIfAckOnJobStart();
@@ -102,12 +102,12 @@ public class AsyncMessageListener {
             acknowledgeExplicitlyOnExceptionIfAckOnJobStart();
         }
     }
-    
+
     private void acknowledgeExplicitlyOnExceptionIfAckOnJobStart() {
         // ackOnJobStart=trueの場合、
         // DefaultJobExecutionListenerで明示的にメッセージをacknowledgeするため、
         // SQSServerConfigクラスにて無駄にacknowledgeさせない実装例としている
-        // エラー時のacknowledge漏れがないよう、acknowledge実行している        
+        // エラー時のacknowledge漏れがないよう、acknowledge実行している
         if (sqsServerConfigurationProperties.isAckOnJobStart()) {
             jmsMessageManager.acknowledge();
         }

@@ -30,7 +30,7 @@ public class DefaultJobExecutionListener implements JobExecutionListener {
     @Override
     public void beforeJob(JobExecution jobExecution) {
         appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0003, jobExecution.getJobInstance().getJobName(),
-                jobExecution.getId());
+                jobExecution.getJobId(), jobExecution.getId());
         // ジョブ開始後即時にキューメッセージをACK（削除）するかどうか
         // 長時間バッチではSQSの可視性タイムアウトを短くするためtrueにするとよい
         if (sqsServerConfigurationProperties.isAckOnJobStart()) {
@@ -46,7 +46,7 @@ public class DefaultJobExecutionListener implements JobExecutionListener {
         if (startTime != null && endTime != null) {
             double elapsedTime = SystemDateUtils.calcElapsedTimeByMilliSeconds(startTime, endTime);
             appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0004, elapsedTime, startTime,
-                    jobExecution.getJobInstance().getJobName(), jobExecution.getId(),
+                    jobExecution.getJobInstance().getJobName(), jobExecution.getJobId(), jobExecution.getId(),
                     jobExecution.getExitStatus().getExitCode());
         }
         // 例外発生時に集約例外ハンドリング
