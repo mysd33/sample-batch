@@ -16,6 +16,9 @@ spring:
   threads:
     virtual:
       enabled: true
+# Transaction Rollback
+  transaction:
+    rollback-on-commit-failure: true			
 # HikariCP AutoCommit false
   datasource:
     hikari:
