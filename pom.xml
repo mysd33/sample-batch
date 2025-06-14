@@ -20,6 +20,7 @@
         <spring-cloud-aws.version>3.3.0</spring-cloud-aws.version>        
         <awssdk.bom.version>2.29.19</awssdk.bom.version>
         <amazon-sqs-java-messaging-lib.version>2.1.3</amazon-sqs-java-messaging-lib.version>
+        <terasoluna.version>5.9.0.RELEASE</terasoluna.version>
         <elasticmq.version>1.6.9</elasticmq.version>
         <commons-io.version>2.18.0</commons-io.version>
     </properties>
@@ -70,6 +71,22 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
+		<!-- TERASOLUNA CodePoint -->
+		<dependency>
+			<groupId>org.terasoluna.gfw.codepoints</groupId>
+			<artifactId>terasoluna-gfw-codepoints-jisx0201</artifactId>
+			<version>${terasoluna.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.terasoluna.gfw.codepoints</groupId>
+			<artifactId>terasoluna-gfw-codepoints-jisx0208</artifactId>
+			<version>${terasoluna.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.terasoluna.gfw.codepoints</groupId>
+			<artifactId>terasoluna-gfw-codepoints-jisx0213kanji</artifactId>
+			<version>${terasoluna.version}</version>
+		</dependency>        
         <!-- JAXB -->
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
