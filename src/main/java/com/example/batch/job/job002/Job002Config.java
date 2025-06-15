@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.example.batch.domain.record.TodoRecord;
+import com.example.batch.job.common.record.TodoRecord;
 import com.example.fw.batch.writer.NoOpItemWriter;
 import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;
@@ -33,6 +33,9 @@ public class Job002Config {
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
     private final FlatFileItemReader<TodoRecord> todoListFileReader;
+
+    @Value("${input.file.name:files/input/todolist.csv}")
+    private String defaultInputFileName;
 
     @Value("${job002.chunk-size:5}")
     private int chunkSize;
@@ -59,9 +62,11 @@ public class Job002Config {
                     StepExecution stepExecution = chunkContext.getStepContext().getStepExecution();
                     String param01 = stepExecution.getJobParameters().getString("param01");
                     String param02 = stepExecution.getJobParameters().getString("param02");
-                    appLogger.debug("param01:{}, param02:{}", param01, param02);
+                    String inputFileName = stepExecution.getJobParameters().getString("input-file-name",
+                            defaultInputFileName);
+                    appLogger.debug("param01:{}, param02:{}, inputFileName:{}", param01, param02, inputFileName);
                     ExecutionContext jobExecutionContext = stepExecution.getJobExecution().getExecutionContext();
-                    jobExecutionContext.put("input.file.name", "files/input/todolist.csv");
+                    jobExecutionContext.put("input.file.name", inputFileName);
                     return RepeatStatus.FINISHED;
                 }, transactionManager).build();
     }

@@ -2,17 +2,18 @@ package com.example.batch.job.job002;
 
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.validator.ValidationException;
+import org.springframework.batch.item.validator.Validator;
 import org.springframework.stereotype.Component;
 
-import com.example.batch.domain.model.Todo;
-import com.example.batch.domain.record.TodoRecord;
-import com.example.batch.domain.repository.TodoRepository;
+import com.example.batch.domain.message.MessageIds;
+import com.example.batch.domain.sharedservice.TodoSharedService;
+import com.example.batch.job.common.record.TodoRecord;
 import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 
 @StepScope
 @Component
@@ -20,13 +21,23 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class Job002ItemProcessor implements ItemProcessor<TodoRecord, TodoRecord> {
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
-    private final TodoRepository todoRepository;
+    private final Validator<TodoRecord> validator;
+    private final TodoSharedService todoSharedService;
 
     @Override
     public TodoRecord process(TodoRecord item) throws Exception {
         appLogger.debug("Job002ItemProcessor実行:{}", item.getTodoTitle());
-        Todo todo = Todo.builder().todoTitle(item.getTodoTitle()).build();
-        todoRepository.create(todo);
+        // 入力チェック
+        // 入力チェック
+        try {
+            validator.validate(item);
+        } catch (ValidationException e) {
+            // 入力チェックエラーの場合は、レコードの何行目でエラーが発生したかをログを出しリスロー
+            appLogger.warn(MessageIds.W_EX_5001, e, "todoファイル", item.getCount());
+            throw e;
+        }
+        // ビジネスロジックの実行
+        todoSharedService.registerTodo(item.getTodoTitle());
         return item;
     }
 

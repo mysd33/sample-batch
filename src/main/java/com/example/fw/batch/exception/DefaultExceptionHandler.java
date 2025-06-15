@@ -2,7 +2,7 @@ package com.example.fw.batch.exception;
 
 import java.util.List;
 
-import jakarta.validation.ValidationException;
+import org.springframework.batch.item.validator.ValidationException;
 
 import org.springframework.batch.core.JobExecution;
 import org.springframework.validation.BindException;
@@ -21,6 +21,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DefaultExceptionHandler implements ExceptionHandler {
     private static final MonitoringLogger monitoringLogger = LoggerFactory.getMonitoringLogger(log);
+    
+    @Setter
+    private String defaultValdationExceptionMessageId;
 
     @Setter
     private String defaultExceptionMessageId;
@@ -39,7 +42,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
                 monitoringLogger.error(error.getCode(), error, (Object[]) error.getArgs());
             } else if (ex instanceof ValidationException) {
                 BindException error = (BindException) ex.getCause();
-                monitoringLogger.error(defaultExceptionMessageId, error, error.getFieldError());
+                monitoringLogger.error(defaultValdationExceptionMessageId, error);
             } else {
                 monitoringLogger.error(defaultExceptionMessageId, ex);
             }

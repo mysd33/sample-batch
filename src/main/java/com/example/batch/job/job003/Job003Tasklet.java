@@ -11,13 +11,14 @@ import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.file.FlatFileItemReader;
+import org.springframework.batch.item.validator.ValidationException;
+import org.springframework.batch.item.validator.Validator;
 import org.springframework.batch.repeat.RepeatStatus;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import com.example.batch.domain.model.Todo;
-import com.example.batch.domain.record.TodoRecord;
-import com.example.batch.domain.repository.TodoRepository;
+import com.example.batch.domain.message.MessageIds;
+import com.example.batch.domain.sharedservice.TodoSharedService;
+import com.example.batch.job.common.record.TodoRecord;
 import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;
 import com.example.fw.common.objectstorage.DownloadObject;
@@ -37,11 +38,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Job003Tasklet implements Tasklet {
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
-    private static final String TEMPDIR_RELATIVE_PATH = "files/input/";
-
-    @Qualifier("todoListFileReader")
+    private static final String TEMPDIR_RELATIVE_PATH = "files/input/";    
     private final FlatFileItemReader<TodoRecord> todoListFileReader;
-    private final TodoRepository todoRepository;
+    private final Validator<TodoRecord> validator;
+    private final TodoSharedService todoSharedService;
     private final ObjectStorageFileAccessor objectStorageFileAccessor;
 
     @Override
@@ -68,8 +68,16 @@ public class Job003Tasklet implements Tasklet {
             todoListFileReader.open(executionContext);
             while ((item = todoListFileReader.read()) != null) {
                 log.debug(item.toString());
-                Todo todo = Todo.builder().todoTitle(item.getTodoTitle()).build();
-                todoRepository.create(todo);
+                // 入力チェック
+                try {
+                    validator.validate(item);
+                } catch (ValidationException e) {
+                    // 入力チェックエラーの場合は、レコードの何行目でエラーが発生したかをログを出しリスロー
+                    appLogger.warn(MessageIds.W_EX_5001, e, tempFilePath.toString(), item.getCount());
+                    throw e;
+                }  
+                // ビジネスロジックの実行
+                todoSharedService.registerTodo(item.getTodoTitle());
             }
 
         } finally {
