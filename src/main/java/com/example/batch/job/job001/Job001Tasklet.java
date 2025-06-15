@@ -34,7 +34,11 @@ import lombok.extern.slf4j.Slf4j;
 public class Job001Tasklet implements Tasklet {
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
     private final FlatFileItemReader<TodoRecord> todoListFileReader;
-    private final Validator<TodoRecord> validator;
+    // 単項目チェック用のValidator
+    private final Validator<TodoRecord> validator;   
+    // 相関項目チェック用のValidator
+    private final Validator<TodoRecord> todoRecordSpringValidator;
+    
     private final TodoSharedService todoSharedService;
 
     @Value("${input.file.name:files/input/todolist.csv}")
@@ -61,7 +65,10 @@ public class Job001Tasklet implements Tasklet {
                 log.debug(item.toString());
                 // 入力チェック
                 try {
+                    // 単項目チェック
                     validator.validate(item);
+                    // 相関項目チェック
+                    todoRecordSpringValidator.validate(item);
                 } catch (ValidationException e) {
                     // 入力チェックエラーの場合は、レコードの何行目でエラーが発生したかをログを出しリスロー
                     appLogger.warn(MessageIds.W_EX_5001, e, inputFileName, item.getCount());

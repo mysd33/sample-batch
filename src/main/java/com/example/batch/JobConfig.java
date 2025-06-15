@@ -5,6 +5,7 @@ import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.validator.SpringValidator;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -31,11 +32,12 @@ public class JobConfig {
      * 集約例外ハンドリングクラス
      */
     @Bean
-    ExceptionHandler defaultExceptionHandler() {
-        DefaultExceptionHandler defaultExceptionHandler = new DefaultExceptionHandler();
-        // バリデーションエラーのメッセージIDを設定
-        defaultExceptionHandler.setDefaultValdationExceptionMessageId(MessageIds.E_EX_9002);
-        defaultExceptionHandler.setDefaultExceptionMessageId(MessageIds.E_EX_9001);
+    ExceptionHandler defaultExceptionHandler(MessageSource messageSource) {
+        DefaultExceptionHandler defaultExceptionHandler = new DefaultExceptionHandler(messageSource,
+                // バリデーションエラーのメッセージIDを設定
+                MessageIds.E_EX_9002,
+                // 予期せぬエラーのメッセージIDを設定
+                MessageIds.E_EX_9001);
         return defaultExceptionHandler;
     }
 
@@ -54,7 +56,7 @@ public class JobConfig {
     }
 
     /**
-     * バッチの入力チェック機能のValidatorクラス
+     * バッチの単項目入力チェック機能のSpring Batch用のValidatorクラス
      * 
      * @param beanValidator Bean ValidationのValidatorクラス
      */
@@ -66,7 +68,7 @@ public class JobConfig {
     }
 
     /**
-     * バッチの入力チェック機能のBeanValidatorクラス
+     * バッチの単項目入力チェック機能のBeanValidatorクラス
      */
     @Bean
     Validator beanValidator() {
@@ -74,6 +76,18 @@ public class JobConfig {
             localValidatorFactoryBean.afterPropertiesSet();
             return localValidatorFactoryBean;
         }
+    }
+
+    /**
+     * バッチのTodo用の相関項目入力チェック機能のSpring Batch用のValidatorクラス
+     * 
+     * @param todoRecordCustomValidator TodoRecord用の相関項目入力チェック機能のValidatorクラス
+     */
+    @Bean
+    SpringValidator<?> todoRecordSpringValidator(Validator todoRecordCustomValidator) {
+        SpringValidator<?> springValidator = new SpringValidator<>();
+        springValidator.setValidator(todoRecordCustomValidator);
+        return springValidator;
     }
 
 }

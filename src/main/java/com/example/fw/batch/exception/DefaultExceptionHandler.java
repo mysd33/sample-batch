@@ -1,17 +1,20 @@
 package com.example.fw.batch.exception;
 
 import java.util.List;
-
-import org.springframework.batch.item.validator.ValidationException;
+import java.util.Locale;
 
 import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.item.validator.ValidationException;
+import org.springframework.context.MessageSource;
 import org.springframework.validation.BindException;
+import org.springframework.validation.FieldError;
 
 import com.example.fw.common.exception.BusinessException;
 import com.example.fw.common.exception.SystemException;
 import com.example.fw.common.logging.LoggerFactory;
 import com.example.fw.common.logging.MonitoringLogger;
-import lombok.Setter;
+
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -19,14 +22,12 @@ import lombok.extern.slf4j.Slf4j;
  *
  */
 @Slf4j
+@RequiredArgsConstructor
 public class DefaultExceptionHandler implements ExceptionHandler {
     private static final MonitoringLogger monitoringLogger = LoggerFactory.getMonitoringLogger(log);
-    
-    @Setter
-    private String defaultValdationExceptionMessageId;
-
-    @Setter
-    private String defaultExceptionMessageId;
+    private final MessageSource messageSource;
+    private final String defaultValdationExceptionMessageId;
+    private final String defaultExceptionMessageId;
 
     @Override
     public void handle(final JobExecution jobExecution) {
@@ -36,14 +37,31 @@ public class DefaultExceptionHandler implements ExceptionHandler {
             return;
         }
         for (Throwable ex : exceptions) {
-            if (ex instanceof SystemException error) {                
+            if (ex instanceof SystemException error) {
+                // システム例外でのシステムエラー
                 monitoringLogger.error(error.getCode(), error, (Object[]) error.getArgs());
-            } else if (ex instanceof BusinessException error) {                
+            } else if (ex instanceof BusinessException error) {
+                // バッチの場合にビジネス例外を使うことはないが、システムエラー扱い
                 monitoringLogger.error(error.getCode(), error, (Object[]) error.getArgs());
             } else if (ex instanceof ValidationException) {
+                // 入力エラーによるシステムエラー
                 BindException error = (BindException) ex.getCause();
-                monitoringLogger.error(defaultValdationExceptionMessageId, error);
+                FieldError fieldError = error.getFieldError();
+                String code = fieldError != null ? fieldError.getCode() : null;
+                if (code == null) {
+                    monitoringLogger.error(defaultValdationExceptionMessageId, error);
+                    continue;
+                }
+                // エラーコードがある場合は、入力エラーメッセージを取得
+                // なお、バッチの単項目チェックの場合、
+                // メッセージIDが(FQDN).messageのメッセージを自動取得できないことや
+                // {value}のような置換文字列が使えないので、メッセージ定義に注意が必要
+                String message = messageSource.getMessage(code, fieldError.getArguments(),
+                        fieldError.getDefaultMessage(), Locale.getDefault());
+
+                monitoringLogger.error(defaultValdationExceptionMessageId, error, message);
             } else {
+                // 予期せぬ例外によるシステムエラー
                 monitoringLogger.error(defaultExceptionMessageId, ex);
             }
         }
