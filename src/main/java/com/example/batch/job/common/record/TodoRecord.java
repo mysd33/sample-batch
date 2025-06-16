@@ -20,15 +20,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TodoRecord implements ItemCountAware {
     private int count;
-    
-	//タイトル
+
+    // タイトル
     @NotNull
     @RangeLength(min = 1, max = 30)
     @CharSet
-	private String todoTitle;
+    private String todoTitle;
 
     @Override
     public void setItemCount(int count) {
-        this.count = count;        
+        this.count = count;
     }
 }

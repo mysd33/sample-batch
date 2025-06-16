@@ -15,14 +15,14 @@ public class TodoRecordCustomValidator implements Validator {
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return TodoRecord.class.isAssignableFrom(clazz);        
+        return TodoRecord.class.isAssignableFrom(clazz);
     }
 
     @Override
     public void validate(Object target, Errors errors) {
         TodoRecord todoRecord = (TodoRecord) target;
 
-        // 本来は、ここに相関項目チェックのロジックを実装する 
+        // 本来は、ここに相関項目チェックのロジックを実装する
         // サンプルのCSVファイルがTodoタイトルしかないため
         // ここではdummyという文字列があると入力エラーとする
         if (todoRecord.getTodoTitle() != null && todoRecord.getTodoTitle().contains("dummy")) {

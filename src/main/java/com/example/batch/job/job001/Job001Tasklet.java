@@ -35,10 +35,10 @@ public class Job001Tasklet implements Tasklet {
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
     private final FlatFileItemReader<TodoRecord> todoListFileReader;
     // 単項目チェック用のValidator
-    private final Validator<TodoRecord> validator;   
+    private final Validator<TodoRecord> validator;
     // 相関項目チェック用のValidator
     private final Validator<TodoRecord> todoRecordSpringValidator;
-    
+
     private final TodoSharedService todoSharedService;
 
     @Value("${input.file.name:files/input/todolist.csv}")

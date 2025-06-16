@@ -21,16 +21,21 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class Job002ItemProcessor implements ItemProcessor<TodoRecord, TodoRecord> {
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
+    // 単項目チェック用のValidator
     private final Validator<TodoRecord> validator;
+    // 相関項目チェック用のValidator
+    private final Validator<TodoRecord> todoRecordSpringValidator;
     private final TodoSharedService todoSharedService;
 
     @Override
     public TodoRecord process(TodoRecord item) throws Exception {
         appLogger.debug("Job002ItemProcessor実行:{}", item.getTodoTitle());
         // 入力チェック
-        // 入力チェック
         try {
+            // 単項目チェック
             validator.validate(item);
+            // 相関項目チェック
+            todoRecordSpringValidator.validate(item);
         } catch (ValidationException e) {
             // 入力チェックエラーの場合は、レコードの何行目でエラーが発生したかをログを出しリスロー
             appLogger.warn(MessageIds.W_EX_5001, e, "todoファイル", item.getCount());
