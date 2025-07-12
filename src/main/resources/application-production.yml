@@ -26,6 +26,26 @@ management:
     web:
       discovery:
         enabled: false
+      exposure:
+        include:
+          - health
+          - metrics
+# Metrics enabled        
+  metrics:
+    enable:
+      all: false
+      system: true
+      process: true
+      disk: true
+      jvm: true
+      hikaricp: true
+      mybatis: true
+
+# Spring Cloud for AWS Micrometer CloudWatch Integration Enabled        
+  cloudwatch:
+    metrics:
+      export:
+        enabled: true
         
 resilience4j:
   timelimiter:
