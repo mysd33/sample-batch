@@ -26,7 +26,7 @@ public class TodoRecordCustomValidator implements Validator {
         // サンプルのCSVファイルがTodoタイトルしかないため
         // ここではdummyという文字列があると入力エラーとする
         if (todoRecord.getTodoTitle() != null && todoRecord.getTodoTitle().contains("dummy")) {
-            errors.rejectValue("todoTitle", MessageIds.W_EX_5002);
+            errors.rejectValue("todoTitle", MessageIds.W_EX_3001);
         }
     }
 
