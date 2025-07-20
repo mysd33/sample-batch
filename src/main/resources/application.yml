@@ -11,7 +11,9 @@ spring:
     job:
       enabled: false
     jdbc:
-      isolation-level-for-create: READ_COMMITTED   
+      isolation-level-for-create: READ_COMMITTED
+  jackson:
+    property-naming-strategy: SNAKE_CASE
 # Virtual Thread                  
   threads:
     virtual:
