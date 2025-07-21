@@ -5,3 +5,5 @@ spring:
     job:
       enabled: true
     type: standard
+  main:
+      web-application-type: none    

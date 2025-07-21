@@ -111,6 +111,33 @@
             * job001は、タスクレットモデルで実装している。
             * job002は、チャンクモデルでjob001と同じ処理を実装している。
 
+
+## コマンド実行
+- SQSのメッセージ送信によるディレード処理方式をベースとした純バッチ実行だけでなく、Spring BootのバッチAP実行が可能である。
+
+1. SampleBatchApplication.javaの「@SpringBootApplication」をコメントアウトして無効化
+
+1. SampleBatchApplicationForStandardBatch.javaの「@SpringBootApplication」をコメントインして有効化
+
+1. 以下のオプションで実行
+
+    * プログラム引数
+
+    ```
+    param01=aaa param02=bbb input-file-name=files/input/todolist.csv
+    ```
+
+    * VMオプション
+        * プログラム引数にする場合は、「-D」を「--」に変える
+
+    ```
+    -Dspring.profiles.active=dev,log_default,standardbatch -Dspring.batch.job.name=job001
+    ```
+
+
+
+
+
 ## PostgreSQLのローカル起動
 * Profileが「dev」でSpringBootアプリケーションを実行する場合、H2DBが起動するので、何もしなくてよい。
 * Profileが「production」に切り替えてSpringBootアプリケーションを実行する場合、DBがPostgreSQLで動作する設定になっているため、事前にPostgreSQLを起動する必要がある。
