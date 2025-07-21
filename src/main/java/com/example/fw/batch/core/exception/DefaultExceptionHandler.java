@@ -1,4 +1,4 @@
-package com.example.fw.batch.exception;
+package com.example.fw.batch.core.exception;
 
 import java.util.List;
 import java.util.Locale;

@@ -2,6 +2,7 @@ package com.example.fw.batch.async.config;
 
 import org.elasticmq.rest.sqs.SQSRestServer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +17,7 @@ import software.amazon.awssdk.services.sqs.SqsClient;
  * SQS Local起動の設定クラス(開発時のみ)
  */
 @Profile("dev")
+@ConditionalOnProperty(prefix = "spring.batch" , name = "type", havingValue = "async", matchIfMissing = true)
 @Configuration
 @EnableConfigurationProperties({SQSCommonConfigurationProperties.class, SQSServerConfigurationProperties.class})
 public class SQSServerLocalConfig {

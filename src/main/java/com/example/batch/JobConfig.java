@@ -16,8 +16,8 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import com.example.batch.domain.message.MessageIds;
 import com.example.batch.job.common.record.TodoRecord;
 import com.example.fw.batch.core.config.SpringBatchConfigPackage;
-import com.example.fw.batch.exception.DefaultExceptionHandler;
-import com.example.fw.batch.exception.ExceptionHandler;
+import com.example.fw.batch.core.exception.DefaultExceptionHandler;
+import com.example.fw.batch.core.exception.ExceptionHandler;
 
 /**
  * 

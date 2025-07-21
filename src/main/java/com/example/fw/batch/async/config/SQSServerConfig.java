@@ -6,6 +6,7 @@ import jakarta.jms.Message;
 import jakarta.jms.Session;
 
 import org.springframework.batch.core.launch.JobOperator;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,13 +16,17 @@ import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
 import com.example.fw.batch.async.messaging.AsyncMessageListener;
+import com.example.fw.batch.store.DefaultJmsMessageManager;
 import com.example.fw.batch.store.JmsMessageManager;
+import com.example.fw.batch.store.JmsMessageStore;
+import com.example.fw.batch.store.ThreadLocalJmsMessageStore;
 import com.example.fw.common.async.config.SQSCommonConfigurationProperties;
 
 /**
  * SQSのサーバ側設定クラス
  */
 @Configuration
+@ConditionalOnProperty(prefix = "spring.batch" , name = "type", havingValue = "async", matchIfMissing = true)
 @EnableConfigurationProperties({ SQSCommonConfigurationProperties.class, SQSServerConfigurationProperties.class })
 public class SQSServerConfig {    
 
@@ -69,6 +74,22 @@ public class SQSServerConfig {
     AsyncMessageListener asyncMessageListener(JobOperator jobOperator, JmsMessageManager jmsMessageManager,
             SQSServerConfigurationProperties sqsServerConfigurationProperties) {
         return new AsyncMessageListener(jobOperator, jmsMessageManager, sqsServerConfigurationProperties);
+    }
+    
+    /**
+     * JMSのメッセージストアクラス
+     */
+    @Bean
+    JmsMessageStore jmsMessageStore() {
+        return new ThreadLocalJmsMessageStore();
+    }
+
+    /**
+     * JMSのメッセージ管理クラス
+     */
+    @Bean
+    JmsMessageManager jmsMessageManager(JmsMessageStore jmsMessageStore) {
+        return new DefaultJmsMessageManager(jmsMessageStore);
     }
     
 }

@@ -1,0 +1,7 @@
+# 純バッチ用設定ファイル
+# Spring Batch
+spring: 
+  batch:
+    job:
+      enabled: true
+    type: standard

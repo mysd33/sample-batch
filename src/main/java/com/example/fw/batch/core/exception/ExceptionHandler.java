@@ -1,4 +1,4 @@
-package com.example.fw.batch.exception;
+package com.example.fw.batch.core.exception;
 
 import org.springframework.batch.core.JobExecution;
 

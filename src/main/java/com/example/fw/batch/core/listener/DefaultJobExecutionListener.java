@@ -1,4 +1,4 @@
-package com.example.fw.batch.listener;
+package com.example.fw.batch.core.listener;
 
 import java.time.LocalDateTime;
 
@@ -6,7 +6,7 @@ import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
 
 import com.example.fw.batch.async.config.SQSServerConfigurationProperties;
-import com.example.fw.batch.exception.ExceptionHandler;
+import com.example.fw.batch.core.exception.ExceptionHandler;
 import com.example.fw.batch.message.BatchFrameworkMessageIds;
 import com.example.fw.batch.store.JmsMessageManager;
 import com.example.fw.common.logging.ApplicationLogger;
@@ -23,8 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class DefaultJobExecutionListener implements JobExecutionListener {
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
-    private final JmsMessageManager jmsMessageManager;
     private final ExceptionHandler defaultExceptionHandler;
+    private final JmsMessageManager jmsMessageManager;
     private final SQSServerConfigurationProperties sqsServerConfigurationProperties;
 
     @Override
@@ -33,7 +33,8 @@ public class DefaultJobExecutionListener implements JobExecutionListener {
                 jobExecution.getJobId(), jobExecution.getId());
         // ジョブ開始後即時にキューメッセージをACK（削除）するかどうか
         // 長時間バッチではSQSの可視性タイムアウトを短くするためtrueにするとよい
-        if (sqsServerConfigurationProperties.isAckOnJobStart()) {
+        if (jmsMessageManager != null && //
+                sqsServerConfigurationProperties != null && sqsServerConfigurationProperties.isAckOnJobStart()) {
             // ACKしキューからメッセージを削除
             jmsMessageManager.acknowledge();
         }
