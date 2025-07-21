@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.example.batch.job.common.record.TodoRecord;
-import com.example.fw.batch.writer.NoOpItemWriter;
+import com.example.fw.batch.core.writer.NoOpItemWriter;
 import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;
 

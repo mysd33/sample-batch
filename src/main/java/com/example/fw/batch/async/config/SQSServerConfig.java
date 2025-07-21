@@ -16,10 +16,10 @@ import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
 import com.example.fw.batch.async.messaging.AsyncMessageListener;
-import com.example.fw.batch.store.DefaultJmsMessageManager;
-import com.example.fw.batch.store.JmsMessageManager;
-import com.example.fw.batch.store.JmsMessageStore;
-import com.example.fw.batch.store.ThreadLocalJmsMessageStore;
+import com.example.fw.batch.async.store.DefaultJmsMessageManager;
+import com.example.fw.batch.async.store.JmsMessageManager;
+import com.example.fw.batch.async.store.JmsMessageStore;
+import com.example.fw.batch.async.store.ThreadLocalJmsMessageStore;
 import com.example.fw.common.async.config.SQSCommonConfigurationProperties;
 
 /**

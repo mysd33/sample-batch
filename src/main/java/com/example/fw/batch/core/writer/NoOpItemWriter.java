@@ -1,4 +1,4 @@
-package com.example.fw.batch.writer;
+package com.example.fw.batch.core.writer;
 
 import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;

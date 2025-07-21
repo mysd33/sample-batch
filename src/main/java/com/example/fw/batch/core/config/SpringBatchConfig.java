@@ -6,9 +6,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.example.fw.batch.async.config.SQSServerConfigurationProperties;
+import com.example.fw.batch.async.store.JmsMessageManager;
 import com.example.fw.batch.core.exception.ExceptionHandler;
 import com.example.fw.batch.core.listener.DefaultJobExecutionListener;
-import com.example.fw.batch.store.JmsMessageManager;
 
 /**
  * 

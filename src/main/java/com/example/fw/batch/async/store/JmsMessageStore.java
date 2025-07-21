@@ -1,4 +1,4 @@
-package com.example.fw.batch.store;
+package com.example.fw.batch.async.store;
 
 import jakarta.jms.Message;
 
