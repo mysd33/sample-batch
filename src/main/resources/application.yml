@@ -28,7 +28,7 @@ spring:
 # Spring Cloud for AWS Parameter Store Integration & Secrets Manager Integration
   config:
     import: 
-      - optional:aws-parameterstore:/config/common/;/config/sample-backend/
+      - optional:aws-parameterstore:/config/common/;/config/sample-batch/
       - optional:aws-secretsmanager:/secrets/database-secrets?prefix=spring.datasource.
 
 # Spring Cloud for AWS Micrometer CloudWatch Integration Common Configuration

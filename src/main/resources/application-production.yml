@@ -4,10 +4,10 @@ spring:
       platform: postgresql
       mode: always      
   datasource:    
-#    url: jdbc:postgresql://localhost:5432/testdb
+    url: jdbc:postgresql://localhost:5432/testdb
     driver-class-name: org.postgresql.Driver
-#    username: postgres
-#    password: password
+    username: postgres
+    password: password
     # PostgreSQLはデフォルトautocommit=trueなので、カーソルがオンメモリ処理にならないようautocommit=false
     hikari:
       auto-commit: false
@@ -51,11 +51,11 @@ aws:
   sqs:    
     number-of-messages-to-prefetch: 0
     listener:
-#      queue-name: SampleQueue      
+      queue-name: SampleQueue
       concurrency: 5
-#  s3:
-#    bucket: mysd33bucket123
-#    region: ap-northeast-1
+  s3:
+    bucket: mysd33bucket123
+    region: ap-northeast-1
 
 logging:
   level:
@@ -65,8 +65,8 @@ logging:
     org.springframework.context.support.ResourceBundleMessageSource: ERROR
     
 api:
-#  backend:
-#    url: http://localhost:8000    
+  backend:
+    url: http://localhost:8000    
   retry:
     max-attempts: 3
     min-backoff: 200
