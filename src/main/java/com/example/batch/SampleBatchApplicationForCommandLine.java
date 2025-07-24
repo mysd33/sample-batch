@@ -7,8 +7,8 @@ import org.springframework.boot.SpringApplication;
  * 参考: https://spring.io/guides/gs/batch-processing
  */
 //@SpringBootApplication
-public class SampleBatchApplicationForStandardBatch {
+public class SampleBatchApplicationForCommandLine {
     public static void main(String[] args) {
-        System.exit(SpringApplication.exit(SpringApplication.run(SampleBatchApplicationForStandardBatch.class, args)));
+        System.exit(SpringApplication.exit(SpringApplication.run(SampleBatchApplicationForCommandLine.class, args)));
     }
 }

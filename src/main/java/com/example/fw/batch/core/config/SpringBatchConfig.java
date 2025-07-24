@@ -6,7 +6,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.example.fw.batch.async.config.SQSServerConfigurationProperties;
+import com.example.fw.batch.async.store.DefaultJmsMessageManager;
 import com.example.fw.batch.async.store.JmsMessageManager;
+import com.example.fw.batch.async.store.JmsMessageStore;
+import com.example.fw.batch.async.store.ThreadLocalJmsMessageStore;
 import com.example.fw.batch.core.exception.ExceptionHandler;
 import com.example.fw.batch.core.listener.DefaultJobExecutionListener;
 
@@ -17,25 +20,54 @@ import com.example.fw.batch.core.listener.DefaultJobExecutionListener;
  */
 @Configuration
 public class SpringBatchConfig {
+
     /**
-     * ジョブの実行に関わる例外ハンドリング、ログ出力機能の設定（ディレードでの非同期実行）
+     * キューを介した非同期処理依頼メッセージによるバッチ実行のSpring Batch設定
      */
-    @Bean
+    @Configuration
     @ConditionalOnProperty(prefix = "spring.batch", name = "type", havingValue = "async", matchIfMissing = true)
-    JobExecutionListener defaultJobExecutionListenerForAsync(JmsMessageManager jmsMessageManager,
-            ExceptionHandler defaultExceptionHandler,
-            SQSServerConfigurationProperties sqsServerConfigurationProperties) {
-        return new DefaultJobExecutionListener(defaultExceptionHandler, jmsMessageManager,
-                sqsServerConfigurationProperties);
+    static class AsyncSpringBatchConfig {
+        /**
+         * ジョブの実行に関わる例外ハンドリング、ログ出力機能の設定
+         */
+        @Bean
+        JobExecutionListener defaultJobExecutionListenerForAsync(JmsMessageManager jmsMessageManager,
+                ExceptionHandler defaultExceptionHandler,
+                SQSServerConfigurationProperties sqsServerConfigurationProperties) {
+            return new DefaultJobExecutionListener(defaultExceptionHandler, jmsMessageManager,
+                    sqsServerConfigurationProperties);
+        }
+
+        /**
+         * JMSのメッセージストアクラス
+         */
+        @Bean
+        JmsMessageStore jmsMessageStore() {
+            return new ThreadLocalJmsMessageStore();
+        }
+
+        /**
+         * JMSのメッセージ管理クラス
+         */
+        @Bean
+        JmsMessageManager jmsMessageManager(JmsMessageStore jmsMessageStore) {
+            return new DefaultJmsMessageManager(jmsMessageStore);
+        }
     }
 
     /**
-     * ジョブの実行に関わる例外ハンドリング、ログ出力機能の設定（純バッチ）
+     * コマンドライン実行のSpring Batch設定
      */
-    @Bean
-    @ConditionalOnProperty(prefix = "spring.batch", name = "type", havingValue = "standard")
-    JobExecutionListener defaultJobExecutionListenerForStandard(ExceptionHandler defaultExceptionHandler) {
-        return new DefaultJobExecutionListener(defaultExceptionHandler, null, null);
+    @Configuration
+    @ConditionalOnProperty(prefix = "spring.batch", name = "type", havingValue = "commandline")
+    static class CommandLineSpringBatchConfig {
+        /**
+         * ジョブの実行に関わる例外ハンドリング、ログ出力機能の設定
+         */
+        @Bean
+        JobExecutionListener defaultJobExecutionListenerForCommandLine(ExceptionHandler defaultExceptionHandler) {
+            return new DefaultJobExecutionListener(defaultExceptionHandler, null, null);
+        }
     }
 
 }

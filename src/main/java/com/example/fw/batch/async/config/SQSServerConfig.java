@@ -1,10 +1,5 @@
 package com.example.fw.batch.async.config;
 
-import jakarta.jms.ConnectionFactory;
-import jakarta.jms.JMSException;
-import jakarta.jms.Message;
-import jakarta.jms.Session;
-
 import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -16,19 +11,21 @@ import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
 import com.example.fw.batch.async.messaging.AsyncMessageListener;
-import com.example.fw.batch.async.store.DefaultJmsMessageManager;
 import com.example.fw.batch.async.store.JmsMessageManager;
-import com.example.fw.batch.async.store.JmsMessageStore;
-import com.example.fw.batch.async.store.ThreadLocalJmsMessageStore;
 import com.example.fw.common.async.config.SQSCommonConfigurationProperties;
+
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.Session;
 
 /**
  * SQSのサーバ側設定クラス
  */
 @Configuration
-@ConditionalOnProperty(prefix = "spring.batch" , name = "type", havingValue = "async", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.batch", name = "type", havingValue = "async", matchIfMissing = true)
 @EnableConfigurationProperties({ SQSCommonConfigurationProperties.class, SQSServerConfigurationProperties.class })
-public class SQSServerConfig {    
+public class SQSServerConfig {
 
     /**
      * JMSListenerContainerFactoryの定義
@@ -36,8 +33,8 @@ public class SQSServerConfig {
     @Bean
     DefaultJmsListenerContainerFactory jmsListenerContainerFactory(ConnectionFactory connectionFactory,
             MessageConverter jacksonJmsMessageConverter,
-            SQSServerConfigurationProperties sqsServerConfigurationProperties) {        
-        DefaultJmsListenerContainerFactory factory;        
+            SQSServerConfigurationProperties sqsServerConfigurationProperties) {
+        DefaultJmsListenerContainerFactory factory;
         if (sqsServerConfigurationProperties.isAckOnJobStart()) {
             factory = new DefaultJmsListenerContainerFactory() {
                 @Override
@@ -46,7 +43,7 @@ public class SQSServerConfig {
                         @Override
                         protected void commitIfNecessary(Session session, Message message) throws JMSException {
                             // ackOnJobStart=trueの時は、DefaultJobExecutionListenerで明示的にacknowledgeするため
-                            //　何もしない（ただし、エラー時など、acknowledge漏れに注意）
+                            // 何もしない（ただし、エラー時など、acknowledge漏れに注意）
                         }
                     };
                 }
@@ -75,21 +72,5 @@ public class SQSServerConfig {
             SQSServerConfigurationProperties sqsServerConfigurationProperties) {
         return new AsyncMessageListener(jobOperator, jmsMessageManager, sqsServerConfigurationProperties);
     }
-    
-    /**
-     * JMSのメッセージストアクラス
-     */
-    @Bean
-    JmsMessageStore jmsMessageStore() {
-        return new ThreadLocalJmsMessageStore();
-    }
 
-    /**
-     * JMSのメッセージ管理クラス
-     */
-    @Bean
-    JmsMessageManager jmsMessageManager(JmsMessageStore jmsMessageStore) {
-        return new DefaultJmsMessageManager(jmsMessageStore);
-    }
-    
 }

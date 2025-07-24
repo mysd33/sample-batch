@@ -4,6 +4,6 @@ spring:
   batch:
     job:
       enabled: true
-    type: standard
+    type: commandline
   main:
       web-application-type: none    

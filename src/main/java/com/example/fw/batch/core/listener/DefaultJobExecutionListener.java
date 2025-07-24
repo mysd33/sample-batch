@@ -31,7 +31,7 @@ public class DefaultJobExecutionListener implements JobExecutionListener {
     public void beforeJob(JobExecution jobExecution) {
         appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0003, jobExecution.getJobInstance().getJobName(),
                 jobExecution.getJobId(), jobExecution.getId());
-        // ジョブ開始後即時にキューメッセージをACK（削除）するかどうか
+        // isAckOnJobStartがtrueの場合、ジョブ開始後即時にキューメッセージをACK（削除）する
         // 長時間バッチではSQSの可視性タイムアウトを短くするためtrueにするとよい
         if (jmsMessageManager != null && //
                 sqsServerConfigurationProperties != null && sqsServerConfigurationProperties.isAckOnJobStart()) {
@@ -44,12 +44,14 @@ public class DefaultJobExecutionListener implements JobExecutionListener {
     public void afterJob(JobExecution jobExecution) {
         LocalDateTime startTime = jobExecution.getStartTime();
         LocalDateTime endTime = jobExecution.getEndTime();
+        double elapsedTime = 0D;
         if (startTime != null && endTime != null) {
-            double elapsedTime = SystemDateUtils.calcElapsedTimeByMilliSeconds(startTime, endTime);
-            appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0004, elapsedTime, startTime,
-                    jobExecution.getJobInstance().getJobName(), jobExecution.getJobId(), jobExecution.getId(),
-                    jobExecution.getExitStatus().getExitCode());
+            elapsedTime = SystemDateUtils.calcElapsedTimeByMilliSeconds(startTime, endTime);
         }
+        appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0004, elapsedTime, startTime,
+                jobExecution.getJobInstance().getJobName(), jobExecution.getJobId(), jobExecution.getId(),
+                jobExecution.getExitStatus().getExitCode());
+
         // 例外発生時に集約例外ハンドリング
         defaultExceptionHandler.handle(jobExecution);
     }

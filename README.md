@@ -131,7 +131,7 @@
         * プログラム引数にする場合は、「-D」を「--」に変える
 
     ```
-    -Dspring.profiles.active=dev,log_default,standardbatch -Dspring.batch.job.name=job001
+    -Dspring.profiles.active=dev,log_default,command -Dspring.batch.job.name=job001
     ```
 
 
