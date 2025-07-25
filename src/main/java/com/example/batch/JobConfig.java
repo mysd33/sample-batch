@@ -33,12 +33,11 @@ public class JobConfig {
      */
     @Bean
     ExceptionHandler defaultExceptionHandler(MessageSource messageSource) {
-        DefaultExceptionHandler defaultExceptionHandler = new DefaultExceptionHandler(messageSource,
+        return new DefaultExceptionHandler(messageSource,
                 // バリデーションエラーのメッセージIDを設定
                 MessageIds.E_EX_9002,
                 // 予期せぬエラーのメッセージIDを設定
                 MessageIds.E_EX_9001);
-        return defaultExceptionHandler;
     }
 
     /**

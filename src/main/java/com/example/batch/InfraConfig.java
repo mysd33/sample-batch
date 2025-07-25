@@ -3,10 +3,12 @@ package com.example.batch;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 import com.example.batch.infra.httpclient.WebClientResponseErrorHandler;
 import com.example.fw.batch.aspect.LogAspect;
 import com.example.fw.common.httpclient.config.WebClientConfigPackage;
+import com.example.fw.common.micrometer.config.MicrometerConfig;
 import com.example.fw.common.objectstorage.config.S3ConfigPackage;
 
 /**
@@ -16,6 +18,7 @@ import com.example.fw.common.objectstorage.config.S3ConfigPackage;
  */
 @Configuration
 @ComponentScan(basePackageClasses = { WebClientConfigPackage.class, S3ConfigPackage.class })
+@Import(MicrometerConfig.class)
 public class InfraConfig {
 
     /**
