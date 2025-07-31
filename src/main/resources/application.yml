@@ -25,6 +25,18 @@ spring:
   datasource:
     hikari:
       auto-commit: false
+# Spring Cloud for AWS Parameter Store Integration & Secrets Manager Integration
+# Default Disabled For Local Development
+  cloud:
+    aws:
+      parameterstore:
+        enabled: false
+      secretsmanager:
+        enabled: false
+  config:
+    import: 
+      - optional:aws-parameterstore:/config/common/;/config/${spring.application.name}/
+      - optional:aws-secretsmanager:/secrets/database-secrets?prefix=spring.datasource.
 
 # Spring Cloud for AWS Micrometer CloudWatch Integration Common Configuration
 # Default Disabled For Local Development
@@ -33,14 +45,23 @@ management:
     metrics:
       export:
         enabled: false
-        namespace: sample-batch
+        namespace: ${spring.application.name}
         step: 10s
-      
+# Spring Cloud Circuit Breaker TimeLimiter
+resilience4j:
+  timelimiter:
+    configs:
+      default:
+        timeoutDuration: 3s
+
+logging:
+  level:
+    org.springframework.context.support.ResourceBundleMessageSource: ERROR
+
+aws:
 # ジョブ開始後即時にキューメッセージをACK（削除）するかどうか
 # 長時間バッチではSQSの可視性タイムアウトを短くするためtrueにするとよい
-aws:
   sqs:
     listener:
-#      ack-on-job-start: true               
-      ack-on-job-start: false      
-     
+#      ack-on-job-start: true
+      ack-on-job-start: false

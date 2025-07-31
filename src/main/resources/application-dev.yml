@@ -27,11 +27,7 @@ management:
 #      export:
 #        enabled: true
         
-resilience4j:
-  timelimiter:
-    configs:
-      default:
-        timeoutDuration: 3s
+
 aws:
   sqs:    
     numberOfMessagesToPrefetch: 0      
@@ -60,8 +56,7 @@ logging:
   level:
     org.springframework: INFO
     org.springframework.jdbc: INFO
-    com.example: DEBUG   
-    org.springframework.context.support.ResourceBundleMessageSource: ERROR
+    com.example: DEBUG
     com.example.fw.batch.aspect.LogAspect: TRACE
 
 api:
