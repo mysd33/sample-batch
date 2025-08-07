@@ -19,7 +19,6 @@
         <spring-cloud.version>2025.0.0</spring-cloud.version>
         <spring-cloud-aws.version>3.4.0</spring-cloud-aws.version>
         <mybatis-spring-boot-starter.version>3.0.4</mybatis-spring-boot-starter.version>
-        <awssdk.bom.version>2.31.76</awssdk.bom.version>
         <amazon-sqs-java-messaging-lib.version>2.1.4</amazon-sqs-java-messaging-lib.version>
         <terasoluna.version>5.10.0.RELEASE</terasoluna.version>
         <elasticmq.version>1.6.12</elasticmq.version>
@@ -205,14 +204,6 @@
     </dependencies>
     <dependencyManagement>
         <dependencies>
-            <!-- AWS SDK -->
-            <dependency>
-                <groupId>software.amazon.awssdk</groupId>
-                <artifactId>bom</artifactId>
-                <version>${awssdk.bom.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
             <!-- Spring Cloud -->
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
