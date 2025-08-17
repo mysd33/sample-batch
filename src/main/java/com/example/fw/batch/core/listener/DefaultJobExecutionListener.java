@@ -29,7 +29,7 @@ public class DefaultJobExecutionListener implements JobExecutionListener {
 
     @Override
     public void beforeJob(JobExecution jobExecution) {
-        appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0003, jobExecution.getJobInstance().getJobName(),
+        appLogger.info(BatchFrameworkMessageIds.I_FW_BTCTRL_0001, jobExecution.getJobInstance().getJobName(),
                 jobExecution.getJobId(), jobExecution.getId());
         // isAckOnJobStartがtrueの場合、ジョブ開始後即時にキューメッセージをACK（削除）する
         // 長時間バッチではSQSの可視性タイムアウトを短くするためtrueにするとよい
@@ -48,7 +48,7 @@ public class DefaultJobExecutionListener implements JobExecutionListener {
         if (startTime != null && endTime != null) {
             elapsedTime = SystemDateUtils.calcElapsedTimeByMilliSeconds(startTime, endTime);
         }
-        appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0004, elapsedTime, startTime,
+        appLogger.info(BatchFrameworkMessageIds.I_FW_BTCTRL_0002, elapsedTime, startTime,
                 jobExecution.getJobInstance().getJobName(), jobExecution.getJobId(), jobExecution.getId(),
                 jobExecution.getExitStatus().getExitCode());
 

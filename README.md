@@ -251,7 +251,7 @@ docker push XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-batch:lates
 
 | 分類 | 機能 | 機能概要と実現方式 | 拡張実装 | 拡張実装の格納パッケージ |
 | ---- | ---- | ---- | ---- | ---- |
-| バッチ | 純バッチAP実行制御 | Spring BootおよびSpringBatchによりコマンドラインで指定された対象のジョブを起動する機能を提供する。また、SpringBatchに関する実行制御機能を提供する。 | ○ | com.example.fw.batch.core |
+| バッチ | バッチAP実行制御 | Spring BootおよびSpringBatchによりコマンドラインで指定された対象のジョブを起動する機能を提供する。また、SpringBatchに関する実行制御機能を提供する。 | ○ | com.example.fw.batch.core |
 | | 非同期AP実行制御 | Spring JMSとAmazon SQS Java Messaging Libraryを利用しSQSの標準キューを介した非同期実行依頼のメッセージを受信し、SpringBatchにより対象のジョブを起動する機能を提供する。 | ○ | com.example.fw.batch.async |
 | | 大量データアクセス | SpringBatchのItemReader、ItemWriterを利用し、大容量のファイルやDBのレコードを逐次読み書きする機能を提供する。 | - | - |
 | | 集約例外ハンドリング | エラー（例外）発生時、SpringBatchの機能によりDBのロールバックするとともに、JobExecutionListenerを利用しエラーログの出力といった共通的なエラーハンドリングを実施する。 | ○ | com.example.fw.batch.exeption<br/>com.example.fw.batch.listener |

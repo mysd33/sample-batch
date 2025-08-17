@@ -4,22 +4,34 @@ public final class BatchFrameworkMessageIds {
     private BatchFrameworkMessageIds() {
     }
 
-    public static final String T_BT_FW_0001 = "t.bt.fw.0001";
-    public static final String T_BT_FW_0002 = "t.bt.fw.0002";
-    public static final String I_BT_FW_0001 = "i.bt.fw.0001";
-    public static final String I_BT_FW_0002 = "i.bt.fw.0002";
-    public static final String I_BT_FW_0003 = "i.bt.fw.0003";
-    public static final String I_BT_FW_0004 = "i.bt.fw.0004";
-    public static final String I_BT_FW_0005 = "i.bt.fw.0005";
-    public static final String I_BT_FW_0006 = "i.bt.fw.0006";
-    public static final String W_BT_FW_8001 = "w.bt.fw.8001";
-    public static final String W_BT_FW_8002 = "w.bt.fw.8002";
-    public static final String W_BT_FW_8003 = "w.bt.fw.8003";
-    public static final String W_BT_FW_8004 = "w.bt.fw.8004";
-    public static final String W_BT_FW_8005 = "w.bt.fw.8005";
-    public static final String W_BT_FW_8006 = "w.bt.fw.8006";
-    public static final String E_BT_FW_9001 = "e.bt.fw.9001";
-    public static final String E_BT_FW_9002 = "e.bt.fw.9002";
-    public static final String E_BT_FW_9003 = "e.bt.fw.9003";
-    public static final String E_BT_FW_9004 = "e.bt.fw.9004";
+    // トレースレベル
+    // バッチAP制御（LogAspect）
+    public static final String T_FW_BTCTRL_0001 = "t.fw.btctrl.0001";
+    public static final String T_FW_BTCTRL_0002 = "t.fw.btctrl.0002";
+
+    // 情報レベル
+    // 非同期AP実行制御
+    public static final String I_FW_ASYNCSV_0001 = "i.fw.asyncsv.0001";
+    public static final String I_FW_ASYNCSV_0002 = "i.fw.asyncsv.0002";
+    public static final String I_FW_ASYNCSV_0003 = "i.fw.asyncsv.0003";
+    public static final String I_FW_ASYNCSV_0004 = "i.fw.asyncsv.0004";
+    // バッチAP制御
+    public static final String I_FW_BTCTRL_0001 = "i.fw.btctrl.0001";
+    public static final String I_FW_BTCTRL_0002 = "i.fw.btctrl.0002";
+
+    // 警告レベル
+    // 非同期AP実行制御
+    public static final String W_FW_ASYNCSV_8001 = "w.fw.asyncsv.8001";
+    public static final String W_FW_ASYNCSV_8002 = "w.fw.asyncsv.8002";
+    public static final String W_FW_ASYNCSV_8003 = "w.fw.asyncsv.8003";
+    public static final String W_FW_ASYNCSV_8004 = "w.fw.asyncsv.8004";
+    public static final String W_FW_ASYNCSV_8005 = "w.fw.asyncsv.8005";
+    public static final String W_FW_ASYNCSV_8006 = "w.fw.asyncsv.8006";
+
+    // エラーレベル
+    // 非同期AP実行制御
+    public static final String E_FW_ASYNCSV_9001 = "e.fw.asyncsv.9001";
+    public static final String E_FW_ASYNCSV_9002 = "e.fw.asyncsv.9002";
+    public static final String E_FW_ASYNCSV_9003 = "e.fw.asyncsv.9003";
+    public static final String E_FW_ASYNCSV_9004 = "e.fw.asyncsv.9004";
 }

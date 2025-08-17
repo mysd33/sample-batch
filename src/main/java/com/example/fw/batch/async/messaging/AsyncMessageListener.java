@@ -49,7 +49,7 @@ public class AsyncMessageListener {
     public void onMessage(@Headers final Map<String, String> headers, Message message, final JobRequest request) {
         // メッセージが有効な形式かチェック
         if (!request.isValid()) {
-            monitoringLogger.error(BatchFrameworkMessageIds.E_BT_FW_9001, null, request);
+            monitoringLogger.error(BatchFrameworkMessageIds.E_FW_ASYNCSV_9001, null, request);
             return;
         }
         // メッセージID取得
@@ -63,23 +63,23 @@ public class AsyncMessageListener {
             Long preExecutionId = request.getJobExecutionId();
             try {
                 // SpringBatchで前回ジョブ実行IDを用いてジョブ再実行
-                appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0005, messageId, preExecutionId);
+                appLogger.info(BatchFrameworkMessageIds.I_FW_ASYNCSV_0003, messageId, preExecutionId);
                 jobExecutionId = jobOperator.restart(preExecutionId);
-                appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0006, messageId, preExecutionId, jobExecutionId);
+                appLogger.info(BatchFrameworkMessageIds.I_FW_ASYNCSV_0004, messageId, preExecutionId, jobExecutionId);
             } catch (NoSuchJobExecutionException e) {
-                appLogger.warn(BatchFrameworkMessageIds.W_BT_FW_8003, e, messageId, preExecutionId);
+                appLogger.warn(BatchFrameworkMessageIds.W_FW_ASYNCSV_8003, e, messageId, preExecutionId);
                 acknowledgeExplicitlyOnExceptionIfAckOnJobStart();
             } catch (NoSuchJobException e) {
-                appLogger.warn(BatchFrameworkMessageIds.W_BT_FW_8004, e, messageId, preExecutionId);
+                appLogger.warn(BatchFrameworkMessageIds.W_FW_ASYNCSV_8004, e, messageId, preExecutionId);
                 acknowledgeExplicitlyOnExceptionIfAckOnJobStart();
             } catch (JobInstanceAlreadyCompleteException e) {
-                appLogger.warn(BatchFrameworkMessageIds.W_BT_FW_8005, e, messageId, preExecutionId);
+                appLogger.warn(BatchFrameworkMessageIds.W_FW_ASYNCSV_8005, e, messageId, preExecutionId);
                 acknowledgeExplicitlyOnExceptionIfAckOnJobStart();
             } catch (JobParametersInvalidException e) {
-                monitoringLogger.error(BatchFrameworkMessageIds.E_BT_FW_9003, e, messageId, preExecutionId);
+                monitoringLogger.error(BatchFrameworkMessageIds.E_FW_ASYNCSV_9003, e, messageId, preExecutionId);
                 acknowledgeExplicitlyOnExceptionIfAckOnJobStart();
             } catch (JobRestartException e) {
-                monitoringLogger.error(BatchFrameworkMessageIds.E_BT_FW_9004, e, messageId, preExecutionId);
+                monitoringLogger.error(BatchFrameworkMessageIds.E_FW_ASYNCSV_9004, e, messageId, preExecutionId);
                 acknowledgeExplicitlyOnExceptionIfAckOnJobStart();
             }
             return;
@@ -87,18 +87,18 @@ public class AsyncMessageListener {
         // ジョブ初回実行の場合
         String jobId = request.getJobId();
         try {
-            appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0001, messageId, jobId, request.toParameterString());
+            appLogger.info(BatchFrameworkMessageIds.I_FW_ASYNCSV_0001, messageId, jobId, request.toParameterString());
             // SpringBatchでジョブ実行
             jobExecutionId = jobOperator.start(jobId, request.toParameterProperties());
-            appLogger.info(BatchFrameworkMessageIds.I_BT_FW_0002, messageId, jobId, jobExecutionId);
+            appLogger.info(BatchFrameworkMessageIds.I_FW_ASYNCSV_0002, messageId, jobId, jobExecutionId);
         } catch (JobInstanceAlreadyExistsException e) {
-            appLogger.warn(BatchFrameworkMessageIds.W_BT_FW_8001, e, messageId, jobId, request.toParameterString());
+            appLogger.warn(BatchFrameworkMessageIds.W_FW_ASYNCSV_8001, e, messageId, jobId, request.toParameterString());
             acknowledgeExplicitlyOnExceptionIfAckOnJobStart();
         } catch (NoSuchJobException e) {
-            appLogger.warn(BatchFrameworkMessageIds.W_BT_FW_8002, e, messageId, jobId);
+            appLogger.warn(BatchFrameworkMessageIds.W_FW_ASYNCSV_8002, e, messageId, jobId);
             acknowledgeExplicitlyOnExceptionIfAckOnJobStart();
         } catch (JobParametersInvalidException e) {
-            monitoringLogger.error(BatchFrameworkMessageIds.E_BT_FW_9002, e, messageId, jobId);
+            monitoringLogger.error(BatchFrameworkMessageIds.E_FW_ASYNCSV_9002, e, messageId, jobId);
             acknowledgeExplicitlyOnExceptionIfAckOnJobStart();
         }
     }
