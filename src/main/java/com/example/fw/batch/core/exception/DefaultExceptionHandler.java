@@ -1,5 +1,6 @@
 package com.example.fw.batch.core.exception;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -46,20 +47,22 @@ public class DefaultExceptionHandler implements ExceptionHandler {
             } else if (ex instanceof ValidationException) {
                 // 入力エラーによるシステムエラー
                 BindException error = (BindException) ex.getCause();
-                FieldError fieldError = error.getFieldError();
-                String code = fieldError != null ? fieldError.getCode() : null;
-                if (code == null) {
-                    monitoringLogger.error(defaultValdationExceptionMessageId, error);
-                    continue;
+                List<FieldError> fieldErrors = error.getFieldErrors();
+                List<String> messages = new ArrayList<>();
+                for (FieldError fieldError : fieldErrors) {
+                    String code = fieldError != null ? fieldError.getCode() : null;
+                    if (code == null) {
+                        continue;
+                    }
+                    // エラーコードがある場合は、入力エラーメッセージを取得
+                    // なお、バッチの単項目チェックの場合、
+                    // メッセージIDが(FQDN).messageのメッセージを自動取得できないことや
+                    // {value}のような置換文字列が使えないので、メッセージ定義に注意が必要
+                    String message = messageSource.getMessage(code, fieldError.getArguments(),
+                            fieldError.getDefaultMessage(), Locale.getDefault());
+                    messages.add(message);
                 }
-                // エラーコードがある場合は、入力エラーメッセージを取得
-                // なお、バッチの単項目チェックの場合、
-                // メッセージIDが(FQDN).messageのメッセージを自動取得できないことや
-                // {value}のような置換文字列が使えないので、メッセージ定義に注意が必要
-                String message = messageSource.getMessage(code, fieldError.getArguments(),
-                        fieldError.getDefaultMessage(), Locale.getDefault());
-
-                monitoringLogger.error(defaultValdationExceptionMessageId, error, message);
+                monitoringLogger.error(defaultValdationExceptionMessageId, error, messages.toString());
             } else {
                 // 予期せぬ例外によるシステムエラー
                 monitoringLogger.error(defaultExceptionMessageId, ex);

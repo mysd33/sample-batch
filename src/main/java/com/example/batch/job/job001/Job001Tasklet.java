@@ -71,7 +71,7 @@ public class Job001Tasklet implements Tasklet {
                     todoRecordSpringValidator.validate(item);
                 } catch (ValidationException e) {
                     // 入力チェックエラーの場合は、レコードの何行目でエラーが発生したかをログを出しリスロー
-                    appLogger.warn(MessageIds.W_EX_2001, e, inputFileName, item.getCount());
+                    appLogger.warn(MessageIds.W_EX_2001, inputFileName, item.getCount());
                     throw e;
                 }
                 // ビジネスロジックの実行

@@ -1,11 +1,16 @@
 package com.example.fw.batch.message;
 
+/**
+ * 
+ * フレームワークのメッセージID定数クラス
+ *
+ */
 public final class BatchFrameworkMessageIds {
     private BatchFrameworkMessageIds() {
     }
 
     // トレースレベル
-    // バッチAP制御（LogAspect）
+    // バッチAP実行制御（LogAspect）
     public static final String T_FW_BTCTRL_0001 = "t.fw.btctrl.0001";
     public static final String T_FW_BTCTRL_0002 = "t.fw.btctrl.0002";
 
@@ -15,7 +20,7 @@ public final class BatchFrameworkMessageIds {
     public static final String I_FW_ASYNCSV_0002 = "i.fw.asyncsv.0002";
     public static final String I_FW_ASYNCSV_0003 = "i.fw.asyncsv.0003";
     public static final String I_FW_ASYNCSV_0004 = "i.fw.asyncsv.0004";
-    // バッチAP制御
+    // バッチAP実行制御
     public static final String I_FW_BTCTRL_0001 = "i.fw.btctrl.0001";
     public static final String I_FW_BTCTRL_0002 = "i.fw.btctrl.0002";
 
