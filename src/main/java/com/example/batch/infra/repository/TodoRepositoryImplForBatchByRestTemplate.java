@@ -10,7 +10,7 @@ import org.springframework.web.client.RestTemplate;
 import com.example.batch.domain.model.Todo;
 import com.example.batch.domain.model.TodoList;
 import com.example.batch.domain.repository.TodoRepository;
-import com.example.batch.infra.httpclient.CircutiBreakerErrorFallback;
+import com.example.batch.infra.httpclient.CircuitBreakerErrorFallback;
 
 import lombok.RequiredArgsConstructor;
 
@@ -42,7 +42,7 @@ public class TodoRepositoryImplForBatchByRestTemplate implements TodoRepository 
     public Optional<Todo> findById(String todoId) {
         Todo todo = cbFactory.create("todo_findById").run(
                 () -> restTemplate.getForObject(urlTodoById, Todo.class, todoId),
-                CircutiBreakerErrorFallback.throwBusinessException());
+                CircuitBreakerErrorFallback.throwBusinessException());
         return Optional.ofNullable(todo);
     }
 
@@ -58,7 +58,7 @@ public class TodoRepositoryImplForBatchByRestTemplate implements TodoRepository 
     public void create(Todo todo) {
         // バッチ処理のサンプル実行向けに件数チェックされない、create APIのURLを呼び出し
         cbFactory.create("todo_create").run(() -> restTemplate.postForObject(urlTodosForCreateBatch, todo, Todo.class),
-                CircutiBreakerErrorFallback.throwBusinessException());
+                CircuitBreakerErrorFallback.throwBusinessException());
     }
 
     @Override
@@ -66,7 +66,7 @@ public class TodoRepositoryImplForBatchByRestTemplate implements TodoRepository 
         return cbFactory.create("todo_update").run(() -> {
             restTemplate.put(urlTodoById, null, todo.getTodoId());
             return true;
-        }, CircutiBreakerErrorFallback.throwBusinessException());
+        }, CircuitBreakerErrorFallback.throwBusinessException());
     }
 
     @Override
@@ -74,7 +74,7 @@ public class TodoRepositoryImplForBatchByRestTemplate implements TodoRepository 
         cbFactory.create("todo_delete").run(() -> {
             restTemplate.delete(urlTodoById, todo.getTodoId());
             return true;
-        }, CircutiBreakerErrorFallback.throwBusinessException());
+        }, CircuitBreakerErrorFallback.throwBusinessException());
     }
 
 }

@@ -14,7 +14,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.example.batch.domain.model.Todo;
 import com.example.batch.domain.model.TodoList;
 import com.example.batch.domain.repository.TodoRepository;
-import com.example.batch.infra.httpclient.CircutiBreakerErrorFallback;
+import com.example.batch.infra.httpclient.CircuitBreakerErrorFallback;
 import com.example.batch.infra.httpclient.WebClientResponseErrorHandler;
 import com.example.fw.common.exception.BusinessException;
 
@@ -76,7 +76,7 @@ public class TodoRepositoryImplForBatchByWebClient implements TodoRepository {
                 }))
                 // サーキットブレーカによる処理
                 .transform(it -> cbFactory.create("todo_findById")
-                        .run(it, CircutiBreakerErrorFallback.returnMonoBusinessException()));
+                        .run(it, CircuitBreakerErrorFallback.returnMonoBusinessException()));
         return todoMono.blockOptional();
         // @formatter:on
     }
@@ -126,7 +126,7 @@ public class TodoRepositoryImplForBatchByWebClient implements TodoRepository {
                 }))
                 // サーキットブレーカによる処理                
                 .transform(it -> cbFactory.create("todo_create").run(it,
-                        CircutiBreakerErrorFallback.returnMonoBusinessException()))
+                        CircuitBreakerErrorFallback.returnMonoBusinessException()))
                 .block();
         // @formatter:on
     }
@@ -149,7 +149,7 @@ public class TodoRepositoryImplForBatchByWebClient implements TodoRepository {
                 }))
                 // サーキットブレーカによる処理                
                 .transform(it -> cbFactory.create("todo_update").run(it,
-                        CircutiBreakerErrorFallback.returnMonoBusinessException()))
+                        CircuitBreakerErrorFallback.returnMonoBusinessException()))
                 .block();
         // @formatter:on 
         return true;
@@ -173,7 +173,7 @@ public class TodoRepositoryImplForBatchByWebClient implements TodoRepository {
                 }))
                 // サーキットブレーカによる処理
                 .transform(it -> cbFactory.create("todo_delete").run(it,
-                        CircutiBreakerErrorFallback.returnMonoBusinessException()))
+                        CircuitBreakerErrorFallback.returnMonoBusinessException()))
                 .block();
         // @formatter:on        
     }
