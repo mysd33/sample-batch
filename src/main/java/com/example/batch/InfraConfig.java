@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Import;
 import com.example.batch.infra.httpclient.WebClientResponseErrorHandler;
 import com.example.fw.batch.aspect.LogAspect;
 import com.example.fw.common.httpclient.config.WebClientConfigPackage;
-import com.example.fw.common.micrometer.config.MicrometerConfig;
+import com.example.fw.common.metrics.config.MetricsConfig;
 import com.example.fw.common.objectstorage.config.S3ConfigPackage;
 
 /**
@@ -18,7 +18,7 @@ import com.example.fw.common.objectstorage.config.S3ConfigPackage;
  */
 @Configuration
 @ComponentScan(basePackageClasses = { WebClientConfigPackage.class, S3ConfigPackage.class })
-@Import(MicrometerConfig.class)
+@Import(MetricsConfig.class)
 public class InfraConfig {
 
     /**
