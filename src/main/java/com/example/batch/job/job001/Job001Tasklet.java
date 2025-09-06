@@ -48,6 +48,7 @@ public class Job001Tasklet implements Tasklet {
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         appLogger.debug("Job001Tasklet実行");
 
+        // StepScopeなので、@Valueでパラメータを受け取る方法のほうが簡単だが、ここではChunkContextから取得する例とする
         StepExecution stepExecution = chunkContext.getStepContext().getStepExecution();
         String param01 = stepExecution.getJobParameters().getString("param01");
         String param02 = stepExecution.getJobParameters().getString("param02");

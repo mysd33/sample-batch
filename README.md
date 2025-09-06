@@ -31,7 +31,9 @@
     * [Mapstruct](https://mapstruct.org/)
         * [EclipseやIntelliJへのプラグインインストール](https://mapstruct.org/documentation/ide-support/)
 
-## 動作手順
+## 通常の動作手順
+- 通常の、SQSのメッセージ送信によるディレード処理方式をベースとした動作手順を示す。
+
 1. Backend AP（sample-backend）の起動
     * sample-backendをSpringBoot Applicationとして起動。
 
@@ -112,9 +114,15 @@
             * job002は、チャンクモデルでjob001と同じ処理を実装している。
 
 
-## コマンド実行
-- SQSのメッセージ送信によるディレード処理方式をベースとした純バッチ実行だけでなく、Spring BootのバッチAP実行が可能である。
+## コマンド実行によるジョブ起動
+- 通常の、SQSのメッセージ送信によるディレード処理方式をベースとしたジョブの起動だけなく、コマンドラインでのジョブの起動も可能である。
+- これにより、例えば、ECSやAWS Batchでのコンテナでのjavaコマンドによるジョブの起動が可能となる。
+- 応用することで、Step Functionsでジョブフローの制御を行い、ステートとしてAWS Batchを呼ぶことで、コンテナでのコマンド実行も可能となる。
 
+![コマンド実行](img/sample-batch-commandline.png)
+
+
+### 動作手順
 1. SampleBatchApplication.javaの「@SpringBootApplication」をコメントアウトして無効化
 
 1. SampleBatchApplicationForStandardBatch.javaの「@SpringBootApplication」をコメントインして有効化
@@ -134,9 +142,12 @@
     -Dspring.profiles.active=dev,log_default,command -Dspring.batch.job.name=job001
     ```
 
-
-
-
+### （検証）Spring Batchのコマンドライン実行の標準機能でのジョブの二重実行防止
+- ジョブ名（ジョブID）とジョブパラメータが同じ値のもの（＝同一ジョブインスタンス）を、2度指定してコマンド実行した場合の挙動は以下の通り。
+    - 対象ジョブインスタンスが成功し完了済（COMPLETED）の場合は、ジョブが実行済となり終了する。
+        - IllegalStateExceptionがスローされる。causeにはJobInstanceAlreadyCompleteExceptionが含まれる。
+        - javaコマンド実行での終了コードは「1」になった
+    - 対象ジョブインスタンスが失敗（FAILED）の場合は、同じジョブ名、パラメータを渡すと再実行してくれる。
 
 ## PostgreSQLのローカル起動
 * Profileが「dev」でSpringBootアプリケーションを実行する場合、H2DBが起動するので、何もしなくてよい。
