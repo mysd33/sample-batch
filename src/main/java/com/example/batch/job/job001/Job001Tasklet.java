@@ -13,6 +13,7 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.example.batch.domain.message.CommonMessageIds;
 import com.example.batch.domain.message.MessageIds;
 import com.example.batch.domain.sharedservice.TodoSharedService;
 import com.example.batch.job.common.record.TodoRecord;
@@ -47,6 +48,8 @@ public class Job001Tasklet implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         appLogger.debug("Job001Tasklet実行");
+
+        appLogger.info(CommonMessageIds.I_CMN_0001);
 
         // StepScopeなので、@Valueでパラメータを受け取る方法のほうが簡単だが、ここではChunkContextから取得する例とする
         StepExecution stepExecution = chunkContext.getStepContext().getStepExecution();
