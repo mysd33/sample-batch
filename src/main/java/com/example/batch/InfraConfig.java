@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Import;
 import com.example.batch.infra.httpclient.WebClientResponseErrorHandler;
 import com.example.fw.batch.aspect.LogAspect;
 import com.example.fw.common.httpclient.config.WebClientConfigPackage;
-import com.example.fw.common.logging.config.LoggingExtensionConfig;
+import com.example.fw.common.logging.config.LoggingConfigPackage;
 import com.example.fw.common.metrics.config.MetricsConfig;
 import com.example.fw.common.objectstorage.config.S3ConfigPackage;
 
@@ -18,10 +18,10 @@ import com.example.fw.common.objectstorage.config.S3ConfigPackage;
  *
  */
 @Configuration
-@ComponentScan(basePackageClasses = { WebClientConfigPackage.class, S3ConfigPackage.class })
+// RESTクライアント、オブジェクトストレージアクセス、ロギング拡張機能の設定を追加
+@ComponentScan(basePackageClasses = { WebClientConfigPackage.class, S3ConfigPackage.class, LoggingConfigPackage.class })
 //Micrometerのカスタムメトリックス設定を追加
-//ロギング拡張機能の設定を追加
-@Import({ MetricsConfig.class, LoggingExtensionConfig.class })
+@Import({ MetricsConfig.class })
 public class InfraConfig {
 
     /**
