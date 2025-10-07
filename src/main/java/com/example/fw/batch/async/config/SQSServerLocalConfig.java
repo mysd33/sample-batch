@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import com.example.fw.batch.async.sqslocal.ElasticMQLocalExecutor;
+import com.example.fw.batch.core.config.SpringBatchConfig;
 import com.example.fw.common.async.config.SQSCommonConfigurationProperties;
 
 import software.amazon.awssdk.services.sqs.SqsClient;
@@ -17,22 +18,20 @@ import software.amazon.awssdk.services.sqs.SqsClient;
  * SQS Local起動の設定クラス(開発時のみ)
  */
 @Profile("dev")
-@ConditionalOnProperty(prefix = "spring.batch" , name = "type", havingValue = "async", matchIfMissing = true)
+@ConditionalOnProperty(prefix = SpringBatchConfig.PROPERTY_PREFIX, name = "type", havingValue = "async", matchIfMissing = true)
 @Configuration
-@EnableConfigurationProperties({SQSCommonConfigurationProperties.class, SQSServerConfigurationProperties.class})
+@EnableConfigurationProperties({ SQSCommonConfigurationProperties.class, SQSServerConfigurationProperties.class })
 public class SQSServerLocalConfig {
-        
+
     /**
      * ElasticMQの起動クラス
      */
     @Bean
     @ConditionalOnClass(SQSRestServer.class)
-    ElasticMQLocalExecutor elasticMQLocalExecutor(SqsClient sqsClient,             
+    ElasticMQLocalExecutor elasticMQLocalExecutor(SqsClient sqsClient,
             SQSCommonConfigurationProperties sqsCommonConfigurationProperties,
-            SQSServerConfigurationProperties sqsServerConfigurationProperties) {            
-        return new ElasticMQLocalExecutor(sqsClient,                 
-                sqsCommonConfigurationProperties.getSqslocal().getPort(),
-                sqsServerConfigurationProperties.getQueueName()
-                );
+            SQSServerConfigurationProperties sqsServerConfigurationProperties) {
+        return new ElasticMQLocalExecutor(sqsClient, sqsCommonConfigurationProperties.getSqslocal().getPort(),
+                sqsServerConfigurationProperties.getQueueName());
     }
 }

@@ -2,7 +2,6 @@ package com.example.fw.common.objectstorage.config;
 
 import java.net.URI;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -27,7 +26,7 @@ import software.amazon.awssdk.services.s3.S3Configuration;
  *
  */
 @Profile("dev")
-@ConditionalOnProperty(prefix = "aws.s3.localfake", name = "type", havingValue = "minio")
+@ConditionalOnProperty(prefix = S3ConfigurationProperties.LOCALFAKE_PROPERTY_PREFIX, name = "type", havingValue = "minio")
 @EnableConfigurationProperties({ S3ConfigurationProperties.class })
 @Configuration
 @RequiredArgsConstructor
@@ -56,7 +55,7 @@ public class S3LocalMinioFakeConfig {
         Region region = Region.of(s3ConfigurationProperties.getRegion());
         // @formatter:off
         return S3Client.builder()
-                .httpClientBuilder((ApacheHttpClient.builder())) 
+                .httpClientBuilder((ApacheHttpClient.builder()))
                 .region(region)       
                 .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
                 .endpointOverride(URI.create("http://localhost:" + s3ConfigurationProperties.getLocalfake().getPort()))
@@ -75,14 +74,15 @@ public class S3LocalMinioFakeConfig {
     @Bean
     S3Client s3ClientWithXRay() {
         // ダミーのクレデンシャル
-        AwsBasicCredentials awsCreds = AwsBasicCredentials.create(s3ConfigurationProperties.getLocalfake().getAccessKeyId(),
+        AwsBasicCredentials awsCreds = AwsBasicCredentials.create(
+                s3ConfigurationProperties.getLocalfake().getAccessKeyId(),
                 s3ConfigurationProperties.getLocalfake().getSecretAccessKey());
-        
+
         Region region = Region.of(s3ConfigurationProperties.getRegion());
         // @formatter:off
-        return S3Client.builder() 
-                .httpClientBuilder((ApacheHttpClient.builder()))    
-                .region(region)       
+        return S3Client.builder()                
+                .region(region)
+                .httpClientBuilder((ApacheHttpClient.builder()))
                 .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
                 .endpointOverride(URI.create("http://localhost:" + s3ConfigurationProperties.getLocalfake().getPort()))
                 // 個別にDynamoDBへのAWS SDKの呼び出しをトレーシングできるように設定

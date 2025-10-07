@@ -22,7 +22,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 @EnableConfigurationProperties({S3ConfigurationProperties.class})
 @Configuration
 @RequiredArgsConstructor
-public class S3ProdConfig {        
+public class S3ProdConfig {    
     private final S3ConfigurationProperties s3ConfigurationProperties;    
       
     /**

@@ -12,6 +12,7 @@ import com.example.fw.batch.async.store.JmsMessageStore;
 import com.example.fw.batch.async.store.ThreadLocalJmsMessageStore;
 import com.example.fw.batch.core.exception.ExceptionHandler;
 import com.example.fw.batch.core.listener.DefaultJobExecutionListener;
+import com.example.fw.common.constants.FrameworkConstants;
 
 /**
  * 
@@ -20,12 +21,15 @@ import com.example.fw.batch.core.listener.DefaultJobExecutionListener;
  */
 @Configuration
 public class SpringBatchConfig {
+    // TODO: プロパティ名の見直しを予定
+    // Spring Batchのプロパティプレフィックス
+    public static final String PROPERTY_PREFIX = FrameworkConstants.PROPERTY_BASE_NAME + "spring.batch";
 
     /**
      * キューを介した非同期処理依頼メッセージによるバッチ実行のSpring Batch設定
      */
     @Configuration
-    @ConditionalOnProperty(prefix = "spring.batch", name = "type", havingValue = "async", matchIfMissing = true)
+    @ConditionalOnProperty(prefix = PROPERTY_PREFIX, name = "type", havingValue = "async", matchIfMissing = true)
     static class AsyncSpringBatchConfig {
         /**
          * ジョブの実行に関わる例外ハンドリング、ログ出力機能の設定
@@ -59,7 +63,7 @@ public class SpringBatchConfig {
      * コマンドライン実行のSpring Batch設定
      */
     @Configuration
-    @ConditionalOnProperty(prefix = "spring.batch", name = "type", havingValue = "commandline")
+    @ConditionalOnProperty(prefix = PROPERTY_PREFIX, name = "type", havingValue = "commandline")
     static class CommandLineSpringBatchConfig {
         /**
          * ジョブの実行に関わる例外ハンドリング、ログ出力機能の設定

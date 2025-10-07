@@ -33,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class AsyncMessageListener {
+
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
     private static final MonitoringLogger monitoringLogger = LoggerFactory.getMonitoringLogger(log);
     private final JobOperator jobOperator;
@@ -45,7 +46,7 @@ public class AsyncMessageListener {
      * @param request ジョブの要求情報
      * 
      */
-    @JmsListener(destination = "${aws.sqs.listener.queue-name}")
+    @JmsListener(destination = SQSServerConfigurationProperties.LISTENER_QUEUE_NAME_EXPRESSION)
     public void onMessage(@Headers final Map<String, String> headers, Message message, final JobRequest request) {
         // メッセージが有効な形式かチェック
         if (!request.isValid()) {
@@ -92,7 +93,8 @@ public class AsyncMessageListener {
             jobExecutionId = jobOperator.start(jobId, request.toParameterProperties());
             appLogger.info(BatchFrameworkMessageIds.I_FW_ASYNCSV_0002, messageId, jobId, jobExecutionId);
         } catch (JobInstanceAlreadyExistsException e) {
-            appLogger.warn(BatchFrameworkMessageIds.W_FW_ASYNCSV_8001, e, messageId, jobId, request.toParameterString());
+            appLogger.warn(BatchFrameworkMessageIds.W_FW_ASYNCSV_8001, e, messageId, jobId,
+                    request.toParameterString());
             acknowledgeExplicitlyOnExceptionIfAckOnJobStart();
         } catch (NoSuchJobException e) {
             appLogger.warn(BatchFrameworkMessageIds.W_FW_ASYNCSV_8002, e, messageId, jobId);

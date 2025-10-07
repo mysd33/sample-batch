@@ -25,7 +25,7 @@ import software.amazon.awssdk.services.sqs.SqsClient;
 @EnableConfigurationProperties({ SQSCommonConfigurationProperties.class })
 public class SQSCommonLocalConfig {
     private static final String HTTP_LOCALHOST = "http://localhost:";
-    
+
     private final SQSCommonConfigurationProperties sqsCommonConfigurationProperties;
 
     /**
@@ -49,21 +49,18 @@ public class SQSCommonLocalConfig {
      * ElastiqMQ(SQSLocal)起動する場合のSQSClientの定義(X-Rayトレーシングあり）
      */
     /*
-    @Profile("xray")
-    @Bean
-    SqsClient sqsClientFactoryWithXRay() {
-        // ダミーのクレデンシャル
-        AwsBasicCredentials awsCreds = AwsBasicCredentials.create("dummy", "dummy");
-        Region region = Region.of(sqsCommonConfigurationProperties.getRegion());
-        return SqsClient.builder()
-                // 個別にSQSへのAWS SDKの呼び出しをトレーシングできるように設定
-                .overrideConfiguration(
-                        ClientOverrideConfiguration.builder().addExecutionInterceptor(new TracingInterceptor()).build())
-                .region(region)//
-                .httpClientBuilder((ApacheHttpClient.builder()))    
-                .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
-                .endpointOverride(URI.create(HTTP_LOCALHOST + sqsCommonConfigurationProperties.getSqslocal().getPort()))
-                .build();
-    }
-    */
+     * @Profile("xray")
+     * 
+     * @Bean SqsClient sqsClientFactoryWithXRay() { // ダミーのクレデンシャル
+     * AwsBasicCredentials awsCreds = AwsBasicCredentials.create("dummy", "dummy");
+     * Region region = Region.of(sqsCommonConfigurationProperties.getRegion());
+     * return SqsClient.builder() // 個別にSQSへのAWS SDKの呼び出しをトレーシングできるように設定
+     * .overrideConfiguration(
+     * ClientOverrideConfiguration.builder().addExecutionInterceptor(new
+     * TracingInterceptor()).build())
+     * .httpClientBuilder((ApacheHttpClient.builder()))// .region(region)//
+     * .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
+     * .endpointOverride(URI.create(HTTP_LOCALHOST +
+     * sqsCommonConfigurationProperties.getSqslocal().getPort())) .build(); }
+     */
 }

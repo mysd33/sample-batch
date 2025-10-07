@@ -26,12 +26,13 @@ import software.amazon.awssdk.services.s3.S3Configuration;
  *
  */
 @Profile("dev")
-@ConditionalOnProperty(prefix = "aws.s3.localfake", name = "type", havingValue = "s3rver")
-@EnableConfigurationProperties({S3ConfigurationProperties.class})
+@ConditionalOnProperty(prefix = S3ConfigurationProperties.LOCALFAKE_PROPERTY_PREFIX, name = "type", havingValue = "s3rver")
+@EnableConfigurationProperties({ S3ConfigurationProperties.class })
 @Configuration
 @RequiredArgsConstructor
 public class S3LocalS3rverFakeConfig {
-    private final S3ConfigurationProperties s3ConfigurationProperties;    
+    private static final String S3RVER = "S3RVER";
+    private final S3ConfigurationProperties s3ConfigurationProperties;
 
     /**
      * オブジェクトストレージアクセスクラス
@@ -48,12 +49,12 @@ public class S3LocalS3rverFakeConfig {
     @Bean
     S3Client s3ClientWithoutXRay() {
         // ダミーのクレデンシャル
-        AwsBasicCredentials awsCreds = AwsBasicCredentials.create("S3RVER", "S3RVER");
-        
+        AwsBasicCredentials awsCreds = AwsBasicCredentials.create(S3RVER, S3RVER);
+
         Region region = Region.of(s3ConfigurationProperties.getRegion());
         // @formatter:off
-        return S3Client.builder()      
-                .httpClientBuilder((ApacheHttpClient.builder()))                 
+        return S3Client.builder()
+                .httpClientBuilder((ApacheHttpClient.builder()))
                 .region(region)       
                 .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
                 .endpointOverride(URI.create("http://localhost:" + s3ConfigurationProperties.getLocalfake().getPort()))
@@ -72,13 +73,13 @@ public class S3LocalS3rverFakeConfig {
     @Bean
     S3Client s3ClientWithXRay() {
         // ダミーのクレデンシャル
-        AwsBasicCredentials awsCreds = AwsBasicCredentials.create("S3RVER", "S3RVER");
-        
+        AwsBasicCredentials awsCreds = AwsBasicCredentials.create(S3RVER, S3RVER);
+
         Region region = Region.of(s3ConfigurationProperties.getRegion());
         // @formatter:off
-        return S3Client.builder() 
-                .httpClientBuilder((ApacheHttpClient.builder()))                        
-                .region(region)                   
+        return S3Client.builder()     
+                .httpClientBuilder((ApacheHttpClient.builder()))
+                .region(region)       
                 .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
                 .endpointOverride(URI.create("http://localhost:" + s3ConfigurationProperties.getLocalfake().getPort()))
                 //S3rverの場合、putしたファイルにchunk-signatureが入ってしまうため対処策として設定

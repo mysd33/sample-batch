@@ -16,7 +16,7 @@ import software.amazon.awssdk.services.sqs.SqsClient;
 @Profile("production")
 @Configuration
 @RequiredArgsConstructor
-@EnableConfigurationProperties({SQSCommonConfigurationProperties.class})
+@EnableConfigurationProperties({ SQSCommonConfigurationProperties.class })
 public class SQSCommonProdConfig {
     private final SQSCommonConfigurationProperties sqsCommonConfigurationProperties;
 
@@ -28,7 +28,7 @@ public class SQSCommonProdConfig {
     SqsClient sqsClientWithoutXRay() {
         Region region = Region.of(sqsCommonConfigurationProperties.getRegion());
         return SqsClient.builder()//
-                .httpClientBuilder((ApacheHttpClient.builder())) //
+                .httpClientBuilder((ApacheHttpClient.builder()))//
                 .region(region)//
                 .build();
     }
@@ -37,17 +37,16 @@ public class SQSCommonProdConfig {
      * SQSConnectionFactoryの定義(X-Rayトレーシングあり）
      */
     /*
-    @Profile("xray")
-    @Bean
-    SqsClient sqsClientWithXRay() {
-        Region region = Region.of(sqsCommonConfigurationProperties.getRegion());
-        return SqsClient.builder()
-                // 個別にSQSへのAWS SDKの呼び出しをトレーシングできるように設定
-                .overrideConfiguration(
-                        ClientOverrideConfiguration.builder().addExecutionInterceptor(new TracingInterceptor()).build())
-                .httpClientBuilder((ApacheHttpClient.builder()))                            
-                .region(region)
-                .build();
-    }*/
+     * @Profile("xray")
+     * 
+     * @Bean SqsClient sqsClientWithXRay() { Region region =
+     * Region.of(sqsCommonConfigurationProperties.getRegion()); return
+     * SqsClient.builder() // 個別にSQSへのAWS SDKの呼び出しをトレーシングできるように設定
+     * .overrideConfiguration(
+     * ClientOverrideConfiguration.builder().addExecutionInterceptor(new
+     * TracingInterceptor()).build())
+     * .httpClientBuilder((ApacheHttpClient.builder()))// .region(region) .build();
+     * }
+     */
 
 }
