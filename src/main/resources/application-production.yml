@@ -42,7 +42,7 @@ management:
     metrics:
       export:
         enabled: true
-        
+        namespace: ${spring.application.name}
 resilience4j:
   timelimiter:
     configs:

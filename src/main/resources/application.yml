@@ -47,7 +47,6 @@ management:
     metrics:
       export:
         enabled: false
-        namespace: ${spring.application.name}
         step: 10s
 # Spring Cloud Circuit Breaker TimeLimiter
 resilience4j:
