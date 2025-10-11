@@ -22,6 +22,11 @@ spring:
         enabled: true
       secretsmanager:
         enabled: true
+  config:
+    import: 
+      - optional:aws-parameterstore:/config/common/;/config/${spring.application.name}/
+      - optional:aws-secretsmanager:/secrets/database-secrets?prefix=spring.datasource.
+
 management:
   endpoints:
     web:
