@@ -29,13 +29,13 @@ public class TodoRepositoryImplForBatchByRestTemplate implements TodoRepository 
     @SuppressWarnings("rawtypes")
     private final CircuitBreakerFactory cbFactory;
 
-    @Value("${api.backend.url}/api/v1/todos/batch")
+    @Value("${example.api.backend.url}/api/v1/todos/batch")
     private String urlTodosForCreateBatch;
 
-    @Value("${api.backend.url}/api/v1/todos")
+    @Value("${example.api.backend.url}/api/v1/todos")
     private String urlTodos;
 
-    @Value("${api.backend.url}/api/v1/todos/{todoId}")
+    @Value("${example.api.backend.url}/api/v1/todos/{todoId}")
     private String urlTodoById;
 
     @Override
@@ -48,10 +48,9 @@ public class TodoRepositoryImplForBatchByRestTemplate implements TodoRepository 
 
     @Override
     public Collection<Todo> findAll() {
-        return cbFactory.create("todo_findAll").run(
-                () -> restTemplate.getForObject(urlTodos, TodoList.class),
+        return cbFactory.create("todo_findAll").run(() -> restTemplate.getForObject(urlTodos, TodoList.class),
                 // エラーとせずにFallback処理として空のリストを返却する例
-                throwable -> new TodoList());        
+                throwable -> new TodoList());
     }
 
     @Override

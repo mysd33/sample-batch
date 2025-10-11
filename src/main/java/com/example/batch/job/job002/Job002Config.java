@@ -34,10 +34,10 @@ public class Job002Config {
     private final PlatformTransactionManager transactionManager;
     private final FlatFileItemReader<TodoRecord> todoListFileReader;
 
-    @Value("${input.file.name:files/input/todolist.csv}")
+    @Value("${example.input.file.name:files/input/todolist.csv}")
     private String defaultInputFileName;
 
-    @Value("${job002.chunk-size:5}")
+    @Value("${example.job002.chunk-size:5}")
     private int chunkSize;
 
     /**

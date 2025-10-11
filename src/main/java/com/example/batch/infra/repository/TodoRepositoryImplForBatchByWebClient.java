@@ -36,19 +36,19 @@ public class TodoRepositoryImplForBatchByWebClient implements TodoRepository {
     @SuppressWarnings("rawtypes")
     private final ReactiveCircuitBreakerFactory cbFactory;
     // リトライ回数
-    @Value("${api.retry.max-attempts:3}")
+    @Value("${example.api.retry.max-attempts:3}")
     int maxAttempts;
     // エクスポネンシャルバックオフによる初回待機時間
-    @Value("${api.retry.min-backoff:200}")
+    @Value("${example.api.retry.min-backoff:200}")
     long minBackoff;
 
-    @Value("${api.backend.url}/api/v1/todos/batch")
+    @Value("${example.api.backend.url}/api/v1/todos/batch")
     private String urlTodosForCreateBatch;
 
-    @Value("${api.backend.url}/api/v1/todos")
+    @Value("${example.api.backend.url}/api/v1/todos")
     private String urlTodos;
 
-    @Value("${api.backend.url}/api/v1/todos/{todoId}")
+    @Value("${example.api.backend.url}/api/v1/todos/{todoId}")
     private String urlTodoById;
 
     // WebClient(WebFlux)版の実装の参考ページ

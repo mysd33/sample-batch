@@ -21,9 +21,8 @@ import com.example.fw.common.constants.FrameworkConstants;
  */
 @Configuration
 public class SpringBatchConfig {
-    // TODO: プロパティ名の見直しを予定
     // Spring Batchのプロパティプレフィックス
-    public static final String PROPERTY_PREFIX = FrameworkConstants.PROPERTY_BASE_NAME + "spring.batch";
+    public static final String PROPERTY_PREFIX = FrameworkConstants.PROPERTY_BASE_NAME + "batch";
 
     /**
      * キューを介した非同期処理依頼メッセージによるバッチ実行のSpring Batch設定

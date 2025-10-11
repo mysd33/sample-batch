@@ -11,7 +11,7 @@ spring:
     # PostgreSQLはデフォルトautocommit=trueなので、カーソルがオンメモリ処理にならないようautocommit=false
     hikari:
       auto-commit: false
-  #　デモAPとして簡単のためSpringBatchのテーブルのPostgreSQLのスキーマを起動時に作成（本来は、DDLを実行し事前作成すべき）
+  # デモAPとして簡単のためSpringBatchのテーブルのPostgreSQLのスキーマを起動時に作成（本来は、DDLを実行し事前作成すべき）
   batch:
     jdbc:
       initialize-schema: always
@@ -53,8 +53,10 @@ resilience4j:
     configs:
       default:
         timeoutDuration: 3s
-aws:
-  sqs:    
+
+# 拡張フレームワーク機能の設定
+example:
+  sqs:
     number-of-messages-to-prefetch: 0
     listener:
       queue-name: SampleQueue
@@ -62,13 +64,12 @@ aws:
   s3:
     bucket: mysd33bucket123
     region: ap-northeast-1
-
-api:
-  backend:
-    url: http://localhost:8000    
-  retry:
-    max-attempts: 3
-    min-backoff: 200
-    
-job002:
-  chunk-size: 5     
+# 業務APの設定    
+  api:
+    backend:
+      url: http://localhost:8000
+    retry:
+      max-attempts: 3
+      min-backoff: 200
+  job002:
+    chunk-size: 5

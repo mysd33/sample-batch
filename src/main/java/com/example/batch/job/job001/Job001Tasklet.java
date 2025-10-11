@@ -42,7 +42,7 @@ public class Job001Tasklet implements Tasklet {
 
     private final TodoSharedService todoSharedService;
 
-    @Value("${input.file.name:files/input/todolist.csv}")
+    @Value("${example.input.file.name:files/input/todolist.csv}")
     private String defaultInputFileName;
 
     @Override

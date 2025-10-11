@@ -55,7 +55,8 @@ logging:
   level:
     org.springframework.context.support.ResourceBundleMessageSource: ERROR
 
-aws:
+# 拡張フレームワーク機能の設定
+example:
 # ジョブ開始後即時にキューメッセージをACK（削除）するかどうか
 # 長時間バッチではSQSの可視性タイムアウトを短くするためtrueにするとよい
   sqs:

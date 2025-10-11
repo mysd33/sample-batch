@@ -14,9 +14,8 @@ import lombok.Data;
 @Data
 @ConfigurationProperties(prefix = SQSServerConfigurationProperties.PROPERTY_PREFIX)
 public class SQSServerConfigurationProperties {
-    // TODO: プロパティ名の見直し
     // 非同期実行制御機能のプロパティのプレフィックス
-    static final String PROPERTY_PREFIX = FrameworkConstants.PROPERTY_BASE_NAME + "aws.sqs.listener";
+    static final String PROPERTY_PREFIX = FrameworkConstants.PROPERTY_BASE_NAME + "sqs.listener";
     // リスナーが待ち受けするキュー名のプロパティ名
     public static final String LISTENER_QUEUE_NAME_EXPRESSION = "${" + PROPERTY_PREFIX + ".queue-name}";
     // リスナーが待ち受けするキュー名
