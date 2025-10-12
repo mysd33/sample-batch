@@ -4,6 +4,7 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.job.DefaultJobParametersValidator;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
@@ -41,6 +42,19 @@ public class Job002Config {
     private int chunkSize;
 
     /**
+     * パラメータの妥当性検証の例
+     */
+    @Bean
+    DefaultJobParametersValidator job002JobParametersValidator() {
+        DefaultJobParametersValidator validator = new DefaultJobParametersValidator();
+        // 必須パラメータ
+        validator.setRequiredKeys(new String[] { "input-file-name" });
+        // 任意パラメータ
+        validator.setOptionalKeys(new String[] { "param01", "param02" });
+        return validator;
+    }
+
+    /**
      * Job
      */
     @Bean
@@ -48,6 +62,7 @@ public class Job002Config {
         return new JobBuilder("job002", jobRepository)//
                 .listener(listener)//
                 .start(step00201())//
+                .validator(job002JobParametersValidator())//
                 .next(step00202())//
                 .build();
     }

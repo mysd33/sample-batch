@@ -1,9 +1,6 @@
 # 純バッチ用設定ファイル
 # Spring Batch
 spring: 
-  batch:
-    job:
-      enabled: true
   main:
       web-application-type: none
 

@@ -3,6 +3,7 @@ package com.example.batch.job.job001;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.DefaultJobParametersValidator;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
@@ -23,6 +24,18 @@ public class Job001Config {
     private final PlatformTransactionManager transactionManager;
 
     /**
+     * パラメータの妥当性検証の例
+     */
+    @Bean
+    DefaultJobParametersValidator job001JobParametersValidator() {
+        return new DefaultJobParametersValidator(
+                // 必須パラメータ
+                new String[] { "input-file-name" },
+                // 任意パラメータ
+                new String[] { "param01", "param02" });
+    }
+
+    /**
      * Job
      */
     @Bean
@@ -30,6 +43,7 @@ public class Job001Config {
         return new JobBuilder("job001", jobRepository)//
                 .listener(listener)//
                 .start(step00101())//
+                .validator(job001JobParametersValidator())//
                 .build();
     }
 

@@ -42,6 +42,12 @@ public class Job001Tasklet implements Tasklet {
 
     private final TodoSharedService todoSharedService;
 
+    // @StepScopeなので、JobParametersを@Valueで受け取れる
+    @Value("#{jobParameters['param01'] ?: 'default01'}")
+    private String param01;
+    @Value("#{jobParameters['param02'] ?: 'default02'}")
+    private String param02;
+
     @Value("${example.input.file.name:files/input/todolist.csv}")
     private String defaultInputFileName;
 
@@ -53,9 +59,12 @@ public class Job001Tasklet implements Tasklet {
 
         // StepScopeなので、@Valueでパラメータを受け取る方法のほうが簡単だが、ここではChunkContextから取得する例とする
         StepExecution stepExecution = chunkContext.getStepContext().getStepExecution();
-        String param01 = stepExecution.getJobParameters().getString("param01");
-        String param02 = stepExecution.getJobParameters().getString("param02");
         String inputFileName = stepExecution.getJobParameters().getString("input-file-name", defaultInputFileName);
+        // @formatter:off
+        // この例では、param01,param02は@Valueで受け取る例としているが、ChunkContextから取得する場合は以下のようにする
+        // String param01 = stepExecution.getJobParameters().getString("param01", "default01");
+        // String param02 = stepExecution.getJobParameters().getString("param02", "default02");
+        // @formatter:on
         appLogger.debug("param01:{},param02:{},inputFileName:{}", param01, param02, inputFileName);
 
         ExecutionContext jobExecutionContext = stepExecution.getJobExecution().getExecutionContext();
