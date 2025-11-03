@@ -1,5 +1,6 @@
 package com.example.batch.job.job004;
 
+import org.mybatis.spring.batch.MyBatisBatchItemWriter;
 import org.mybatis.spring.batch.MyBatisCursorItemReader;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecutionListener;
@@ -9,7 +10,6 @@ import org.springframework.batch.core.partition.PartitionHandler;
 import org.springframework.batch.core.partition.support.TaskExecutorPartitionHandler;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
-import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +17,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.example.batch.domain.model.User;
-import com.example.fw.batch.core.writer.NoOpItemWriter;
+import com.example.batch.domain.model.UserTempInfo;
 
 import lombok.RequiredArgsConstructor;
 
@@ -33,6 +33,7 @@ public class Job004Config {
     private final TaskExecutor parallelTaskExecutor;
     private final MyBatisCursorItemReader<User> userTableItemReader;
     private final Job004ItemProcessor job004ItemProcessor;
+    private final MyBatisBatchItemWriter<UserTempInfo> userTempTableItemWriter;
 
     /**
      * Job
@@ -76,18 +77,10 @@ public class Job004Config {
     @Bean
     Step job004StepWorker() {
         return new StepBuilder("job004StepWorker", jobRepository)//
-                .<User, User>chunk(10, transactionManager)//
+                .<User, UserTempInfo>chunk(10, transactionManager)//
                 .reader(userTableItemReader)//
                 .processor(job004ItemProcessor)//
-                .writer(job004NoOpItemWriter())//
+                .writer(userTempTableItemWriter)//
                 .build();
-    }
-
-    /**
-     * TODO: MyBatisBatchItemWriterのサンプルを実装するように修正予定
-     */
-    @Bean
-    ItemWriter<User> job004NoOpItemWriter() {
-        return new NoOpItemWriter<>();
     }
 }

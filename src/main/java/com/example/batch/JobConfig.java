@@ -3,7 +3,9 @@ package com.example.batch;
 import java.util.Map;
 
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.mybatis.spring.batch.MyBatisBatchItemWriter;
 import org.mybatis.spring.batch.MyBatisCursorItemReader;
+import org.mybatis.spring.batch.builder.MyBatisBatchItemWriterBuilder;
 import org.mybatis.spring.batch.builder.MyBatisCursorItemReaderBuilder;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.file.FlatFileItemReader;
@@ -22,6 +24,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import com.example.batch.domain.message.MessageIds;
 import com.example.batch.domain.model.User;
+import com.example.batch.domain.model.UserTempInfo;
 import com.example.batch.job.common.record.TodoRecord;
 import com.example.fw.batch.core.config.SpringBatchConfigPackage;
 import com.example.fw.batch.core.exception.DefaultExceptionHandler;
@@ -113,12 +116,8 @@ public class JobConfig {
     }
 
     /**
-     * Userテーブル用ItemReaderクラス（Partitioning Step用にlimit, offsetで取得）
+     * ユーザテーブル用ItemReaderクラス（Partitioning Step用にlimit, offsetで取得）
      * 
-     * @param sqlSessionFactory
-     * @param dataSize
-     * @param offset
-     * @return
      */
     @StepScope
     @Bean
@@ -128,6 +127,19 @@ public class JobConfig {
         return new MyBatisCursorItemReaderBuilder<User>().sqlSessionFactory(sqlSessionFactory)//
                 .queryId("com.example.batch.domain.repository.UserRepository.findAllForPartitioning")//
                 .parameterValues(Map.of("dataSize", dataSize, "offset", offset))//
+                .build();
+    }
+
+    /**
+     * ユーザ一時テーブル用ItemWriterクラス
+     * 
+     */
+    @StepScope
+    @Bean
+    MyBatisBatchItemWriter<UserTempInfo> userTempTableItemWriter(SqlSessionFactory sqlSessionFactory) {
+        return new MyBatisBatchItemWriterBuilder<UserTempInfo>()//
+                .sqlSessionFactory(sqlSessionFactory)//
+                .statementId("com.example.batch.domain.repository.UserTempInfoRepository.insert")//
                 .build();
     }
 
