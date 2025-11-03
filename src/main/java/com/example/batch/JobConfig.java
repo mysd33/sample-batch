@@ -17,8 +17,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.task.TaskExecutor;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
@@ -38,21 +36,6 @@ import com.example.fw.batch.core.exception.ExceptionHandler;
 @Configuration
 @ComponentScan(basePackageClasses = SpringBatchConfigPackage.class)
 public class JobConfig {
-    /**
-     * Partitioning Step（多重実行）用のTaskExecutorクラス
-     * 
-     * @param threadSize    スレッド数
-     * @param queueCapacity キューの容量
-     */
-    @Bean
-    TaskExecutor parallelTaskExecutor(@Value("${thread.size:5}") int threadSize,
-            @Value("${queue.capacity:200}") int queueCapacity) {
-        // TODO: VirtualThreadの対応を検討
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(threadSize);
-        executor.setQueueCapacity(queueCapacity);
-        return executor;
-    }
 
     /**
      * 集約例外ハンドリングクラス

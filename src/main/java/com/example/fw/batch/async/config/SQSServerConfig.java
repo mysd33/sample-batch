@@ -12,7 +12,7 @@ import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
 import com.example.fw.batch.async.messaging.AsyncMessageListener;
 import com.example.fw.batch.async.store.JmsMessageManager;
-import com.example.fw.batch.core.config.SpringBatchConfig;
+import com.example.fw.batch.core.config.SpringBatchConfigurationProperties;
 import com.example.fw.common.async.config.SQSCommonConfigurationProperties;
 
 import jakarta.jms.ConnectionFactory;
@@ -24,7 +24,7 @@ import jakarta.jms.Session;
  * SQSのサーバ側設定クラス
  */
 @Configuration
-@ConditionalOnProperty(prefix = SpringBatchConfig.PROPERTY_PREFIX, name = "type", havingValue = "async", matchIfMissing = true)
+@ConditionalOnProperty(prefix = SpringBatchConfigurationProperties.PROPERTY_PREFIX, name = "type", havingValue = "async", matchIfMissing = true)
 @EnableConfigurationProperties({ SQSCommonConfigurationProperties.class, SQSServerConfigurationProperties.class })
 public class SQSServerConfig {
 
