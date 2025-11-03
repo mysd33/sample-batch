@@ -13,7 +13,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Job001の定義
+ * Job003の定義<br>
+ * Taskletを実行するシンプルなJobの例
  */
 @Configuration
 @RequiredArgsConstructor
@@ -21,6 +22,7 @@ public class Job003Config {
     private final Job003Tasklet job003Tasklet;
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
+
     /**
      * Job
      */

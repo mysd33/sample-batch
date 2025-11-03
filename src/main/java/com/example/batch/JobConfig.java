@@ -1,5 +1,10 @@
 package com.example.batch;
 
+import java.util.Map;
+
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.mybatis.spring.batch.MyBatisCursorItemReader;
+import org.mybatis.spring.batch.builder.MyBatisCursorItemReaderBuilder;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
@@ -10,10 +15,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import com.example.batch.domain.message.MessageIds;
+import com.example.batch.domain.model.User;
 import com.example.batch.job.common.record.TodoRecord;
 import com.example.fw.batch.core.config.SpringBatchConfigPackage;
 import com.example.fw.batch.core.exception.DefaultExceptionHandler;
@@ -27,6 +35,21 @@ import com.example.fw.batch.core.exception.ExceptionHandler;
 @Configuration
 @ComponentScan(basePackageClasses = SpringBatchConfigPackage.class)
 public class JobConfig {
+    /**
+     * Partitioning Step（多重実行）用のTaskExecutorクラス
+     * 
+     * @param threadSize    スレッド数
+     * @param queueCapacity キューの容量
+     */
+    @Bean
+    TaskExecutor parallelTaskExecutor(@Value("${thread.size:5}") int threadSize,
+            @Value("${queue.capacity:200}") int queueCapacity) {
+        // TODO: VirtualThreadの対応を検討
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(threadSize);
+        executor.setQueueCapacity(queueCapacity);
+        return executor;
+    }
 
     /**
      * 集約例外ハンドリングクラス
@@ -41,13 +64,13 @@ public class JobConfig {
     }
 
     /**
-     * TodoListの読み込みクラス
+     * TodoListのFileItemReaderクラス
      * 
      * @param filePathName ファイルパス名
      */
     @StepScope
     @Bean
-    FlatFileItemReader<TodoRecord> todoListFileReader(
+    FlatFileItemReader<TodoRecord> todoListFileItemReader(
             @Value("#{jobExecutionContext['input.file.name']}") String filePathName) {
         return new FlatFileItemReaderBuilder<TodoRecord>().name("todoListReader")
                 .resource(new FileSystemResource(filePathName)).delimited().delimiter(",").names("todoTitle")
@@ -87,6 +110,25 @@ public class JobConfig {
         SpringValidator<?> springValidator = new SpringValidator<>();
         springValidator.setValidator(todoRecordCustomValidator);
         return springValidator;
+    }
+
+    /**
+     * Userテーブル用ItemReaderクラス（Partitioning Step用にlimit, offsetで取得）
+     * 
+     * @param sqlSessionFactory
+     * @param dataSize
+     * @param offset
+     * @return
+     */
+    @StepScope
+    @Bean
+    MyBatisCursorItemReader<User> userTableItemReader(SqlSessionFactory sqlSessionFactory,
+            @Value("#{stepExecutionContext['dataSize']}") Integer dataSize,
+            @Value("#{stepExecutionContext['offset']}") Integer offset) {
+        return new MyBatisCursorItemReaderBuilder<User>().sqlSessionFactory(sqlSessionFactory)//
+                .queryId("com.example.batch.domain.repository.UserRepository.findAllForPartitioning")//
+                .parameterValues(Map.of("dataSize", dataSize, "offset", offset))//
+                .build();
     }
 
 }

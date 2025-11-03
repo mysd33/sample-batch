@@ -34,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class Job001Tasklet implements Tasklet {
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
-    private final FlatFileItemReader<TodoRecord> todoListFileReader;
+    private final FlatFileItemReader<TodoRecord> todoListFileItemReader;
     // 単項目チェック用のValidator
     private final Validator<TodoRecord> validator;
     // 相関項目チェック用のValidator
@@ -73,8 +73,8 @@ public class Job001Tasklet implements Tasklet {
 
         TodoRecord item;
         try {
-            todoListFileReader.open(executionContext);
-            while ((item = todoListFileReader.read()) != null) {
+            todoListFileItemReader.open(executionContext);
+            while ((item = todoListFileItemReader.read()) != null) {
                 log.debug(item.toString());
                 // 入力チェック
                 try {
@@ -91,7 +91,7 @@ public class Job001Tasklet implements Tasklet {
                 todoSharedService.registerTodo(item.getTodoTitle());
             }
         } finally {
-            todoListFileReader.close();
+            todoListFileItemReader.close();
         }
         return RepeatStatus.FINISHED;
     }

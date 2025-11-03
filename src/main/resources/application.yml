@@ -44,6 +44,14 @@ management:
       export:
         enabled: false
         step: 10s
+
+# Mybatis
+mybatis:
+  type-aliases-package: com.example.batch.domain.model
+  configuration:
+    map-underscore-to-camel-case: true
+    default-fetch-size: 10
+
 # Spring Cloud Circuit Breaker TimeLimiter
 resilience4j:
   timelimiter:

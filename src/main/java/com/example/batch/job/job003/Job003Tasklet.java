@@ -39,7 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 public class Job003Tasklet implements Tasklet {
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
     private static final String TEMPDIR_RELATIVE_PATH = "files/input/";
-    private final FlatFileItemReader<TodoRecord> todoListFileReader;
+    private final FlatFileItemReader<TodoRecord> todoListFileItemReader;
     // 単項目チェック用のValidator
     private final Validator<TodoRecord> validator;
     // 相関項目チェック用のValidator
@@ -68,8 +68,8 @@ public class Job003Tasklet implements Tasklet {
         TodoRecord item;
         try {
             // ファイルを読み込み、Repositoryを呼び出す（REST APIを呼び出しTodoを作成）
-            todoListFileReader.open(executionContext);
-            while ((item = todoListFileReader.read()) != null) {
+            todoListFileItemReader.open(executionContext);
+            while ((item = todoListFileItemReader.read()) != null) {
                 log.debug(item.toString());
                 // 入力チェック
                 try {
@@ -87,7 +87,7 @@ public class Job003Tasklet implements Tasklet {
             }
 
         } finally {
-            todoListFileReader.close();
+            todoListFileItemReader.close();
 
             // 一時ファイルを削除
             Files.delete(tempFilePath);

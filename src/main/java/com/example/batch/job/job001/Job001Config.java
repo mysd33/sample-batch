@@ -14,7 +14,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Job001の定義
+ * Job001の定義<br>
+ * Taskletを実行するシンプルなJobの例
  */
 @Configuration
 @RequiredArgsConstructor

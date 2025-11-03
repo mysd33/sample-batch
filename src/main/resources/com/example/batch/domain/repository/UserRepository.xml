@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.batch.domain.repository.UserRepository">
+
+    <!-- マッピング定義 -->    
+    <!-- 全件検索（Partitioning Step用） -->
+    <select id="findAllForPartitioning" resultType="User">
+        SELECT
+            user_id,
+            password,
+            user_name,
+            birthday,
+            role
+        FROM
+            m_user
+        LIMIT
+            #{dataSize}
+        OFFSET
+            #{offset}
+    </select>
+    
+    <!-- 件数取得 -->
+    <select id="count" resultType="int">
+        SELECT
+            count(user_id)
+        FROM
+            m_user
+    </select>
+
+</mapper>

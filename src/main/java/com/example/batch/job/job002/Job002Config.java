@@ -25,6 +25,10 @@ import com.example.fw.common.logging.LoggerFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Job002の定義<br>
+ * ItemProcessorを実行するJobの例
+ */
 @Configuration
 @RequiredArgsConstructor
 @Slf4j
@@ -33,7 +37,7 @@ public class Job002Config {
     private final Job002ItemProcessor job002ItemProcessor;
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
-    private final FlatFileItemReader<TodoRecord> todoListFileReader;
+    private final FlatFileItemReader<TodoRecord> todoListFileItemReader;
 
     @Value("${example.input.file.name:files/input/todolist.csv}")
     private String defaultInputFileName;
@@ -93,9 +97,9 @@ public class Job002Config {
     Step step00202() {
         return new StepBuilder("step002_02", jobRepository)//
                 .<TodoRecord, TodoRecord>chunk(chunkSize, transactionManager)//
-                .reader(todoListFileReader)//
+                .reader(todoListFileItemReader)//
                 .processor(job002ItemProcessor)//
-                .writer(noOpItemWriter())//
+                .writer(job002NoOpItemWriter())//
                 .build();
     }
 
@@ -103,7 +107,7 @@ public class Job002Config {
      * 何もしないItemWriter
      */
     @Bean
-    ItemWriter<TodoRecord> noOpItemWriter() {
+    ItemWriter<TodoRecord> job002NoOpItemWriter() {
         return new NoOpItemWriter<>();
     }
 
