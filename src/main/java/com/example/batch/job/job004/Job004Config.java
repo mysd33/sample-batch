@@ -77,7 +77,7 @@ public class Job004Config {
     }
 
     /**
-     * Step Worker
+     * Worker Step
      */
     @Bean
     Step job004StepWorker() {
