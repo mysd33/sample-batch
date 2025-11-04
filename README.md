@@ -178,12 +178,12 @@ postgres> CREATE DATABASE testdb;
 * Profileが「dev」でSpringBootアプリケーションを実行する場合、S3アクセスは無効化し、ローカルのファイルシステムアクセスする設定になっている。
     * application-dev.ymlの「example.s3.localfake.type」が「file」であり、「example.s3.localfake.base-dir」を一時保存するファイルシステムのディレクトリパスが現状、C:\tmpになっているので、フォルダの変更が必要な場合は、変更する。
         * 「sample-batch」アプリケーション側も変更が必要
-* Profileが「dev」でも、S3のローカル起動用のFake（MinIOやs3rver）を起動したい場合には、以下の通り
 
 > [!NOTE]
 > MinIOは、GNU AGPL v3によるOSSライセンスと商用ライセンスのデュアルライセンスで提供されており、MinIOを同梱しての配布、利用等には注意すること。  
 > s3rverは、現在、アーカイブされているので、利用等には注意すること。
 
+* Profileが「dev」でも、S3のローカル起動用のFake（MinIOやs3rver）を起動したい場合には、以下の通り
     * MinIOの場合
         * [MinIOのサイト](https://min.io/download#/windows)の手順に従い、インストールし、MinIOを起動
         * 以下は、Windows版での起動例
