@@ -13,7 +13,9 @@ public class SpringBatchConfigurationProperties {
     public static final String PROPERTY_PREFIX = FrameworkConstants.PROPERTY_BASE_NAME + "batch";
     // Spring Batchの実行タイプ（async:キューを介した非同期実行、commandline:コマンドライン実行）
     private String type;
-
+    //  @formatter:off
+    // 
+    // Spring Bootのスレッドプールに任せない場合は、下記のTaskExecutor Bean定義を有効化する
     // Partitioning Step（多重実行）用でVirtualThread版TaskExecutorのスレッド名プレフィックス
     private String threadNamePrefix = "prt-virtual-";
     // Partitioning Step（多重実行）用でThreadPool版TaskExecutorのコアプールサイズ
@@ -22,5 +24,5 @@ public class SpringBatchConfigurationProperties {
     private int threadMaxPoolSize = 5;
     // Partitioning Step（多重実行）用のThreadPool版TaskExecutorのキューキャパシティサイズ
     private int queueCapacity = 200;
-
+    //@formatter:on
 }

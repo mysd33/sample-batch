@@ -10,9 +10,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.task.TaskExecutor;
-import org.springframework.core.task.VirtualThreadTaskExecutor;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.StringUtils;
 
 import com.example.fw.batch.async.config.SQSServerConfigurationProperties;
@@ -35,22 +32,27 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @EnableConfigurationProperties(SpringBatchConfigurationProperties.class)
 public class SpringBatchConfig {
-    private final SpringBatchConfigurationProperties springBatchConfigurationProperties;
-
+    //  @formatter:off
+    // 
+    // Spring Bootのスレッドプールに任せない場合は、下記のTaskExecutor Bean定義を有効化する
+    //private final SpringBatchConfigurationProperties springBatchConfigurationProperties;
     /**
      * VirtualThread有効時のPartitioning Step（多重実行）用のTaskExecutor
      * 
      */
+    
+    /*
     @Bean
     @ConditionalOnProperty(prefix = "spring.threads.virtual", name = "enabled", havingValue = "true", matchIfMissing = false)
     TaskExecutor parallelVirtualThreadTaskExecutor() {
         return new VirtualThreadTaskExecutor(springBatchConfigurationProperties.getThreadNamePrefix());
-    }
+    }*/
 
     /**
      * VirtualThread無効時のPartitioning Step（多重実行）用のTheadPool版TaskExecutor
      * 
      */
+    /*
     @Bean
     @ConditionalOnProperty(prefix = "spring.threads.virtual", name = "enabled", havingValue = "false", matchIfMissing = true)
     TaskExecutor parallelThreadPoolTaskExecutor() {
@@ -59,7 +61,8 @@ public class SpringBatchConfig {
         executor.setMaxPoolSize(springBatchConfigurationProperties.getThreadMaxPoolSize());
         executor.setQueueCapacity(springBatchConfigurationProperties.getQueueCapacity());
         return executor;
-    }
+    }*/
+    //@formatter:on
 
     /**
      * キューを介した非同期処理依頼メッセージによるバッチ実行のSpring Batch設定
