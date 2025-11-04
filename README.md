@@ -14,11 +14,11 @@
     * 別プロジェクト。当該名称のリポジトリを参照のこと。Spring BootのREST APIアプリケーションで、sample-webやsample-batchが送信したREST APIのメッセージを受信し処理することが可能である。
         * sample-backendは永続化にRDBを使っているが、sample-backend-dynamodbは同じAPのDynamoDB版になっている。
         * デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、RDB永続化にはH2DBによる組み込みDBになっている。また、sample-backend-dynamodbプロジェクトの場合は、AP起動時にDynamoDBの代わりに、DynamoDB Localを組み込みで起動し、接続するようになっている。
-        * プロファイルproductionの場合は、RDB永続化にはPostgreSQL(AWS上はAurora等）になっている。また、sample-backend-dynamodbプロジェクトの場合は、DynamoDBに接続するようになっている。
+        * プロファイルproductionの場合は、RDB永続化にはPostgreSQL（AWS上はAurora等）になっている。また、sample-backend-dynamodbプロジェクトの場合は、DynamoDBに接続するようになっている。
 * sample-batch
     * 本プロジェクト。Spring JMSを使ったSpring Bootの非同期処理アプリケーションで、sample-webやsample-schedulelaunchが送信した非同期実行依頼のメッセージをSQSを介して受信し処理することが可能である。    
         * デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、AP起動時にSQSの代わりにElasticMQを組み込みで起動し、リッスンするようになっている。また、RDB永続化にはH2DBによる組み込みDBになっている。
-        * プロファイルproductionの場合は、SQSをリッスンするようになっている。また、RDB永続化にはPostgreSQL(AWS上はAurora等）になっている。
+        * プロファイルproductionの場合は、SQSをリッスンするようになっている。また、RDB永続化にはPostgreSQL（AWS上はAurora等）になっている。
 * sample-schedulelaunch
     * 別プロジェクト。当該名称のリポジトリを参照のこと。SpringBootのCLIアプリケーションで、実行時に引数または環境変数で指定したスケジュール起動バッチ定義IDに対応するジョブの非同期実行依頼を実施し、SQSを介して、sample-batchアプリケーションのジョブを実行する。スケジュールによるバッチ起動を想定したアプリケーション。
         * デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、SQS接続はsample-batch側で組み込みで起動するElasticMQへ送信するようになっている。
@@ -176,19 +176,23 @@ postgres> CREATE DATABASE testdb;
 
 ## S3の設定
 * Profileが「dev」でSpringBootアプリケーションを実行する場合、S3アクセスは無効化し、ローカルのファイルシステムアクセスする設定になっている。
-    * application-dev.ymlの「aws.s3.localfake.type」が「file」であり、「aws.s3.localfake.base-dir」を一時保存するファイルシステムのディレクトリパスが現状、C:\tmpになっているので、フォルダの変更が必要な場合は、変更する。
+    * application-dev.ymlの「example.s3.localfake.type」が「file」であり、「example.s3.localfake.base-dir」を一時保存するファイルシステムのディレクトリパスが現状、C:\tmpになっているので、フォルダの変更が必要な場合は、変更する。
         * 「sample-batch」アプリケーション側も変更が必要
 * Profileが「dev」でも、S3のローカル起動用のFake（MinIOやs3rver）を起動したい場合には、以下の通り
     * MinIOの場合
         * [MinIOのサイト](https://min.io/download#/windows)の手順に従い、インストールし、MinIOを起動
+
+            > [!NOTE]
+            > MinIOは、GNU AGPL v3によるOSSライセンスと商用ライセンスのデュアルライセンスで提供されており、MinIOを同梱しての配布、利用等には注意すること。
+
         * 以下は、Windows版での起動例
             * C:\minioフォルダにminio.exeを格納して、起動した例（デフォルトポート9000番ポートで起動、コンソールは9001番ポートで起動）
         ```sh        
         C:\minio\minio.exe server C:\minio\data --console-address ":9001"
         ```
-        *  application-dev.ymlの「aws.s3.localfake.type」を「minio」に変更し、以下の通り設定
+        *  application-dev.ymlの「example.s3.localfake.type」を「minio」に変更し、以下の通り設定
         ```yaml
-        aws:
+        example:
           s3:
             localfake:
               type: minio
@@ -199,13 +203,17 @@ postgres> CREATE DATABASE testdb;
         ```
     * s3rverの場合
         * [s3rverのサイト](https://github.com/jamhall/s3rver)の手順に従い、npmでインストールし、s3rverを起動
+
+            > [!NOTE]
+            > s3rverは、現在、アーカイブされているので、利用等には注意すること。
+
         * 以下、起動例
         ```
         s3rver -d C:\s3rver
         ```
-        *  application-dev.ymlの「aws.s3.localfake.type」を「s3rver」に変更し、以下の通り設定
+        *  application-dev.ymlの「example.s3.localfake.type」を「s3rver」に変更し、以下の通り設定
         ```yaml
-        aws:
+        example:
           s3:
             localfake:
               type: s3rver
