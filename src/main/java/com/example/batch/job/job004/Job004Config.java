@@ -35,6 +35,11 @@ public class Job004Config {
     private final Job004ItemProcessor job004ItemProcessor;
     private final MyBatisBatchItemWriter<UserTempInfo> userTempTableItemWriter;
 
+    @Value("${job004.grid-size:5}")
+    private int gridSize;
+    @Value("${job004.chunk-size:10}")
+    private int chunkSize;
+
     /**
      * Job
      */
@@ -63,7 +68,7 @@ public class Job004Config {
      * PartiionHandler
      */
     @Bean
-    PartitionHandler job004PartitionHandler(@Value("${grid.size:5}") int gridSize, Step job004StepWorker) {
+    PartitionHandler job004PartitionHandler(Step job004StepWorker) {
         TaskExecutorPartitionHandler handler = new TaskExecutorPartitionHandler();
         handler.setStep(job004StepWorker);
         handler.setTaskExecutor(parallelTaskExecutor);
@@ -77,7 +82,7 @@ public class Job004Config {
     @Bean
     Step job004StepWorker() {
         return new StepBuilder("job004StepWorker", jobRepository)//
-                .<User, UserTempInfo>chunk(10, transactionManager)//
+                .<User, UserTempInfo>chunk(chunkSize, transactionManager)//
                 .reader(userTableItemReader)//
                 .processor(job004ItemProcessor)//
                 .writer(userTempTableItemWriter)//
