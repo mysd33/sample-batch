@@ -177,46 +177,84 @@ postgres> CREATE DATABASE testdb;
 ## S3の設定
 * Profileが「dev」でSpringBootアプリケーションを実行する場合、S3アクセスは無効化し、ローカルのファイルシステムアクセスする設定になっている。
     * application-dev.ymlの「example.s3.localfake.type」が「file」であり、「example.s3.localfake.base-dir」を一時保存するファイルシステムのディレクトリパスが現状、C:\tmpになっているので、フォルダの変更が必要な場合は、変更する。
-        * 「sample-batch」アプリケーション側も変更が必要
+        * 「sample-bff」アプリケーション側も変更が必要
 
 > [!NOTE]
 > MinIOは、GNU AGPL v3によるOSSライセンスと商用ライセンスのデュアルライセンスで提供されており、MinIOを同梱しての配布、利用等には注意すること。  
 > s3rverは、現在、アーカイブされているので、利用等には注意すること。
 
-* Profileが「dev」でも、S3のローカル起動用のFake（MinIOやs3rver）を起動したい場合には、以下の通り
+* Profileが「dev」でも、S3のローカル起動用のFake（LocalStackやMinIO、s3rver）を起動したい場合には、以下の通り
+    * LocalStackの場合
+        * Docker起動が前提になるため、Dockerがインストールされている必要がある。
+        * [LocalStackのサイト](https://docs.localstack.cloud/aws/getting-started/installation/)に記載された、いずれかの手順に従いインストールし、LocalStackを起動
+            * ここでは[Docker Composeでの起動例](https://docs.localstack.cloud/aws/getting-started/installation/#docker-compose)を記載する。すでに、サンプルとしてlocalstackフォルダにdocker-compose.ymlが用意されているので、以下の通り起動する。
+
+            ```sh
+            cd localstack
+            docker compose up -d
+            ```
+
+            ```sh
+            $ aws configure --profile localstack
+            AWS Access Key ID [None]: dummy
+            AWS Secret Access Key [None]: dummy
+            Default region name [None]: ap-northeast-1
+            Default output format [None]: json
+            ```
+
+            * LocalStackが起動したら、AWS CLIでS3のバケットを作成する。
+
+            ```sh
+            aws s3 mb --endpoint-url=http://localhost:4566 --profile localstack s3://mysd33bucket123
+            aws s3 ls --endpoint-url=http://localhost:4566 --profile localstack
+            ```
+
+            * バケット内のファイルの確認（サンプルAP実行後に使用）
+
+            ```sh            
+            aws s3 ls --endpoint-url=http://localhost:4566 --profile localstack s3://mysd33bucket123 --recursive
+            ```
+
     * MinIOの場合
         * [MinIOのサイト](https://min.io/download#/windows)の手順に従い、インストールし、MinIOを起動
         * 以下は、Windows版での起動例
             * C:\minioフォルダにminio.exeを格納して、起動した例（デフォルトポート9000番ポートで起動、コンソールは9001番ポートで起動）
-        ```sh        
-        C:\minio\minio.exe server C:\minio\data --console-address ":9001"
-        ```
+
+            ```sh        
+            C:\minio\minio.exe server C:\minio\data --console-address ":9001"
+            ```
+
         *  application-dev.ymlの「example.s3.localfake.type」を「minio」に変更し、以下の通り設定
-        ```yaml
-        example:
-          s3:
-            localfake:
-              type: minio
-              port: 9000
-              access-key-id: minioadmin
-              secret-access-key: minioadmin
-            bucket: mysd33bucket123
-        ```
+
+            ```yaml
+            example:
+            s3:
+                localfake:
+                type: minio
+                port: 9000
+                access-key-id: minioadmin
+                secret-access-key: minioadmin
+                bucket: mysd33bucket123
+            ```
     * s3rverの場合
         * [s3rverのサイト](https://github.com/jamhall/s3rver)の手順に従い、npmでインストールし、s3rverを起動
+
         * 以下、起動例
-        ```
-        s3rver -d C:\s3rver
-        ```
+
+            ```
+            s3rver -d C:\s3rver
+            ```
+
         *  application-dev.ymlの「example.s3.localfake.type」を「s3rver」に変更し、以下の通り設定
-        ```yaml
-        example:
-          s3:
-            localfake:
-              type: s3rver
-              port: 4568
-            bucket: mysd33bucket123
-        ```
+
+            ```yaml
+            example:
+              s3:
+                localfake:
+                  type: s3rver
+                  port: 4568
+                bucket: mysd33bucket123
+            ```
 
 * Profileが「production」に切り替えてSpringBootアプリケーションを実行する場合、S3を使用する設定になっているため、事前にAWS上に、S3のバケットを作成する必要がある。
     * application-production.ymlの「aws.s3.bucket」プロパティを作成したバケット名に変更する。

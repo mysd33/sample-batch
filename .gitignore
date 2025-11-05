@@ -32,7 +32,7 @@ build/
 ### VS Code ###
 .vscode/
 
-
 log/
 *.bkp
 *.dtmp
+localstack/volume
