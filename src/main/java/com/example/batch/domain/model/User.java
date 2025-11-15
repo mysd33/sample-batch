@@ -3,7 +3,8 @@ package com.example.batch.domain.model;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.example.bff.domain.rule.CalendarRules;
+import com.example.batch.domain.rule.CalendarRules;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -1,4 +1,4 @@
-package com.example.bff.domain.rule;
+package com.example.batch.domain.rule;
 
 import java.util.Calendar;
 import java.util.Date;
