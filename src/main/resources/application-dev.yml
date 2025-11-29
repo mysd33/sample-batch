@@ -10,6 +10,10 @@ spring:
     driver-class-name: org.h2.Driver
     username: sa
     password:
+# WebClient ログ詳細化
+  http:
+    codecs:
+      log-request-details: true
 
 management:
   endpoints:
@@ -33,7 +37,10 @@ logging:
     org.springframework: INFO
     org.springframework.jdbc: INFO
     com.example: DEBUG
+    # LogAspect 性能ログ出力    
     com.example.fw.batch.aspect.LogAspect: TRACE
+# WebClient ログ詳細化    
+    org.springframework.web.reactive.function.client.ExchangeFunctions: TRACE
 
 # 拡張フレームワーク機能の設定
 example:
