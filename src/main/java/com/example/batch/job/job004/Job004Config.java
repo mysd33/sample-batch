@@ -55,12 +55,12 @@ public class Job004Config {
      * Manager Step
      */
     @Bean
-    Step job004StepManager(PartitionHandler partitionHandler, //
+    Step job004StepManager(PartitionHandler job004PartitionHandler, //
             Job004Partitioner job004Partitioner, //
             Step job004StepWorker) {
         return new StepBuilder("job004StepManager", jobRepository)//
-                .partitioner(" job004Partitioner", job004Partitioner)//
-                .partitionHandler(partitionHandler)//
+                .partitioner("job004Partitioner", job004Partitioner)//
+                .partitionHandler(job004PartitionHandler)//
                 .build();
     }
 
