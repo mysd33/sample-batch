@@ -2,8 +2,8 @@ package com.example.fw.batch.core.listener;
 
 import java.time.LocalDateTime;
 
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.JobExecutionListener;
+import org.springframework.batch.core.job.JobExecution;
+import org.springframework.batch.core.listener.JobExecutionListener;
 
 import com.example.fw.batch.async.config.SQSServerConfigurationProperties;
 import com.example.fw.batch.async.store.JmsMessageManager;
@@ -30,7 +30,7 @@ public class DefaultJobExecutionListener implements JobExecutionListener {
     @Override
     public void beforeJob(JobExecution jobExecution) {
         appLogger.info(BatchFrameworkMessageIds.I_FW_BTCTRL_0001, jobExecution.getJobInstance().getJobName(),
-                jobExecution.getJobId(), jobExecution.getId());
+                jobExecution.getJobInstanceId(), jobExecution.getId());
         // isAckOnJobStartがtrueの場合、ジョブ開始後即時にキューメッセージをACK（削除）する
         // 長時間バッチではSQSの可視性タイムアウトを短くするためtrueにするとよい
         if (jmsMessageManager != null && //
@@ -49,7 +49,7 @@ public class DefaultJobExecutionListener implements JobExecutionListener {
             elapsedTime = SystemDateUtils.calcElapsedTimeByMilliSeconds(startTime, endTime);
         }
         appLogger.info(BatchFrameworkMessageIds.I_FW_BTCTRL_0002, elapsedTime, startTime,
-                jobExecution.getJobInstance().getJobName(), jobExecution.getJobId(), jobExecution.getId(),
+                jobExecution.getJobInstance().getJobName(), jobExecution.getJobInstanceId(), jobExecution.getId(),
                 jobExecution.getExitStatus().getExitCode());
 
         // 例外発生時に集約例外ハンドリング

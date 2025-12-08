@@ -1,6 +1,6 @@
 package com.example.batch.job.common.record;
 
-import org.springframework.batch.item.ItemCountAware;
+import org.springframework.batch.infrastructure.item.ItemCountAware;
 
 import com.example.fw.common.validation.CharSet;
 import com.example.fw.common.validation.RangeLength;

@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.item.validator.ValidationException;
+import org.springframework.batch.core.job.JobExecution;
+import org.springframework.batch.infrastructure.item.validator.ValidationException;
 import org.springframework.context.MessageSource;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;

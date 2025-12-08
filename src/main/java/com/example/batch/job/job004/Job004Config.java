@@ -2,13 +2,13 @@ package com.example.batch.job.job004;
 
 import org.mybatis.spring.batch.MyBatisBatchItemWriter;
 import org.mybatis.spring.batch.MyBatisCursorItemReader;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobExecutionListener;
-import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.Job;
 import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.listener.JobExecutionListener;
 import org.springframework.batch.core.partition.PartitionHandler;
 import org.springframework.batch.core.partition.support.TaskExecutorPartitionHandler;
 import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.step.Step;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -82,7 +82,8 @@ public class Job004Config {
     @Bean
     Step job004StepWorker() {
         return new StepBuilder("job004StepWorker", jobRepository)//
-                .<User, UserTempInfo>chunk(chunkSize, transactionManager)//
+                .<User, UserTempInfo>chunk(chunkSize)//
+                .transactionManager(transactionManager)//
                 .reader(userTableItemReader)//
                 .processor(job004ItemProcessor)//
                 .writer(userTempTableItemWriter)//

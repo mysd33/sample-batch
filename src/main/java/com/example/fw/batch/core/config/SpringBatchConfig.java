@@ -1,12 +1,11 @@
 package com.example.fw.batch.core.config;
 
-import org.springframework.batch.core.JobExecutionListener;
-import org.springframework.batch.core.explore.JobExplorer;
-import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.batch.core.repository.JobRepository;
-import org.springframework.boot.autoconfigure.batch.BatchProperties;
-import org.springframework.boot.autoconfigure.batch.JobLauncherApplicationRunner;
+import org.springframework.batch.core.configuration.annotation.EnableJdbcJobRepository;
+import org.springframework.batch.core.launch.JobOperator;
+import org.springframework.batch.core.listener.JobExecutionListener;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.batch.autoconfigure.BatchProperties;
+import org.springframework.boot.batch.autoconfigure.JobLauncherApplicationRunner;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,6 +30,8 @@ import lombok.RequiredArgsConstructor;
 @Configuration
 @RequiredArgsConstructor
 @EnableConfigurationProperties(SpringBatchConfigurationProperties.class)
+// JDBCベースのインフラを有効化
+@EnableJdbcJobRepository
 public class SpringBatchConfig {
     //  @formatter:off
     // 
@@ -108,10 +109,8 @@ public class SpringBatchConfig {
          * コマンドライン実行用のJobLauncherApplicationRunnerのBean定義<br>
          */
         @Bean
-        JobLauncherApplicationRunner jobLauncherApplicationRunner(JobLauncher jobLauncher, JobExplorer jobExplorer,
-                JobRepository jobRepository, BatchProperties properties) {
-            DefaultJobLauncherApplicationRunner runner = new DefaultJobLauncherApplicationRunner(jobLauncher,
-                    jobExplorer, jobRepository);
+        JobLauncherApplicationRunner jobLauncherApplicationRunner(JobOperator jobOperator, BatchProperties properties) {
+            DefaultJobLauncherApplicationRunner runner = new DefaultJobLauncherApplicationRunner(jobOperator);
             String jobName = properties.getJob().getName();
             if (StringUtils.hasText(jobName)) {
                 runner.setJobName(jobName);

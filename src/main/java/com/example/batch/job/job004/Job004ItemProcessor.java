@@ -1,7 +1,7 @@
 package com.example.batch.job.job004;
 
 import org.springframework.batch.core.configuration.annotation.StepScope;
-import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.infrastructure.item.ItemProcessor;
 import org.springframework.stereotype.Component;
 
 import com.example.batch.domain.model.User;

@@ -1,6 +1,6 @@
 package com.example.fw.batch.core.exception;
 
-import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.job.JobExecution;
 
 /**
  * 
