@@ -31,7 +31,6 @@ public final class BatchFrameworkMessageIds {
     public static final String W_FW_ASYNCSV_8003 = "w.fw.asyncsv.8003";
     public static final String W_FW_ASYNCSV_8004 = "w.fw.asyncsv.8004";
     public static final String W_FW_ASYNCSV_8005 = "w.fw.asyncsv.8005";
-    public static final String W_FW_ASYNCSV_8006 = "w.fw.asyncsv.8006";
 
     // エラーレベル
     // 非同期AP実行制御
@@ -39,7 +38,6 @@ public final class BatchFrameworkMessageIds {
     public static final String E_FW_ASYNCSV_9002 = "e.fw.asyncsv.9002";
     public static final String E_FW_ASYNCSV_9003 = "e.fw.asyncsv.9003";
     public static final String E_FW_ASYNCSV_9004 = "e.fw.asyncsv.9004";
-
     // バッチAP実行制御
     public static final String E_FW_BATCH_9001 = "e.fw.batch.9001";
 }

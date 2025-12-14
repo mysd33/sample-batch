@@ -1,6 +1,9 @@
 package com.example.fw.batch.async.config;
 
+import org.springframework.batch.core.configuration.JobRegistry;
+import org.springframework.batch.core.converter.JobParametersConverter;
 import org.springframework.batch.core.launch.JobOperator;
+import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -69,9 +72,11 @@ public class SQSServerConfig {
      * @param jobOperator {@link JobOperator}
      */
     @Bean
-    AsyncMessageListener asyncMessageListener(JobOperator jobOperator, JmsMessageManager jmsMessageManager,
+    AsyncMessageListener asyncMessageListener(JobOperator jobOperator, JobParametersConverter jobParametersConverter,
+            JobRepository jobRepository, JobRegistry jobRegistry, JmsMessageManager jmsMessageManager,
             SQSServerConfigurationProperties sqsServerConfigurationProperties) {
-        return new AsyncMessageListener(jobOperator, jmsMessageManager, sqsServerConfigurationProperties);
+        return new AsyncMessageListener(jobOperator, jobParametersConverter, jobRepository, jobRegistry,
+                jmsMessageManager, sqsServerConfigurationProperties);
     }
 
 }
