@@ -100,7 +100,8 @@ public class AsyncMessageListener {
             appLogger.warn(BatchFrameworkMessageIds.W_FW_ASYNCSV_8002, e, messageId, jobId);
             acknowledgeExplicitlyOnExceptionIfAckOnJobStart();
         } catch (JobParametersInvalidException e) {
-            monitoringLogger.error(BatchFrameworkMessageIds.E_FW_ASYNCSV_9002, e, messageId, jobId);
+            monitoringLogger.error(BatchFrameworkMessageIds.E_FW_ASYNCSV_9002, e, messageId, jobId,
+                    request.toParameterString());
             acknowledgeExplicitlyOnExceptionIfAckOnJobStart();
         }
     }
