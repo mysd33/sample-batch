@@ -1,8 +1,6 @@
 package com.example.fw.batch.core.config;
 
-import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.configuration.annotation.EnableJdbcJobRepository;
-import org.springframework.batch.core.configuration.support.MapJobRegistry;
 import org.springframework.batch.core.converter.DefaultJobParametersConverter;
 import org.springframework.batch.core.converter.JobParametersConverter;
 import org.springframework.batch.core.launch.JobOperator;
@@ -75,14 +73,6 @@ public class SpringBatchConfig {
     @Bean
     JobParametersConverter jobParametersConverter() {
         return new DefaultJobParametersConverter();
-    }
-
-    /**
-     * ジョブレジストリの定義
-     */
-    @Bean
-    JobRegistry jobRegistry() {
-        return new MapJobRegistry();
     }
 
     /**

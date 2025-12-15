@@ -46,10 +46,8 @@ public class Job004Config {
      * Job
      */
     @Bean
-    // TODO: Spring
-    // BatchのAPI変更に伴いMapJobRegistry()をBean定義するように変えるとBean名がジョブ名と完全一致していないとジョブが取得できない問題がありそう
-    // Job job004Job(JobExecutionListener listener, Step job004StepManager) {
-    Job job004(JobExecutionListener listener, Step job004StepManager) {
+    Job job004Job(JobExecutionListener listener, Step job004StepManager) {
+        // Job job004(JobExecutionListener listener, Step job004StepManager) {
         return new JobBuilder("job004", jobRepository)//
                 .listener(listener)//
                 .start(job004StepManager)//

@@ -2,7 +2,10 @@ package com.example.fw.batch.async.messaging;
 
 import java.util.Map;
 
+import org.springframework.batch.core.configuration.BatchConfigurationException;
+import org.springframework.batch.core.configuration.DuplicateJobException;
 import org.springframework.batch.core.configuration.JobRegistry;
+import org.springframework.batch.core.configuration.support.MapJobRegistry;
 import org.springframework.batch.core.converter.JobParametersConverter;
 import org.springframework.batch.core.job.Job;
 import org.springframework.batch.core.job.JobExecution;
@@ -13,6 +16,8 @@ import org.springframework.batch.core.launch.JobInstanceAlreadyCompleteException
 import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.launch.JobRestartException;
 import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.support.JmsHeaders;
 import org.springframework.messaging.handler.annotation.Headers;
@@ -25,6 +30,7 @@ import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;
 import com.example.fw.common.logging.MonitoringLogger;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.jms.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,15 +43,35 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class AsyncMessageListener {
-
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
     private static final MonitoringLogger monitoringLogger = LoggerFactory.getMonitoringLogger(log);
     private final JobOperator jobOperator;
     private final JobParametersConverter jobParametersConverter;
     private final JobRepository jobRepository;
-    private final JobRegistry jobRegistry;
     private final JmsMessageManager jmsMessageManager;
     private final SQSServerConfigurationProperties sqsServerConfigurationProperties;
+    private JobRegistry jobRegistry;
+    private ApplicationContext applicationContext;
+
+    @Autowired
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
+
+    // Note:
+    // MapJobRegistry()をBean定義するように変えると、JobのBean名がジョブ名と完全一致していないとジョブが取得できない問題があるため
+    // ここで初期化生成している。
+    @PostConstruct
+    public void init() {
+        jobRegistry = new MapJobRegistry();
+        this.applicationContext.getBeansOfType(Job.class).values().forEach(job -> {
+            try {
+                jobRegistry.register(job);
+            } catch (DuplicateJobException e) {
+                throw new BatchConfigurationException(e);
+            }
+        });
+    }
 
     /**
      * キューからジョブの要求情報を受信
