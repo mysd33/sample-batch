@@ -11,8 +11,10 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.Step;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -71,17 +73,29 @@ public class Job004Config {
      * PartiionHandler
      */
     @Bean
-    PartitionHandler job004PartitionHandler(Step job004StepWorker) {
+    // PartitionHandler job004PartitionHandler(Step job004StepWorker) {
+    PartitionHandler job004PartitionHandler(Step job004StepWorkerPrototype) {
         TaskExecutorPartitionHandler handler = new TaskExecutorPartitionHandler();
-        handler.setStep(job004StepWorker);
+        // handler.setStep(job004StepWorker);
+        handler.setStep(job004StepWorkerPrototype);
         handler.setTaskExecutor(parallelTaskExecutor);
         handler.setGridSize(gridSize);
         return handler;
     }
 
+    // TODO: Spring Batch6.0で現状マルチスレッドのバグがある模様。
+    // 回避策としてWorkerStepをプロトタイプでインスタンス定義しているが、Spring Batchのバグ修正を待つ
+    @Bean
+    Step job004StepWorkerPrototype() {
+        return stepExecution -> job004StepWorker().execute(stepExecution);
+    }
+
     /**
      * Worker Step
      */
+    // TODO: Spring Batch6.0で現状マルチスレッドのバグがある模様。
+    // 回避策としてWorkerStepをプロトタイプでインスタンス定義しているが、Spring Batchのバグ修正を待つ
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     @Bean
     Step job004StepWorker() {
         return new StepBuilder("job004StepWorker", jobRepository)//
