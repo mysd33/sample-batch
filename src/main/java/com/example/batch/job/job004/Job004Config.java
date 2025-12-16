@@ -82,7 +82,9 @@ public class Job004Config {
     }
 
     // TODO: Spring Batch6.0で現状マルチスレッドのバグがある模様。
-    // 回避策としてWorkerStepをプロトタイプでインスタンス定義しているが、Spring Batchのバグ修正を待つ
+    // https://github.com/spring-projects/spring-batch/issues/5099
+    // 回避策としてWorkerStepをプロトタイプでインスタンス定義しているが、Spring Batch6.0.1でのバグ修正を待つ
+    // https://github.com/spring-projects/spring-batch/commit/a2d61f8ffa33da7680b9ca0d3f8b8195d90fab69
     @Bean
     Step job004StepWorkerPrototype() {
         return stepExecution -> job004StepWorker().execute(stepExecution);
@@ -92,7 +94,9 @@ public class Job004Config {
      * Worker Step
      */
     // TODO: Spring Batch6.0で現状マルチスレッドのバグがある模様。
-    // 回避策としてWorkerStepをプロトタイプでインスタンス定義しているが、Spring Batchのバグ修正を待つ
+    // https://github.com/spring-projects/spring-batch/issues/5099
+    // 回避策としてWorkerStepをプロトタイプでインスタンス定義しているが、Spring Batch6.0.1でのバグ修正を待つ
+    // https://github.com/spring-projects/spring-batch/commit/a2d61f8ffa33da7680b9ca0d3f8b8195d90fab69
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     @Bean
     Step job004StepWorker() {
