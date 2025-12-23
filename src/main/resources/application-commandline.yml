@@ -2,7 +2,7 @@
 # Spring Batch
 spring: 
   main:
-      web-application-type: none
+    web-application-type: none
 
 # 拡張フレームワーク機能の設定
 example:
