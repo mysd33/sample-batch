@@ -11,10 +11,8 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.Step;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -71,33 +69,17 @@ public class Job004Config {
      * PartiionHandler
      */
     @Bean
-    // PartitionHandler job004PartitionHandler(Step job004StepWorker) {
-    PartitionHandler job004PartitionHandler(Step job004StepWorkerPrototype) {
+    PartitionHandler job004PartitionHandler(Step job004StepWorker) {
         TaskExecutorPartitionHandler handler = new TaskExecutorPartitionHandler();
-        // handler.setStep(job004StepWorker);
-        handler.setStep(job004StepWorkerPrototype);
+        handler.setStep(job004StepWorker);
         handler.setTaskExecutor(parallelTaskExecutor);
         handler.setGridSize(gridSize);
         return handler;
     }
 
-    // TODO: Spring Batch6.0で現状マルチスレッドのバグがある模様。
-    // https://github.com/spring-projects/spring-batch/issues/5099
-    // 回避策としてWorkerStepをプロトタイプでインスタンス定義しているが、Spring Batch6.0.1でのバグ修正を待つ
-    // https://github.com/spring-projects/spring-batch/commit/a2d61f8ffa33da7680b9ca0d3f8b8195d90fab69
-    @Bean
-    Step job004StepWorkerPrototype() {
-        return stepExecution -> job004StepWorker().execute(stepExecution);
-    }
-
     /**
      * Worker Step
      */
-    // TODO: Spring Batch6.0で現状マルチスレッドのバグがある模様。
-    // https://github.com/spring-projects/spring-batch/issues/5099
-    // 回避策としてWorkerStepをプロトタイプでインスタンス定義しているが、Spring Batch6.0.1でのバグ修正を待つ
-    // https://github.com/spring-projects/spring-batch/commit/a2d61f8ffa33da7680b9ca0d3f8b8195d90fab69
-    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     @Bean
     Step job004StepWorker() {
         return new StepBuilder("job004StepWorker", jobRepository)//
