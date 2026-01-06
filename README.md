@@ -3,7 +3,14 @@
 ## 概要
 * Spring BootでSpring JMS + AWS SQS Messaging Libraryを使って、SQSを介在したメッセージング処理方式で非同期でジョブ実行する、非同期/バッチのサンプルAPである。同期実行処理アプリケーションは、Spring Batchを使用しており、非同期実行依頼メッセージで指定されたジョブIDとパラメータのジョブを実行するようになっている。
 * 開発端末ローカル実行時にAWS SQSがなくても動作するよう、AP起動時にSQSの代わりにSQS互換のFakeとしてElasticMQを組み込みで起動して動作するため、特にAWS環境がなくても単独実行可能である。
-![構成](img/sample-batch.png)
+![実装イメージ](img/sample-batch.png)
+
+* 本サンプルAPのソフトウェアアーキテクチャの図は以下の通り。
+
+![ソフトウェアアーキテクチャ（タスクレット）](img/architecture-tasklet.png)
+
+![ソフトウェアアーキテクチャ（チャンク）](img/architecture-chunk.png)
+
 
 ## プロジェクト構成
 * sample-bff
