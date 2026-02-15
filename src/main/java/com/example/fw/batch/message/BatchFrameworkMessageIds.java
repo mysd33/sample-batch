@@ -23,6 +23,8 @@ public final class BatchFrameworkMessageIds {
     // バッチAP実行制御
     public static final String I_FW_BTCTRL_0001 = "i.fw.btctrl.0001";
     public static final String I_FW_BTCTRL_0002 = "i.fw.btctrl.0002";
+    // ジョブフロー実行支援
+    public static final String I_FW_JBFLW_0001 = "i.fw.jbflw.0001";
 
     // 警告レベル
     // 非同期AP実行制御
@@ -40,4 +42,6 @@ public final class BatchFrameworkMessageIds {
     public static final String E_FW_ASYNCSV_9004 = "e.fw.asyncsv.9004";
     // バッチAP実行制御
     public static final String E_FW_BATCH_9001 = "e.fw.batch.9001";
+    // ジョブフロー実行支援
+    public static final String E_FW_JBFLW_9001 = "e.fw.jbflw.9001";
 }
