@@ -10,6 +10,9 @@ import org.mybatis.spring.batch.builder.MyBatisCursorItemReaderBuilder;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.infrastructure.item.file.FlatFileItemReader;
 import org.springframework.batch.infrastructure.item.file.builder.FlatFileItemReaderBuilder;
+import org.springframework.batch.infrastructure.item.file.mapping.BeanWrapperFieldSetMapper;
+import org.springframework.batch.infrastructure.item.file.mapping.DefaultLineMapper;
+import org.springframework.batch.infrastructure.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.batch.infrastructure.item.validator.SpringValidator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
@@ -27,6 +30,7 @@ import com.example.batch.job.common.record.TodoRecord;
 import com.example.fw.batch.core.config.SpringBatchConfigPackage;
 import com.example.fw.batch.core.exception.DefaultExceptionHandler;
 import com.example.fw.batch.core.exception.ExceptionHandler;
+import com.example.fw.common.utils.JapaneseStringUtils;
 
 /**
  * 
@@ -58,9 +62,21 @@ public class JobConfig {
     @Bean
     FlatFileItemReader<TodoRecord> todoListFileItemReader(
             @Value("#{jobExecutionContext['input.file.name']}") String filePathName) {
+        final DelimitedLineTokenizer tokenizer = new DelimitedLineTokenizer();
+        tokenizer.setDelimiter(",");
+        tokenizer.setNames("todoTitle");
+        final BeanWrapperFieldSetMapper<TodoRecord> fieldSetMapper = new BeanWrapperFieldSetMapper<>();
+        fieldSetMapper.setTargetType(TodoRecord.class);
+        final DefaultLineMapper<TodoRecord> lineMapper = new DefaultLineMapper<>();
+        lineMapper.setLineTokenizer(tokenizer);
+        lineMapper.setFieldSetMapper(fieldSetMapper);
         return new FlatFileItemReaderBuilder<TodoRecord>().name("todoListReader")
-                .resource(new FileSystemResource(filePathName)).delimited().delimiter(",").names("todoTitle")
-                .targetType(TodoRecord.class).encoding("UTF-8").build();
+                .resource(new FileSystemResource(filePathName))// .delimited().delimiter(",").names("todoTitle")
+                .lineMapper((line, lineNumber) -> {
+                    // 特殊文字のコードポイント変換を行う
+                    String converted = JapaneseStringUtils.exchageSpecialChar(line);
+                    return lineMapper.mapLine(converted, lineNumber);
+                }).targetType(TodoRecord.class).encoding("UTF-8").build();
     }
 
     /**
