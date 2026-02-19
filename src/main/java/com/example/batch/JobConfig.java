@@ -74,7 +74,7 @@ public class JobConfig {
                 .resource(new FileSystemResource(filePathName))// .delimited().delimiter(",").names("todoTitle")
                 .lineMapper((line, lineNumber) -> {
                     // 特殊文字のコードポイント変換を行う
-                    String converted = JapaneseStringUtils.exchageSpecialChar(line);
+                    String converted = JapaneseStringUtils.convertSpecialChar(line);
                     return lineMapper.mapLine(converted, lineNumber);
                 }).targetType(TodoRecord.class).encoding("UTF-8").build();
     }
