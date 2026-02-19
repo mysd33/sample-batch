@@ -71,12 +71,12 @@ public class JobConfig {
         lineMapper.setLineTokenizer(tokenizer);
         lineMapper.setFieldSetMapper(fieldSetMapper);
         return new FlatFileItemReaderBuilder<TodoRecord>().name("todoListReader")
-                .resource(new FileSystemResource(filePathName))// .delimited().delimiter(",").names("todoTitle")
+                .resource(new FileSystemResource(filePathName))//
                 .lineMapper((line, lineNumber) -> {
                     // 特殊文字のコードポイント変換を行う
-                    String converted = JapaneseStringUtils.convertSpecialChar(line);
+                    String converted = JapaneseStringUtils.convertCodePoints(line);
                     return lineMapper.mapLine(converted, lineNumber);
-                }).targetType(TodoRecord.class).encoding("UTF-8").build();
+                }).encoding("UTF-8").build();
     }
 
     /**
