@@ -1,4 +1,4 @@
-package com.example.fw.batch.core.launcher;
+package com.example.fw.batch.core.launch;
 
 import org.springframework.batch.core.job.Job;
 import org.springframework.batch.core.job.parameters.InvalidJobParametersException;
