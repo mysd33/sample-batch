@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
 import com.example.fw.batch.core.exception.ExceptionHandler;
-import com.example.fw.batch.core.launcher.DefaultJobLauncherApplicationRunner;
+import com.example.fw.batch.core.launch.DefaultJobLauncherApplicationRunner;
 import com.example.fw.batch.core.listener.CommandLineJobExecutionListener;
 
 import lombok.RequiredArgsConstructor;
