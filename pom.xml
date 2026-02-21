@@ -68,9 +68,15 @@
             <artifactId>micrometer-registry-prometheus</artifactId>
         </dependency>
         <!-- Spring Boot Starter OpenTelemetry -->
+        <!--
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-opentelemetry</artifactId>
+        </dependency>-->
+        <!-- Micrometer Tracing -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-micrometer-tracing-brave</artifactId>
         </dependency>
         <!-- Spring Boot AspectJ -->
         <dependency>
