@@ -57,36 +57,4 @@ public class SpringBatchCommandLineConfig {
     JobExecutionListener defaultJobExecutionListenerForCommandLine(ExceptionHandler defaultExceptionHandler) {
         return new CommandLineJobExecutionListener(defaultExceptionHandler);
     }
-
-    //  @formatter:off
-    // 
-    // Spring Bootのスレッドプールに任せない場合は、下記のTaskExecutor Bean定義を有効化する
-    //private final SpringBatchConfigurationProperties springBatchConfigurationProperties;
-    /**
-     * VirtualThread有効時のPartitioning Step（多重実行）用のTaskExecutor
-     * 
-     */
-    
-    /*
-    @Bean
-    @ConditionalOnProperty(prefix = "spring.threads.virtual", name = "enabled", havingValue = "true", matchIfMissing = false)
-    TaskExecutor parallelVirtualThreadTaskExecutor() {
-        return new VirtualThreadTaskExecutor(springBatchConfigurationProperties.getThreadNamePrefix());
-    }*/
-
-    /**
-     * VirtualThread無効時のPartitioning Step（多重実行）用のTheadPool版TaskExecutor
-     * 
-     */
-    /*
-    @Bean
-    @ConditionalOnProperty(prefix = "spring.threads.virtual", name = "enabled", havingValue = "false", matchIfMissing = true)
-    TaskExecutor parallelThreadPoolTaskExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(springBatchConfigurationProperties.getThreadCorePoolSize());
-        executor.setMaxPoolSize(springBatchConfigurationProperties.getThreadMaxPoolSize());
-        executor.setQueueCapacity(springBatchConfigurationProperties.getQueueCapacity());
-        return executor;
-    }*/
-    //@formatter:on
 }
