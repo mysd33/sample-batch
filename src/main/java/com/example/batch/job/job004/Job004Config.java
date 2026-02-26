@@ -30,7 +30,8 @@ import lombok.RequiredArgsConstructor;
 public class Job004Config {
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
-    private final TaskExecutor parallelTaskExecutor;
+    // private final TaskExecutor parallelTaskExecutor;
+    private final TaskExecutor contextPropagatingParallelTaskExecutor;
     private final MyBatisCursorItemReader<User> userTableItemReader;
     private final Job004ItemProcessor job004ItemProcessor;
     private final MyBatisBatchItemWriter<UserTempInfo> userTempTableItemWriter;
@@ -71,7 +72,8 @@ public class Job004Config {
     PartitionHandler job004PartitionHandler(Step job004StepWorker) {
         TaskExecutorPartitionHandler handler = new TaskExecutorPartitionHandler();
         handler.setStep(job004StepWorker);
-        handler.setTaskExecutor(parallelTaskExecutor);
+        // handler.setTaskExecutor(parallelTaskExecutor);
+        handler.setTaskExecutor(contextPropagatingParallelTaskExecutor);
         handler.setGridSize(gridSize);
         return handler;
     }
