@@ -31,6 +31,7 @@ public class Job004Config {
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
     private final TaskExecutor parallelTaskExecutor;
+    private final Job004PreprocessTasklet job004PreprocessTasklet;
     private final MyBatisCursorItemReader<User> userTableItemReader;
     private final Job004ItemProcessor job004ItemProcessor;
     private final MyBatisBatchItemWriter<UserTempInfo> userTempTableItemWriter;
@@ -48,7 +49,18 @@ public class Job004Config {
         // Job job004(JobExecutionListener listener, Step job004StepManager) {
         return new JobBuilder("job004", jobRepository)//
                 .listener(listener)//
-                .start(job004StepManager)//
+                .start(job004StepPreprocess())//
+                .next(job004StepManager)//
+                .build();
+    }
+
+    /**
+     * 前処理 Step
+     */
+    @Bean
+    Step job004StepPreprocess() {
+        return new StepBuilder("job004StepPreprocess", jobRepository)//
+                .tasklet(job004PreprocessTasklet, transactionManager)//
                 .build();
     }
 

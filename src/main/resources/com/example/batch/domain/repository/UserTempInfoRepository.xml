@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.batch.domain.repository.UserTempInfoRepository">
 
-    <!-- マッピング定義 -->    
+    <!-- マッピング定義 -->
     <!-- １件insert -->
-    <insert id="insert" >
+    <insert id="insert">
         INSERT INTO m_user_temp (
-            user_id,
-            user_name,
-            age)
+        user_id,
+        user_name,
+        age)
         VALUES (
-            #{userId},            
-            #{userName},
-            #{age})
+        #{userId},
+        #{userName},
+        #{age})
     </insert>
+
+    <!-- 全件削除-->
+    <delete id="deleteAll">
+        DELETE FROM m_user_temp
+    </delete>
 </mapper>

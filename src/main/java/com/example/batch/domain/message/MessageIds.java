@@ -5,6 +5,8 @@ package com.example.batch.domain.message;
  */
 public class MessageIds {
     private MessageIds() {}
+    public static final String I_EX_0001 = "i.ex.0001";
+    public static final String I_EX_0002 = "i.ex.0002";
     public static final String W_EX_2001 = "w.ex.2001";
     public static final String W_EX_3001 = "w.ex.3001";
     public static final String W_EX_8001 = "w.ex.8001";
