@@ -19,4 +19,11 @@ public interface UserTempInfoRepository {
      * @return 登録結果
      */
     public boolean insert(UserTempInfo user);
+
+    /**
+     * ユーザを全件削除する
+     * 
+     * @return 削除結果
+     */
+    public boolean deleteAll();
 }
