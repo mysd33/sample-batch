@@ -7,6 +7,7 @@ import org.springframework.batch.core.partition.support.Partitioner;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.stereotype.Component;
 
+import com.example.batch.domain.message.MessageIds;
 import com.example.batch.domain.repository.UserRepository;
 import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;
@@ -33,6 +34,7 @@ public class Job004Partitioner implements Partitioner {
         int offset = 0;
         // 分割サイズ計算
         int dataSize = (count / gridSize) + 1;
+        appLogger.info(MessageIds.I_EX_0003, count, dataSize, gridSize);
         for (int i = 0; i < gridSize; i++) {
             ExecutionContext context = new ExecutionContext();
             context.putInt("dataSize", dataSize);
