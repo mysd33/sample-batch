@@ -91,7 +91,6 @@ public class AsyncMessageListener {
         // メッセージをJmsMessageManagerの管理下におく
         jmsMessageManager.manage(message);
 
-        Long jobExecutionId = null;
         if (request.isRestart()) {
             // ジョブ再実行の場合
             Long preJobExecutionId = request.getJobExecutionId();
@@ -106,9 +105,9 @@ public class AsyncMessageListener {
                     return;
                 }
                 // SpringBatchでジョブ再実行
-                jobOperator.restart(preJobExecution);
+                JobExecution jobExecution = jobOperator.restart(preJobExecution);
                 appLogger.info(BatchFrameworkMessageIds.I_FW_ASYNCSV_0004, messageId, preJobExecutionId,
-                        jobExecutionId);
+                        jobExecution.getId());
             } catch (JobRestartException e) {
                 monitoringLogger.error(BatchFrameworkMessageIds.E_FW_ASYNCSV_9004, e, messageId, preJobExecutionId);
                 acknowledgeExplicitlyOnExceptionIfAckOnJobStart();
