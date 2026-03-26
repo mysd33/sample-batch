@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.3</version>
+        <version>4.0.4</version>
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.example</groupId>
@@ -18,11 +18,11 @@
         <java.version>21</java.version>
         <spring-cloud.version>2025.1.1</spring-cloud.version>
         <spring-cloud-aws.version>4.0.0</spring-cloud-aws.version>
-        <mybatis-spring-boot-starter.version>4.0.0</mybatis-spring-boot-starter.version>
+        <mybatis-spring-boot-starter.version>4.0.1</mybatis-spring-boot-starter.version>
         <amazon-sqs-java-messaging-lib.version>2.1.4</amazon-sqs-java-messaging-lib.version>
-        <terasoluna.version>5.10.0.RELEASE</terasoluna.version>
-        <elasticmq.version>1.6.12</elasticmq.version>
-        <commons-io.version>2.19.0</commons-io.version>
+        <terasoluna.version>5.11.0.RELEASE</terasoluna.version>
+        <elasticmq.version>1.6.16</elasticmq.version>
+        <commons-io.version>2.21.0</commons-io.version>
     </properties>
     <dependencies>
         <!-- Spring Boot Starter Batch With JDBC-->
