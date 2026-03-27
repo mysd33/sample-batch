@@ -1,5 +1,7 @@
 package com.example.fw.batch.core.config;
 
+import org.springframework.batch.core.configuration.JobRegistry;
+import org.springframework.batch.core.configuration.support.MapJobRegistry;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.support.ContextPropagatingTaskDecorator;
@@ -9,6 +11,14 @@ import org.springframework.core.task.support.ContextPropagatingTaskDecorator;
  */
 @Configuration
 public class SpringBatchCommonConfig {
+    /**
+     * JobRegistryのBean定義
+     */
+    @Bean
+    JobRegistry jobRegistry() {
+        return new MapJobRegistry();
+    }
+
     /**
      * ContextPropagatingTaskDecoratorをBean定義することで、
      * スレッド間でTraceIDの値を伝播させるTaskExecutorになる<br>
