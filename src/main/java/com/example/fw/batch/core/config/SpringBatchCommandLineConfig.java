@@ -4,12 +4,14 @@ import org.springframework.batch.core.converter.DefaultJobParametersConverter;
 import org.springframework.batch.core.converter.JobParametersConverter;
 import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.listener.JobExecutionListener;
+import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.batch.autoconfigure.BatchProperties;
 import org.springframework.boot.batch.autoconfigure.JobLauncherApplicationRunner;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
 import com.example.fw.batch.core.exception.ExceptionHandler;
@@ -41,8 +43,11 @@ public class SpringBatchCommandLineConfig {
      * コマンドライン実行用のJobLauncherApplicationRunnerのBean定義<br>
      */
     @Bean
-    JobLauncherApplicationRunner jobLauncherApplicationRunner(JobOperator jobOperator, BatchProperties properties) {
-        DefaultJobLauncherApplicationRunner runner = new DefaultJobLauncherApplicationRunner(jobOperator);
+    JobLauncherApplicationRunner jobLauncherApplicationRunner(JobOperator jobOperator, BatchProperties properties,
+            JobRepository jobRepository, SpringBatchConfigurationProperties springBatchConfigurationProperties,
+            Environment env) {
+        DefaultJobLauncherApplicationRunner runner = new DefaultJobLauncherApplicationRunner(jobOperator, jobRepository,
+                springBatchConfigurationProperties, env);
         String jobName = properties.getJob().getName();
         if (StringUtils.hasText(jobName)) {
             runner.setJobName(jobName);

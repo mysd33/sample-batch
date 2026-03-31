@@ -25,4 +25,7 @@ public class SpringBatchConfigurationProperties {
     // Partitioning Step（多重実行）用のThreadPool版TaskExecutorのキューキャパシティサイズ
     private int queueCapacity = 200;
     //@formatter:on
+
+    // StepFunctionsのタスクトークンをOS環境変数から取得する場合の環境変数名
+    private String taskTokenEnvName = "TASK_TOKEN";
 }

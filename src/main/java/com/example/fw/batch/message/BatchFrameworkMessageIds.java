@@ -34,6 +34,9 @@ public final class BatchFrameworkMessageIds {
     public static final String W_FW_ASYNCSV_8004 = "w.fw.asyncsv.8004";
     public static final String W_FW_ASYNCSV_8005 = "w.fw.asyncsv.8005";
 
+    // バッチAP実行制御
+    public static final String W_FW_BTCTRL_8001 = "w.fw.btctrl.8001";
+
     // エラーレベル
     // 非同期AP実行制御
     public static final String E_FW_ASYNCSV_9001 = "e.fw.asyncsv.9001";
