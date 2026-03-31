@@ -31,7 +31,7 @@ public class DefaultJobExecutionListener implements JobExecutionListener {
     private final SQSServerConfigurationProperties sqsServerConfigurationProperties;
 
     @Override
-    public void beforeJob(JobExecution jobExecution) {
+    public void beforeJob(final JobExecution jobExecution) {
         appLogger.info(BatchFrameworkMessageIds.I_FW_BTCTRL_0001, jobExecution.getJobInstance().getJobName(),
                 jobExecution.getJobInstanceId(), jobExecution.getId());
         // isAckOnJobStartがtrueの場合、ジョブ開始後即時にキューメッセージをACK（削除）する
@@ -44,7 +44,7 @@ public class DefaultJobExecutionListener implements JobExecutionListener {
     }
 
     @Override
-    public void afterJob(JobExecution jobExecution) {
+    public void afterJob(final JobExecution jobExecution) {
         LocalDateTime startTime = jobExecution.getStartTime();
         LocalDateTime endTime = jobExecution.getEndTime();
         double elapsedTime = 0D;
