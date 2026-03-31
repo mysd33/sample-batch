@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.batch.autoconfigure.JobLauncherApplicationRunner;
 import org.springframework.core.env.Environment;
 
-import com.example.fw.batch.core.config.SpringBatchConfigurationProperties;
+import com.example.fw.batch.jobflow.config.JobflowConfigurationProperties;
 import com.example.fw.batch.jobflow.sfn.SfnTaskResultSender;
 import com.example.fw.batch.jobflow.sfn.service.SfnTaskResultPersistService;
 import com.example.fw.batch.message.BatchFrameworkMessageIds;
@@ -34,7 +34,7 @@ public class DefaultJobLauncherApplicationRunner extends JobLauncherApplicationR
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
     private static final MonitoringLogger monitoringLogger = LoggerFactory.getMonitoringLogger(log);
     private final JobRepository jobRepository;
-    private final SpringBatchConfigurationProperties springBatchConfigurationProperties;
+    private final JobflowConfigurationProperties jobflowConfigurationProperties;
     private final Environment env;
     private SfnTaskResultPersistService sfnTaskResultPersistService = null;
     private SfnTaskResultSender sfnTaskResultSender = null;
@@ -43,10 +43,10 @@ public class DefaultJobLauncherApplicationRunner extends JobLauncherApplicationR
      * コンストラクタ
      */
     public DefaultJobLauncherApplicationRunner(JobOperator jobOperator, JobRepository jobRepository,
-            SpringBatchConfigurationProperties springBatchConfigurationProperties, Environment env) {
+            JobflowConfigurationProperties jobflowConfigurationProperties, Environment env) {
         super(jobOperator);
         this.jobRepository = jobRepository;
-        this.springBatchConfigurationProperties = springBatchConfigurationProperties;
+        this.jobflowConfigurationProperties = jobflowConfigurationProperties;
         this.env = env;
     }
 
@@ -76,7 +76,7 @@ public class DefaultJobLauncherApplicationRunner extends JobLauncherApplicationR
             // 前回実行時のStep Functionsへ送信した処理結果が存在する場合、
             String previousResult = sfnTaskResultPersistService.findTaskResultById(jobInstanceId);
             // タスクトークンを取得
-            String taskToken = env.getProperty(springBatchConfigurationProperties.getTaskTokenEnvName());
+            String taskToken = env.getProperty(jobflowConfigurationProperties.getTaskTokenEnvName());
             if (previousResult != null && sfnTaskResultSender != null) {
                 // StepFunctionsに処理結果を再度送信して後続ジョブの実行を継続させる
                 sfnTaskResultSender.resendTaskSuccessByJsonString(jobInstanceId, previousResult, taskToken);
