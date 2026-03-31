@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
 import com.example.fw.batch.core.exception.ExceptionHandler;
@@ -33,9 +34,10 @@ public class SpringBatchCommandLineConfig {
      */
     @Bean
     JobLauncherApplicationRunner jobLauncherApplicationRunner(JobLauncher jobLauncher, JobExplorer jobExplorer,
-            JobRepository jobRepository, BatchProperties properties) {
+            JobRepository jobRepository, BatchProperties properties,
+            SpringBatchConfigurationProperties springBatchConfigurationProperties, Environment env) {
         DefaultJobLauncherApplicationRunner runner = new DefaultJobLauncherApplicationRunner(jobLauncher, jobExplorer,
-                jobRepository);
+                jobRepository, springBatchConfigurationProperties, env);
         String jobName = properties.getJob().getName();
         if (StringUtils.hasText(jobName)) {
             runner.setJobName(jobName);
