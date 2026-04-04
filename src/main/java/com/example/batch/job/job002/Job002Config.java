@@ -77,7 +77,7 @@ public class Job002Config {
     @Bean
     Step step00201() {
         return new StepBuilder("step002_01", jobRepository)//
-                .tasklet((contribution, chunkContext) -> {
+                .tasklet((_, chunkContext) -> {
                     StepExecution stepExecution = chunkContext.getStepContext().getStepExecution();
                     String param01 = stepExecution.getJobParameters().getString("param01");
                     String param02 = stepExecution.getJobParameters().getString("param02");

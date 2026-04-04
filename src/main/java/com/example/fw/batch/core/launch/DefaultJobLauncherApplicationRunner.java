@@ -65,7 +65,7 @@ public class DefaultJobLauncherApplicationRunner extends JobLauncherApplicationR
             JobRestartException, JobInstanceAlreadyCompleteException, InvalidJobParametersException {
         try {
             super.execute(job, jobParameters);
-        } catch (JobInstanceAlreadyCompleteException e) {
+        } catch (JobInstanceAlreadyCompleteException _) {
             // ジョブインスタンスが既に完了している場合は警告ログを出力し本処理をスキップし、正常終了させる
             JobInstance jobInstance = jobRepository.getJobInstance(job.getName(), jobParameters);
             Long jobInstanceId = Objects.requireNonNull(jobInstance).getId();

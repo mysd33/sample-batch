@@ -34,7 +34,7 @@ public class DefaultJmsMessageManager implements JmsMessageManager {
                 messageId = message.getJMSMessageID();
                 appLogger.debug("メッセージをACK:{}", messageId);
                 message.acknowledge();
-            } catch (JMSException e) {
+            } catch (JMSException _) {
                 // メッセージを削除できなくても例外はスローしない。
                 // メッセージ再受信する可能性があるが、AsyncMessageListenerでハンドリングし対処
                 appLogger.warn(BatchFrameworkMessageIds.W_FW_ASYNCSV_8005, messageId);

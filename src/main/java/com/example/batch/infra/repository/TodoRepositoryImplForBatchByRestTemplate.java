@@ -50,7 +50,7 @@ public class TodoRepositoryImplForBatchByRestTemplate implements TodoRepository 
     public Collection<Todo> findAll() {
         return cbFactory.create("todo_findAll").run(() -> restTemplate.getForObject(urlTodos, TodoList.class),
                 // エラーとせずにFallback処理として空のリストを返却する例
-                throwable -> new TodoList());
+                _ -> new TodoList());
     }
 
     @Override

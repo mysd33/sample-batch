@@ -8,7 +8,7 @@ import org.springframework.boot.SpringApplication;
  */
 //@SpringBootApplication
 public class SampleBatchApplicationForCommandLine {
-    public static void main(String[] args) {
+    void main(String[] args) {
         System.exit(SpringApplication.exit(SpringApplication.run(SampleBatchApplicationForCommandLine.class, args)));
     }
 }
