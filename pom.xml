@@ -23,6 +23,10 @@
         <terasoluna.version>5.11.0.RELEASE</terasoluna.version>
         <elasticmq.version>1.6.16</elasticmq.version>
         <commons-io.version>2.21.0</commons-io.version>
+        <!-- MapStruct -->
+        <m2e.apt.activation>jdt_apt</m2e.apt.activation>
+        <org.mapstruct.version>1.6.3</org.mapstruct.version>
+        <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
     </properties>
     <dependencies>
         <!-- Spring Boot Starter Batch With JDBC-->
