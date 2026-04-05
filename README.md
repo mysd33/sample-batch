@@ -193,6 +193,7 @@ postgres> CREATE DATABASE testdb;
 
 > [!NOTE]
 > LocalStackのHobbyプラン（無料版）は非商用利用限定となったため、注意すること。
+> 類似のOSSのサービスとして[Floci](https://github.com/floci-io/floci)があるので、利用を検討してみるとよい。
 
 > [!NOTE]
 > s3rverは、現在、アーカイブされているので、利用等には注意すること。
@@ -259,6 +260,17 @@ postgres> CREATE DATABASE testdb;
             aws s3 ls --endpoint-url=http://localhost:4566 --profile localstack s3://mysd33bucket123 --recursive
             ```
 
+    * Flociの場合
+        * [Flociのサイト](https://github.com/floci-io/floci)の手順に従い、インストールし、Flociを起動        
+        * ここでは、すでに、サンプルとしてflociフォルダにdocker-compose.ymlが用意されているので、以下の通り起動する。
+            
+            ```sh
+            cd floci
+            docker compose up -d
+            ```        
+
+        * 起動後は、localhostの4566番ポートで起動するので、以降の設定や操作は、localstackと同様である。
+        
     * s3rverの場合
         * [s3rverのサイト](https://github.com/jamhall/s3rver)の手順に従い、npmでインストールし、s3rverを起動
 
@@ -268,7 +280,7 @@ postgres> CREATE DATABASE testdb;
             s3rver -d C:\s3rver
             ```
 
-        *  application-dev.ymlの「example.s3.localfake.type」を「s3rver」に変更し、以下の通り設定
+        * application-dev.ymlの「example.s3.localfake.type」を「s3rver」に変更し、以下の通り設定
 
             ```yaml
             example:
