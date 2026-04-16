@@ -79,7 +79,7 @@ public class DefaultJobLauncherApplicationRunner extends JobLauncherApplicationR
             String taskToken = env.getProperty(jobflowConfigurationProperties.getTaskTokenEnvName());
             if (previousResult != null && sfnTaskResultSender != null) {
                 // StepFunctionsに処理結果を再度送信して後続ジョブの実行を継続させる
-                sfnTaskResultSender.resendTaskSuccessByJsonString(jobInstanceId, previousResult, taskToken);
+                sfnTaskResultSender.resendTaskSuccessByJsonString(previousResult, taskToken);
             }
         } catch (InvalidJobParametersException e) {
             // ジョブパラメータ不正エラーが発生したことを明示的にエラーログ出力

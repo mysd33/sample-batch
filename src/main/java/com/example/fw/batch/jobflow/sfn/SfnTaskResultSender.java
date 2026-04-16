@@ -25,9 +25,8 @@ public interface SfnTaskResultSender {
     /**
      * 一度成功しているタスクの実行成功を再送信する<br>
      * 
-     * @param jobInstanceId ジョブインスタンスID
-     * @param taskToken     タスクトークン
-     * @param outputJson    タスクの実行結果のJSON文字列
+     * @param taskToken  タスクトークン
+     * @param outputJson タスクの実行結果のJSON文字列
      */
-    void resendTaskSuccessByJsonString(long jobInstanceId, String taskToken, String outputJson);
+    void resendTaskSuccessByJsonString(String taskToken, String outputJson);
 }
