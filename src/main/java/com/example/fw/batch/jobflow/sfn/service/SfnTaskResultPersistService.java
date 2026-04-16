@@ -7,10 +7,9 @@ public interface SfnTaskResultPersistService {
     /**
      * タスク実行結果を登録する
      * 
-     * @param jobInstanceId ジョブインスタンスID
-     * @param taskResult    タスク実行結果
+     * @param taskResult タスク実行結果
      */
-    void createTaskResult(long jobInstanceId, String taskResult);
+    void createTaskResult(String taskResult);
 
     /**
      * ジョブインスタンスIDに基づいてタスク実行結果を取得する

@@ -25,6 +25,7 @@ public final class BatchFrameworkMessageIds {
     public static final String I_FW_BTCTRL_0002 = "i.fw.btctrl.0002";
     // ジョブフロー実行支援
     public static final String I_FW_JBFLW_0001 = "i.fw.jbflw.0001";
+    public static final String I_FW_JBFLW_0002 = "i.fw.jbflw.0002";
 
     // 警告レベル
     // 非同期AP実行制御
