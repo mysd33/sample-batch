@@ -3,7 +3,6 @@ package com.example.fw.common.httpclient.config;
 import org.slf4j.MDC;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.example.fw.common.httpclient.WebClientLoggingFilter;
@@ -45,36 +44,12 @@ public class WebClientConfig {
 
     /**
      * 
-     * WebClientクラス（X-Rayトレーシングあり）
+     * WebClientクラス
      * 
      */
-    @Profile("!xray")
     @Bean
-    WebClient webClientWithoutXRay(WebClient.Builder builder, WebClientLoggingFilter loggingFilter) {
+    WebClient webClient(WebClient.Builder builder, WebClientLoggingFilter loggingFilter) {
         return builder.filter(loggingFilter.filter()).build();
     }
 
-    /**
-     * 
-     * WebClientクラス（X-Rayトレーシングあり）
-     * 
-     */
-    /*
-     * @Profile("xray")
-     * 
-     * @Bean WebClient webClientWithXRay(WebClient.Builder builder,
-     * WebClientLoggingFilter loggingFilter, WebClientXrayFilter xrayFilter) {
-     * return
-     * builder.filter(loggingFilter.filter()).filter(xrayFilter.filter()).build(); }
-     */
-    /**
-     * WebClientでのAWS X-RayのHttpクライアントトレーシング設定
-     * 
-     */
-    /*
-     * @Profile("xray")
-     * 
-     * @Bean WebClientXrayFilter webClientXrayFilter() { return new
-     * WebClientXrayFilter(); }
-     */
 }

@@ -21,32 +21,14 @@ public class SQSCommonProdConfig {
     private final SQSCommonConfigurationProperties sqsCommonConfigurationProperties;
 
     /**
-     * SQSClientの定義(X-Rayトレーシングなし）
+     * SQSClientの定義
      */
-    @Profile("!xray")
     @Bean
-    SqsClient sqsClientWithoutXRay() {
+    SqsClient sqsClient() {
         Region region = Region.of(sqsCommonConfigurationProperties.getRegion());
         return SqsClient.builder()//
                 .httpClientBuilder((ApacheHttpClient.builder()))//
                 .region(region)//
                 .build();
     }
-
-    /**
-     * SQSConnectionFactoryの定義(X-Rayトレーシングあり）
-     */
-    /*
-     * @Profile("xray")
-     * 
-     * @Bean SqsClient sqsClientWithXRay() { Region region =
-     * Region.of(sqsCommonConfigurationProperties.getRegion()); return
-     * SqsClient.builder() // 個別にSQSへのAWS SDKの呼び出しをトレーシングできるように設定
-     * .overrideConfiguration(
-     * ClientOverrideConfiguration.builder().addExecutionInterceptor(new
-     * TracingInterceptor()).build())
-     * .httpClientBuilder((ApacheHttpClient.builder()))// .region(region) .build();
-     * }
-     */
-
 }

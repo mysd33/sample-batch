@@ -29,11 +29,10 @@ public class SQSCommonLocalConfig {
     private final SQSCommonConfigurationProperties sqsCommonConfigurationProperties;
 
     /**
-     * ElastiqMQ(SQSLocal)起動する場合のSQSClientの定義(X-Rayトレーシングなし）
+     * ElastiqMQ(SQSLocal)起動する場合のSQSClientの定義
      */
-    @Profile("!xray")
     @Bean
-    SqsClient sqsClientWithoutXRay() {
+    SqsClient sqsClient() {
         // ダミーのクレデンシャル
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create("dummy", "dummy");
         Region region = Region.of(sqsCommonConfigurationProperties.getRegion());
@@ -45,22 +44,4 @@ public class SQSCommonLocalConfig {
                 .build();
     }
 
-    /**
-     * ElastiqMQ(SQSLocal)起動する場合のSQSClientの定義(X-Rayトレーシングあり）
-     */
-    /*
-     * @Profile("xray")
-     * 
-     * @Bean SqsClient sqsClientFactoryWithXRay() { // ダミーのクレデンシャル
-     * AwsBasicCredentials awsCreds = AwsBasicCredentials.create("dummy", "dummy");
-     * Region region = Region.of(sqsCommonConfigurationProperties.getRegion());
-     * return SqsClient.builder() // 個別にSQSへのAWS SDKの呼び出しをトレーシングできるように設定
-     * .overrideConfiguration(
-     * ClientOverrideConfiguration.builder().addExecutionInterceptor(new
-     * TracingInterceptor()).build())
-     * .httpClientBuilder((ApacheHttpClient.builder()))// .region(region)//
-     * .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
-     * .endpointOverride(URI.create(HTTP_LOCALHOST +
-     * sqsCommonConfigurationProperties.getSqslocal().getPort())) .build(); }
-     */
 }

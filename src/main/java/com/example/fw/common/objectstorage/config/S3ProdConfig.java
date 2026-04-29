@@ -19,48 +19,26 @@ import software.amazon.awssdk.services.s3.S3Client;
  *
  */
 @Profile("production")
-@EnableConfigurationProperties({S3ConfigurationProperties.class})
+@EnableConfigurationProperties({ S3ConfigurationProperties.class })
 @Configuration
 @RequiredArgsConstructor
-public class S3ProdConfig {    
-    private final S3ConfigurationProperties s3ConfigurationProperties;    
-      
+public class S3ProdConfig {
+    private final S3ConfigurationProperties s3ConfigurationProperties;
+
     /**
      * オブジェクトストレージアクセスクラス
-     */        
+     */
     @Bean
     ObjectStorageFileAccessor objectStorageFileAccessor(S3Client s3Client) {
         return new S3ObjectStorageFileAccessor(s3Client, s3ConfigurationProperties.getBucket());
-    } 
-    
-    /**
-     * S3クライアント（X-Rayトレースなし）
-     */
-    @Profile("!xray")
-    @Bean
-    S3Client s3ClientWithoutXRay() {
-        Region region = Region.of(s3ConfigurationProperties.getRegion());
-        return S3Client.builder()
-                .httpClientBuilder((ApacheHttpClient.builder()))
-                .region(region)
-                .build();        
     }
-    
+
     /**
-     * S3クライアント（X-Rayトレースあり）
+     * S3クライアント
      */
-    /*
-    @Profile("xray")
     @Bean
-    S3Client s3ClientWithXRay() {
+    S3Client s3Client() {
         Region region = Region.of(s3ConfigurationProperties.getRegion());
-        return S3Client.builder()
-                .httpClientBuilder((ApacheHttpClient.builder()))
-                .region(region)
-                // 個別にDynamoDBへのAWS SDKの呼び出しをトレーシングできるように設定
-                .overrideConfiguration(
-                        ClientOverrideConfiguration.builder().addExecutionInterceptor(new TracingInterceptor()).build())                
-                .build();        
+        return S3Client.builder().httpClientBuilder((ApacheHttpClient.builder())).region(region).build();
     }
-    */
 }

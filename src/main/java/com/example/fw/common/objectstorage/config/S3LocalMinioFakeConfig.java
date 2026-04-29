@@ -23,10 +23,6 @@ import software.amazon.awssdk.services.s3.S3Configuration;
 /**
  * 
  * S3が開発環境上でのローカルサーバFake（MinIO）実行に置き換える設定クラス<br>
- * 
- * ここではMinIOはテスト時のみローカル起動することを想定している。 <br>
- * GNU AGPL v3によるOSSライセンスと商用ライセンスのデュアルライセンスで提供されており、
- * 特にAPGLの場合、MinIOを同梱しての配布、利用等には注意すること。<br>
  *
  */
 @Profile("dev")
@@ -46,11 +42,10 @@ public class S3LocalMinioFakeConfig {
     }
 
     /**
-     * S3クライアント（X-Rayトレースなし）
+     * S3クライアント
      */
-    @Profile("!xray")
     @Bean
-    S3Client s3ClientWithoutXRay() {
+    S3Client s3Client() {
         // ダミーのクレデンシャル
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create(
                 s3ConfigurationProperties.getLocalfake().getAccessKeyId(),
@@ -70,35 +65,6 @@ public class S3LocalMinioFakeConfig {
         // @formatter:on
     }
 
-    /**
-     * S3クライアント（X-Rayトレースあり）
-     */
-    /*
-    @Profile("xray")
-    @Bean
-    S3Client s3ClientWithXRay() {
-        // ダミーのクレデンシャル
-        AwsBasicCredentials awsCreds = AwsBasicCredentials.create(
-                s3ConfigurationProperties.getLocalfake().getAccessKeyId(),
-                s3ConfigurationProperties.getLocalfake().getSecretAccessKey());
-
-        Region region = Region.of(s3ConfigurationProperties.getRegion());
-        // @formatter:off
-        return S3Client.builder()                
-                .region(region)
-                .httpClientBuilder((ApacheHttpClient.builder()))
-                .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
-                .endpointOverride(URI.create("http://localhost:" + s3ConfigurationProperties.getLocalfake().getPort()))
-                // 個別にDynamoDBへのAWS SDKの呼び出しをトレーシングできるように設定
-                .overrideConfiguration(
-                        ClientOverrideConfiguration.builder().addExecutionInterceptor(new TracingInterceptor()).build())
-                //MinIOはデフォルトPath-Styleのため
-                .serviceConfiguration(S3Configuration.builder()
-                        .pathStyleAccessEnabled(true).build())
-                .build();        
-        // @formatter:on
-    }        
-    */
     /**
      * バケット初期作成クラス
      * 

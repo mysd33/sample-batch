@@ -40,17 +40,18 @@ public class S3LocalS3rverFakeConfig {
     /**
      * オブジェクトストレージアクセスクラス
      */
+    @Deprecated
     @Bean
     ObjectStorageFileAccessor objectStorageFileAccessor(S3Client s3Client) {
         return new S3ObjectStorageFileAccessor(s3Client, s3ConfigurationProperties.getBucket());
     }
 
     /**
-     * S3クライアント（X-Rayトレースなし）
+     * S3クライアント
      */
-    @Profile("!xray")
+    @Deprecated
     @Bean
-    S3Client s3ClientWithoutXRay() {
+    S3Client s3Client() {
         // ダミーのクレデンシャル
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create(S3RVER, S3RVER);
 
@@ -69,37 +70,10 @@ public class S3LocalS3rverFakeConfig {
     }
 
     /**
-     * S3クライアント（X-Rayトレースあり）
-     */
-    /*
-    @Profile("xray")
-    @Bean
-    S3Client s3ClientWithXRay() {
-        // ダミーのクレデンシャル
-        AwsBasicCredentials awsCreds = AwsBasicCredentials.create(S3RVER, S3RVER);
-
-        Region region = Region.of(s3ConfigurationProperties.getRegion());
-        // @formatter:off
-        return S3Client.builder()     
-                .httpClientBuilder((ApacheHttpClient.builder()))
-                .region(region)       
-                .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
-                .endpointOverride(URI.create("http://localhost:" + s3ConfigurationProperties.getLocalfake().getPort()))
-                //S3rverの場合、putしたファイルにchunk-signatureが入ってしまうため対処策として設定
-                .serviceConfiguration(S3Configuration.builder()
-                        .chunkedEncodingEnabled(false).build())
-                // 個別にDynamoDBへのAWS SDKの呼び出しをトレーシングできるように設定
-                .overrideConfiguration(
-                        ClientOverrideConfiguration.builder().addExecutionInterceptor(new TracingInterceptor()).build())
-                .build();        
-        // @formatter:on
-    }        
-    */
-    
-    /**
      * バケット初期作成クラス
      * 
      */
+    @Deprecated
     @Bean
     BucketCreateInitializer bucketCreateInitializer(S3Client s3Client) {
         return new BucketCreateInitializer(s3Client, s3ConfigurationProperties.getBucket());
