@@ -201,10 +201,6 @@
             <artifactId>elasticmq-rest-sqs_3</artifactId>
             <version>${elasticmq.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.jspecify</groupId>
-            <artifactId>jspecify</artifactId>
-        </dependency>
         <!-- AWS SDK S3 -->
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
