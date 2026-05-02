@@ -32,8 +32,8 @@ import jakarta.validation.constraintvalidation.ValidationTarget;
 @Repeatable(List.class)
 @ReportAsSingleViolation
 //https://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/#_validation_target_specification_for_purely_composed_constraints
-@SupportedValidationTarget(ValidationTarget.ANNOTATED_ELEMENT)  
-@Pattern(regexp = "^[\\d{3}-\\d{4}]?$")
+@SupportedValidationTarget(ValidationTarget.ANNOTATED_ELEMENT)
+@Pattern(regexp = "(\\d{3}-\\d{4})?")
 public @interface ZipCode {
     String message() default "{com.example.fw.common.validation.ZipCode.message}";
 
