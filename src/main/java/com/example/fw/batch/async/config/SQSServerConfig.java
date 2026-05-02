@@ -1,5 +1,14 @@
 package com.example.fw.batch.async.config;
 
+import com.example.fw.batch.async.messaging.AsyncMessageListener;
+import com.example.fw.batch.async.store.JmsMessageManager;
+import com.example.fw.batch.core.config.SpringBatchConfigurationProperties;
+import com.example.fw.common.async.config.SQSCommonConfigurationProperties;
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.Session;
+import org.jspecify.annotations.NonNull;
 import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.converter.JobParametersConverter;
 import org.springframework.batch.core.launch.JobOperator;
@@ -13,39 +22,32 @@ import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
-import com.example.fw.batch.async.messaging.AsyncMessageListener;
-import com.example.fw.batch.async.store.JmsMessageManager;
-import com.example.fw.batch.core.config.SpringBatchConfigurationProperties;
-import com.example.fw.common.async.config.SQSCommonConfigurationProperties;
-
-import jakarta.jms.ConnectionFactory;
-import jakarta.jms.JMSException;
-import jakarta.jms.Message;
-import jakarta.jms.Session;
-
 /**
  * SQSのサーバ側設定クラス
  */
 @Configuration
 @ConditionalOnProperty(prefix = SpringBatchConfigurationProperties.PROPERTY_PREFIX, name = "type", havingValue = "async", matchIfMissing = true)
-@EnableConfigurationProperties({ SQSCommonConfigurationProperties.class, SQSServerConfigurationProperties.class })
+@EnableConfigurationProperties({SQSCommonConfigurationProperties.class,
+    SQSServerConfigurationProperties.class})
 public class SQSServerConfig {
 
     /**
      * JMSListenerContainerFactoryの定義
      */
     @Bean
-    DefaultJmsListenerContainerFactory jmsListenerContainerFactory(ConnectionFactory connectionFactory,
-            MessageConverter jacksonJmsMessageConverter,
-            SQSServerConfigurationProperties sqsServerConfigurationProperties) {
+    DefaultJmsListenerContainerFactory jmsListenerContainerFactory(
+        ConnectionFactory connectionFactory,
+        MessageConverter jacksonJmsMessageConverter,
+        SQSServerConfigurationProperties sqsServerConfigurationProperties) {
         DefaultJmsListenerContainerFactory factory;
         if (sqsServerConfigurationProperties.isAckOnJobStart()) {
             factory = new DefaultJmsListenerContainerFactory() {
                 @Override
-                protected DefaultMessageListenerContainer createContainerInstance() {
+                protected @NonNull DefaultMessageListenerContainer createContainerInstance() {
                     return new DefaultMessageListenerContainer() {
                         @Override
-                        protected void commitIfNecessary(Session session, Message message) throws JMSException {
+                        protected void commitIfNecessary(@NonNull Session session, Message message)
+                            throws JMSException {
                             // ackOnJobStart=trueの時は、DefaultJobExecutionListenerで明示的にacknowledgeするため
                             // 何もしない（ただし、エラー時など、acknowledge漏れに注意）
                         }
@@ -68,15 +70,18 @@ public class SQSServerConfig {
 
     /**
      * SQSからメッセージを取得するMessageListener
-     * 
+     *
      * @param jobOperator {@link JobOperator}
      */
     @Bean
-    AsyncMessageListener asyncMessageListener(JobOperator jobOperator, JobParametersConverter jobParametersConverter,
-            JobRepository jobRepository, JmsMessageManager jmsMessageManager,
-            SQSServerConfigurationProperties sqsServerConfigurationProperties, JobRegistry jobRegistry) {
-        return new AsyncMessageListener(jobOperator, jobParametersConverter, jobRepository, jmsMessageManager,
-                sqsServerConfigurationProperties, jobRegistry);
+    AsyncMessageListener asyncMessageListener(JobOperator jobOperator,
+        JobParametersConverter jobParametersConverter,
+        JobRepository jobRepository, JmsMessageManager jmsMessageManager,
+        SQSServerConfigurationProperties sqsServerConfigurationProperties,
+        JobRegistry jobRegistry) {
+        return new AsyncMessageListener(jobOperator, jobParametersConverter, jobRepository,
+            jmsMessageManager,
+            sqsServerConfigurationProperties, jobRegistry);
     }
 
 }
