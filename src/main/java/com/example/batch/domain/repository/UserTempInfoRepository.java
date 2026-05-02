@@ -1,29 +1,28 @@
 package com.example.batch.domain.repository;
 
+import com.example.batch.domain.model.UserTempInfo;
 import org.apache.ibatis.annotations.Mapper;
 
-import com.example.batch.domain.model.UserTempInfo;
-
 /**
- * 
- * ユーザー一時データリポジトリインタフェース <br>
- * MyBatisにより実現
+ *
+ * ユーザー一時データリポジトリインタフェース <br> MyBatisにより実現
  *
  */
 @Mapper
 public interface UserTempInfoRepository {
+
     /**
      * ユーザを登録する
-     * 
+     *
      * @param user ユーザ情報
      * @return 登録結果
      */
-    public boolean insert(UserTempInfo user);
+    boolean insert(UserTempInfo user);
 
     /**
      * ユーザを全件削除する
-     * 
+     *
      * @return 削除結果
      */
-    public boolean deleteAll();
+    boolean deleteAll();
 }
