@@ -1,5 +1,8 @@
 package com.example.batch.job.job004;
 
+import com.example.batch.domain.model.User;
+import com.example.batch.domain.model.UserTempInfo;
+import lombok.RequiredArgsConstructor;
 import org.mybatis.spring.batch.MyBatisBatchItemWriter;
 import org.mybatis.spring.batch.MyBatisCursorItemReader;
 import org.springframework.batch.core.job.Job;
@@ -16,18 +19,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.example.batch.domain.model.User;
-import com.example.batch.domain.model.UserTempInfo;
-
-import lombok.RequiredArgsConstructor;
-
-/**
- * Job004の定義<br>
- * Partitioning Stepの例
- */
+/// Job004の定義<br>
+/// Partitioning Stepの例
 @Configuration
 @RequiredArgsConstructor
 public class Job004Config {
+
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
     private final TaskExecutor parallelTaskExecutor;
@@ -41,65 +38,54 @@ public class Job004Config {
     @Value("${job004.chunk-size:10}")
     private int chunkSize;
 
-    /**
-     * Job
-     */
+    /// Job
     @Bean
     Job job004Job(JobExecutionListener listener, Step job004StepManager) {
         // Job job004(JobExecutionListener listener, Step job004StepManager) {
         return new JobBuilder("job004", jobRepository)//
-                .listener(listener)//
-                .start(job004StepPreprocess())//
-                .next(job004StepManager)//
-                .build();
+            .listener(listener)//
+            .start(job004StepPreprocess())//
+            .next(job004StepManager)//
+            .build();
     }
 
-    /**
-     * 前処理 Step
-     */
+    /// 前処理 Step
     @Bean
     Step job004StepPreprocess() {
         return new StepBuilder("job004StepPreprocess", jobRepository)//
-                .tasklet(job004PreprocessTasklet, transactionManager)//
-                .build();
+            .tasklet(job004PreprocessTasklet, transactionManager)//
+            .build();
     }
 
-    /**
-     * Manager Step
-     */
+    /// Manager Step
     @Bean
     Step job004StepManager(PartitionHandler job004PartitionHandler, //
-            Job004Partitioner job004Partitioner, //
-            Step job004StepWorker) {
+        Job004Partitioner job004Partitioner) {
         return new StepBuilder("job004StepManager", jobRepository)//
-                .partitioner("job004Partitioner", job004Partitioner)//
-                .partitionHandler(job004PartitionHandler)//
-                .build();
+            .partitioner("job004Partitioner", job004Partitioner)//
+            .partitionHandler(job004PartitionHandler)//
+            .build();
     }
 
-    /**
-     * PartiionHandler
-     */
+    /// PartitionHandler
     @Bean
     PartitionHandler job004PartitionHandler(Step job004StepWorker) {
-        TaskExecutorPartitionHandler handler = new TaskExecutorPartitionHandler();
+        var handler = new TaskExecutorPartitionHandler();
         handler.setStep(job004StepWorker);
         handler.setTaskExecutor(parallelTaskExecutor);
         handler.setGridSize(gridSize);
         return handler;
     }
 
-    /**
-     * Worker Step
-     */
+    /// Worker Step
     @Bean
     Step job004StepWorker() {
         return new StepBuilder("job004StepWorker", jobRepository)//
-                .<User, UserTempInfo>chunk(chunkSize)//
-                .transactionManager(transactionManager)//
-                .reader(userTableItemReader)//
-                .processor(job004ItemProcessor)//
-                .writer(userTempTableItemWriter)//
-                .build();
+            .<User, UserTempInfo>chunk(chunkSize)//
+            .transactionManager(transactionManager)//
+            .reader(userTableItemReader)//
+            .processor(job004ItemProcessor)//
+            .writer(userTempTableItemWriter)//
+            .build();
     }
 }

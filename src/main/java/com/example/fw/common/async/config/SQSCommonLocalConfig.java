@@ -30,7 +30,7 @@ public class SQSCommonLocalConfig {
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create("dummy", "dummy");
         Region region = Region.of(sqsCommonConfigurationProperties.getRegion());
         return SqsClient.builder()//
-            .httpClientBuilder((ApacheHttpClient.builder()))//
+            .httpClientBuilder(ApacheHttpClient.builder())//
             .region(region)//
             .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
             .endpointOverride(URI.create(

@@ -14,9 +14,7 @@ import com.example.fw.common.systemdate.SystemDateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * キューからメッセージ削除、例外ハンドリング、ログ出力を行うJobExecutionListener
- */
+/// キューからメッセージ削除、例外ハンドリング、ログ出力を行うJobExecutionListener
 @Slf4j
 @RequiredArgsConstructor
 public class CommandLineJobExecutionListener implements JobExecutionListener {
@@ -33,7 +31,7 @@ public class CommandLineJobExecutionListener implements JobExecutionListener {
     public void afterJob(final JobExecution jobExecution) {
         LocalDateTime startTime = jobExecution.getStartTime();
         LocalDateTime endTime = jobExecution.getEndTime();
-        double elapsedTime = 0D;
+        var elapsedTime = 0D;
         if (startTime != null && endTime != null) {
             elapsedTime = SystemDateUtils.calcElapsedTimeByMilliSeconds(startTime, endTime);
         }

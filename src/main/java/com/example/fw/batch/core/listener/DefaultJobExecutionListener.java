@@ -19,9 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 //TODO: ディレードの場合のコードが混在しているので、
 //ディレード用のDefaultJboExecutionListenerとクラスを分ける
 
-/**
- * キューからメッセージ削除、例外ハンドリング、ログ出力を行うJobExecutionListener
- */
+/// キューからメッセージ削除、例外ハンドリング、ログ出力を行うJobExecutionListener
 @Slf4j
 @RequiredArgsConstructor
 public class DefaultJobExecutionListener implements JobExecutionListener {
@@ -47,7 +45,7 @@ public class DefaultJobExecutionListener implements JobExecutionListener {
     public void afterJob(final JobExecution jobExecution) {
         LocalDateTime startTime = jobExecution.getStartTime();
         LocalDateTime endTime = jobExecution.getEndTime();
-        double elapsedTime = 0D;
+        var elapsedTime = 0D;
         if (startTime != null && endTime != null) {
             elapsedTime = SystemDateUtils.calcElapsedTimeByMilliSeconds(startTime, endTime);
         }

@@ -14,11 +14,7 @@ import com.example.fw.common.systemdate.SystemDateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * 
- * バッチ処理向けにRepositoryの性能ログ出力を行うAspect
- *
- */
+/// バッチ処理向けにRepositoryの性能ログ出力を行うAspect
 @Slf4j
 @Aspect
 @RequiredArgsConstructor
@@ -43,13 +39,13 @@ public class LogAspect {
     private Object doAroundRepositoryLog(final ProceedingJoinPoint jp) throws Throwable {
         appLogger.trace(BatchFrameworkMessageIds.T_FW_BTCTRL_0001, jp.getSignature(), Arrays.asList(jp.getArgs()));
         // 処理時間を計測しログ出力
-        long startTime = System.nanoTime();
+        var startTime = System.nanoTime();
         try {
             return jp.proceed();
         } finally {
             // 呼び出し処理実行後、処理時間を計測しログ出力
-            long endTime = System.nanoTime();
-            double elapsedTime = SystemDateUtils.calcElapsedTimeByMilliSeconds(startTime, endTime);
+            var endTime = System.nanoTime();
+            var elapsedTime = SystemDateUtils.calcElapsedTimeByMilliSeconds(startTime, endTime);
             appLogger.trace(BatchFrameworkMessageIds.T_FW_BTCTRL_0002, //
                     jp.getSignature(), Arrays.asList(jp.getArgs()), elapsedTime);
         }

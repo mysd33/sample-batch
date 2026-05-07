@@ -22,9 +22,7 @@ import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 
-/**
- * TodoRepositoryの実装 BackendサービスのREST APIを呼び出す WebFlux実装
- */
+/// TodoRepositoryの実装 BackendサービスのREST APIを呼び出す WebFlux実装
 @Repository
 @RequiredArgsConstructor
 public class TodoRepositoryImplForBatchByWebClient implements TodoRepository {
@@ -59,7 +57,7 @@ public class TodoRepositoryImplForBatchByWebClient implements TodoRepository {
 
     @Override
     public Optional<Todo> findById(String todoId) {
-        Mono<Todo> todoMono = webClient.get()//
+        var todoMono = webClient.get()//
                 .uri(urlTodoById, todoId)//
                 .retrieve()//
                 .onStatus(HttpStatusCode::is4xxClientError, responseErrorHandler::createClientErrorException)//
@@ -76,7 +74,7 @@ public class TodoRepositoryImplForBatchByWebClient implements TodoRepository {
 
     @Override
     public Collection<Todo> findAll() {
-        Mono<TodoList> todoListMono = webClient.get().uri(urlTodos)//
+        var todoListMono = webClient.get().uri(urlTodos)//
                 .retrieve()//
                 .onStatus(HttpStatusCode::is4xxClientError, responseErrorHandler::createClientErrorException)//
                 .onStatus(HttpStatusCode::is5xxServerError, responseErrorHandler::createServerErrorException) //

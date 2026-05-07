@@ -18,29 +18,21 @@ import com.example.fw.batch.core.listener.DefaultJobExecutionListener;
 
 import lombok.RequiredArgsConstructor;
 
-/**
- * 
- * キューを介した非同期処理依頼メッセージによるSpringBatchの設定クラス<br>
- * デフォルトの設定クラス
- *
- */
+/// キューを介した非同期処理依頼メッセージによるSpringBatchの設定クラス<br>
+/// デフォルトの設定クラス
 @Configuration
 @RequiredArgsConstructor
 @EnableConfigurationProperties(SpringBatchConfigurationProperties.class)
 @ConditionalOnProperty(prefix = SpringBatchConfigurationProperties.PROPERTY_PREFIX, name = "type", havingValue = "async", matchIfMissing = true)
 public class SpringBatchAsyncConfig {
 
-    /**
-     * ジョブパラメータのコンバータの定義
-     */
+    /// ジョブパラメータのコンバータの定義
     @Bean
     JobParametersConverter jobParametersConverter() {
         return new DefaultJobParametersConverter();
     }
 
-    /**
-     * ジョブの実行に関わる例外ハンドリング、ログ出力機能の設定
-     */
+    /// ジョブの実行に関わる例外ハンドリング、ログ出力機能の設定
     @Bean
     JobExecutionListener defaultJobExecutionListenerForAsync(JmsMessageManager jmsMessageManager,
             ExceptionHandler defaultExceptionHandler,
@@ -49,17 +41,13 @@ public class SpringBatchAsyncConfig {
                 sqsServerConfigurationProperties);
     }
 
-    /**
-     * JMSのメッセージストアクラス
-     */
+    /// JMSのメッセージストアクラス
     @Bean
     JmsMessageStore jmsMessageStore() {
         return new ThreadLocalJmsMessageStore();
     }
 
-    /**
-     * JMSのメッセージ管理クラス
-     */
+    /// JMSのメッセージ管理クラス
     @Bean
     JmsMessageManager jmsMessageManager(JmsMessageStore jmsMessageStore) {
         return new DefaultJmsMessageManager(jmsMessageStore);

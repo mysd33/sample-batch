@@ -12,9 +12,7 @@ import com.example.fw.common.logging.LoggerFactory;
 
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * Partitionig Step、チャックモデルのItemProcessorのサンプル実装
- */
+/// Partitionig Step、チャックモデルのItemProcessorのサンプル実装
 @StepScope
 @Component
 @Slf4j
@@ -24,7 +22,7 @@ public class Job004ItemProcessor implements ItemProcessor<User, UserTempInfo> {
     @Override
     public UserTempInfo process(User item) throws Exception {
         // 年齢計算してログ出力
-        int age = item.getAge();
+        var age = item.getAge();
         appLogger.debug("{}さんの年齢は{}歳です。", item.getUserName(), age);
         // 計算結果をそのまま返すだけのサンプル実装
         UserTempInfo result = UserTempInfo.builder()//

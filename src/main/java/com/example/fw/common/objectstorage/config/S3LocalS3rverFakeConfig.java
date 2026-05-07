@@ -58,10 +58,7 @@ public class S3LocalS3rverFakeConfig {
         // @formatter:on
     }
 
-    /**
-     * バケット初期作成クラス
-     *
-     */
+    /// バケット初期作成クラス
     @Deprecated
     @Bean
     BucketCreateInitializer bucketCreateInitializer(S3Client s3Client) {

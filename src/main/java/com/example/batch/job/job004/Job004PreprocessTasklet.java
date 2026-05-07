@@ -13,9 +13,7 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.infrastructure.repeat.RepeatStatus;
 import org.springframework.stereotype.Component;
 
-/**
- * 前処理用のTaskletのサンプル実装<br> ジョブが何度も実行可能なよう一時テーブルを全件削除しておく
- */
+/// 前処理用のTaskletのサンプル実装<br> ジョブが何度も実行可能なよう一時テーブルを全件削除しておく
 @Component
 @Slf4j
 @RequiredArgsConstructor

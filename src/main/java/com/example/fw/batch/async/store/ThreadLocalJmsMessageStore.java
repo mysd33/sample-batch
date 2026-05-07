@@ -2,10 +2,7 @@ package com.example.fw.batch.async.store;
 
 import jakarta.jms.Message;
 
-/**
- * ThreadLocalを利用したJmsMessageStore実装クラス
- *
- */
+/// ThreadLocalを利用したJmsMessageStore実装クラス
 public class ThreadLocalJmsMessageStore implements JmsMessageStore {
     private final ThreadLocal<Message> messageStore = new ThreadLocal<>();
 

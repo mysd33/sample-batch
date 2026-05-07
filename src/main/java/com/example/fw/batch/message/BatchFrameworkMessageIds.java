@@ -1,10 +1,6 @@
 package com.example.fw.batch.message;
 
-/**
- * 
- * フレームワークのメッセージID定数クラス
- *
- */
+/// フレームワークのメッセージID定数クラス
 public final class BatchFrameworkMessageIds {
     private BatchFrameworkMessageIds() {
     }

@@ -30,7 +30,7 @@ public class S3ProdConfig {
     @Bean
     S3Client s3Client() {
         Region region = Region.of(s3ConfigurationProperties.getRegion());
-        return S3Client.builder().httpClientBuilder((ApacheHttpClient.builder())).region(region)
+        return S3Client.builder().httpClientBuilder(ApacheHttpClient.builder()).region(region)
             .build();
     }
 }

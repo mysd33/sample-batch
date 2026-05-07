@@ -1,5 +1,6 @@
 package com.example.batch;
 
+import com.example.batch.domain.message.CommonMessageIds;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,28 +10,22 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.regex.Pattern;
 
-import com.example.batch.domain.message.CommonMessageIds;
-
-/**
- * 
- * メッセージIDの定数クラスを自動生成するツール九明日
- * 
- *
- */
+/// メッセージIDの定数クラスを自動生成するツール九明日
 public class CommonMessageIdConstClassGens {
+
     void main() throws IOException {
         // message properties file
-        InputStream inputStream = new FileInputStream("src/main/resources/messages-common.properties");
-        BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+        InputStream inputStream = new FileInputStream(
+            "src/main/resources/messages-common.properties");
+        var br = new BufferedReader(new InputStreamReader(inputStream));
         Class<?> targetClazz = CommonMessageIds.class;
-        File output = new File("src/main/java/" + targetClazz.getName().replaceAll(Pattern.quote("."), "/") + ".java");
+        var output = new File(
+            "src/main/java/" + targetClazz.getName().replaceAll(Pattern.quote("."), "/") + ".java");
         IO.println("write " + output.getAbsolutePath());
-        try (PrintWriter pw = new PrintWriter(output)) {
+        try (var pw = new PrintWriter(output); br) {
             pw.println("package " + targetClazz.getPackage().getName() + ";");
-            pw.println("/**");
-            pw.println(" * Message Id");
-            pw.println(" * Auto-Generarted By MessageKeysGen Class");
-            pw.println(" */");
+            pw.println("/// Message Id");
+            pw.println("/// Auto-Generarted By MessageKeysGen Class");
             pw.println("public class " + targetClazz.getSimpleName() + " {");
             pw.println("    private " + targetClazz.getSimpleName() + "() {}");
 
@@ -40,8 +35,6 @@ public class CommonMessageIdConstClassGens {
             }
             pw.println("}");
             pw.flush();
-        } finally {
-            br.close();
         }
     }
 
@@ -59,8 +52,9 @@ public class CommonMessageIdConstClassGens {
         if (vals.length > 1) {
             String key = vals[0].trim();
             pw.println("    public static final String "
-                    + key.toUpperCase().replaceAll(Pattern.quote("."), "_").replaceAll(Pattern.quote("-"), "_")
-                    + " = \"" + key + "\";");
+                + key.toUpperCase().replaceAll(Pattern.quote("."), "_")
+                .replaceAll(Pattern.quote("-"), "_")
+                + " = \"" + key + "\";");
         }
         return;
     }

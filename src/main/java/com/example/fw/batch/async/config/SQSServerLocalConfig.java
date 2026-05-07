@@ -14,18 +14,14 @@ import com.example.fw.common.async.config.SQSCommonConfigurationProperties;
 
 import software.amazon.awssdk.services.sqs.SqsClient;
 
-/**
- * SQS Local起動の設定クラス(開発時のみ)
- */
+/// SQS Local起動の設定クラス(開発時のみ)
 @Profile("dev")
 @ConditionalOnProperty(prefix = SpringBatchConfigurationProperties.PROPERTY_PREFIX, name = "type", havingValue = "async", matchIfMissing = true)
 @Configuration
 @EnableConfigurationProperties({ SQSCommonConfigurationProperties.class, SQSServerConfigurationProperties.class })
 public class SQSServerLocalConfig {
 
-    /**
-     * ElasticMQの起動クラス
-     */
+    /// ElasticMQの起動クラス
     @Bean
     @ConditionalOnClass(SQSRestServer.class)
     ElasticMQLocalExecutor elasticMQLocalExecutor(SqsClient sqsClient,

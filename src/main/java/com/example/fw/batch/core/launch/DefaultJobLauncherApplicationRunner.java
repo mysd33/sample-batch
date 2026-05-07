@@ -23,9 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.batch.autoconfigure.JobLauncherApplicationRunner;
 import org.springframework.core.env.Environment;
 
-/**
- * JobLauncherApplicationRunnerのデフォルト実装クラス<br> Spring Bootの標準機能を拡張し実装する。
- */
+/// JobLauncherApplicationRunnerのデフォルト実装クラス<br> Spring Bootの標準機能を拡張し実装する。
 @Slf4j
 public class DefaultJobLauncherApplicationRunner extends JobLauncherApplicationRunner {
 
@@ -37,9 +35,7 @@ public class DefaultJobLauncherApplicationRunner extends JobLauncherApplicationR
     private SfnTaskResultPersistService sfnTaskResultPersistService = null;
     private SfnTaskResultSender sfnTaskResultSender = null;
 
-    /**
-     * コンストラクタ
-     */
+    /// コンストラクタ
     public DefaultJobLauncherApplicationRunner(JobOperator jobOperator, JobRepository jobRepository,
         JobflowConfigurationProperties jobflowConfigurationProperties, Environment env) {
         super(jobOperator);
@@ -68,7 +64,7 @@ public class DefaultJobLauncherApplicationRunner extends JobLauncherApplicationR
         } catch (JobInstanceAlreadyCompleteException _) {
             // ジョブインスタンスが既に完了している場合は警告ログを出力し本処理をスキップし、正常終了させる
             JobInstance jobInstance = jobRepository.getJobInstance(job.getName(), jobParameters);
-            long jobInstanceId = Objects.requireNonNull(jobInstance).getId();
+            var jobInstanceId = Objects.requireNonNull(jobInstance).getId();
             appLogger.warn(BatchFrameworkMessageIds.W_FW_BTCTRL_8001, job.getName(), jobInstanceId);
             if (sfnTaskResultPersistService == null) {
                 return;

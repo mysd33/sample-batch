@@ -29,11 +29,7 @@ import jakarta.jms.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * 
- * キューを監視しジョブを実行するクラス
- *
- */
+/// キューを監視しジョブを実行するクラス
 @Slf4j
 @RequiredArgsConstructor
 public class AsyncMessageListener {
@@ -46,12 +42,9 @@ public class AsyncMessageListener {
     private final SQSServerConfigurationProperties sqsServerConfigurationProperties;
     private final JobRegistry jobRegistry;
 
-    /**
-     * キューからジョブの要求情報を受信
-     * 
-     * @param request ジョブの要求情報
-     * 
-     */
+    /// キューからジョブの要求情報を受信
+    ///
+    /// @param request ジョブの要求情報
     @JmsListener(destination = SQSServerConfigurationProperties.LISTENER_QUEUE_NAME_EXPRESSION)
     public void onMessage(@Headers final Map<String, String> headers, Message message, final JobRequest request) {
         // メッセージが有効な形式かチェック

@@ -11,9 +11,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * CSVファイルとマッピングするTodoRecordクラス
- */
+/// CSVファイルとマッピングするTodoRecordクラス
 @Data
 @Builder
 @NoArgsConstructor

@@ -25,11 +25,7 @@ import org.springframework.batch.infrastructure.item.validator.Validator;
 import org.springframework.batch.infrastructure.repeat.RepeatStatus;
 import org.springframework.stereotype.Component;
 
-/**
- *
- * Taskletのサンプル実装。 TodoListのCSVファイルを読み込み、一括でBackendアプリケーションへTodoの登録依頼を実施する。
- *
- */
+/// Taskletのサンプル実装。 TodoListのCSVファイルを読み込み、一括でBackendアプリケーションへTodoの登録依頼を実施する。
 @StepScope
 @Component
 @RequiredArgsConstructor

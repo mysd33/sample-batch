@@ -13,10 +13,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import lombok.RequiredArgsConstructor;
 
-/**
- * Job001の定義<br>
- * Taskletを実行するシンプルなJobの例
- */
+/// Job001の定義<br>
+/// Taskletを実行するシンプルなJobの例
 @Configuration
 @RequiredArgsConstructor
 public class Job001Config {
@@ -24,9 +22,7 @@ public class Job001Config {
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
 
-    /**
-     * パラメータの妥当性検証の例
-     */
+    /// パラメータの妥当性検証の例
     @Bean
     DefaultJobParametersValidator job001JobParametersValidator() {
         return new DefaultJobParametersValidator(
@@ -36,9 +32,7 @@ public class Job001Config {
                 new String[] { "param01", "param02" });
     }
 
-    /**
-     * Job
-     */
+    /// Job
     @Bean
     Job job001(JobExecutionListener listener) {
         return new JobBuilder("job001", jobRepository)//
@@ -48,9 +42,7 @@ public class Job001Config {
                 .build();
     }
 
-    /**
-     * Step
-     */
+    /// Step
     @Bean
     Step step00101() {
         return new StepBuilder("step001_01", jobRepository)//

@@ -6,9 +6,7 @@ import com.example.fw.common.constants.FrameworkConstants;
 
 import lombok.Data;
 
-/**
- * ジョブフローのプロパティクラス
- */
+/// ジョブフローのプロパティクラス
 @Data
 @ConfigurationProperties(prefix = JobflowConfigurationProperties.PROPERTY_PREFIX)
 public class JobflowConfigurationProperties {

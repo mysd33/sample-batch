@@ -10,11 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * 
- * ユーザクラス
- *
- */
+/// ユーザクラス
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

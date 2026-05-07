@@ -22,18 +22,14 @@ import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
-/**
- * SQSのサーバ側設定クラス
- */
+/// SQSのサーバ側設定クラス
 @Configuration
 @ConditionalOnProperty(prefix = SpringBatchConfigurationProperties.PROPERTY_PREFIX, name = "type", havingValue = "async", matchIfMissing = true)
 @EnableConfigurationProperties({SQSCommonConfigurationProperties.class,
     SQSServerConfigurationProperties.class})
 public class SQSServerConfig {
 
-    /**
-     * JMSListenerContainerFactoryの定義
-     */
+    /// JMSListenerContainerFactoryの定義
     @Bean
     DefaultJmsListenerContainerFactory jmsListenerContainerFactory(
         ConnectionFactory connectionFactory,
@@ -68,11 +64,9 @@ public class SQSServerConfig {
         return factory;
     }
 
-    /**
-     * SQSからメッセージを取得するMessageListener
-     *
-     * @param jobOperator {@link JobOperator}
-     */
+    /// SQSからメッセージを取得するMessageListener
+    ///
+    /// @param jobOperator [JobOperator]
     @Bean
     AsyncMessageListener asyncMessageListener(JobOperator jobOperator,
         JobParametersConverter jobParametersConverter,

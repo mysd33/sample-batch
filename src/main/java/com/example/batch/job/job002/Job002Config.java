@@ -1,5 +1,11 @@
 package com.example.batch.job.job002;
 
+import com.example.batch.job.common.record.TodoRecord;
+import com.example.fw.batch.core.writer.NoOpItemWriter;
+import com.example.fw.common.logging.ApplicationLogger;
+import com.example.fw.common.logging.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.job.Job;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.job.parameters.DefaultJobParametersValidator;
@@ -17,23 +23,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.example.batch.job.common.record.TodoRecord;
-import com.example.fw.batch.core.writer.NoOpItemWriter;
-import com.example.fw.common.logging.ApplicationLogger;
-import com.example.fw.common.logging.LoggerFactory;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-/**
- * Job002の定義<br>
- * ItemProcessorを実行するJobの例
- */
+/// Job002の定義<br>
+/// ItemProcessorを実行するJobの例
 @Configuration
 @RequiredArgsConstructor
 @Slf4j
 public class Job002Config {
-    private static ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
+
+    private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
     private final Job002ItemProcessor job002ItemProcessor;
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
@@ -45,68 +42,60 @@ public class Job002Config {
     @Value("${example.job002.chunk-size:5}")
     private int chunkSize;
 
-    /**
-     * パラメータの妥当性検証の例
-     */
+    /// パラメータの妥当性検証の例
     @Bean
     DefaultJobParametersValidator job002JobParametersValidator() {
-        DefaultJobParametersValidator validator = new DefaultJobParametersValidator();
+        var validator = new DefaultJobParametersValidator();
         // 必須パラメータ
-        validator.setRequiredKeys(new String[] { "input-file-name" });
+        validator.setRequiredKeys(new String[]{"input-file-name"});
         // 任意パラメータ
-        validator.setOptionalKeys(new String[] { "param01", "param02" });
+        validator.setOptionalKeys(new String[]{"param01", "param02"});
         return validator;
     }
 
-    /**
-     * Job
-     */
+    /// Job
     @Bean
     Job job002(JobExecutionListener listener) {
         return new JobBuilder("job002", jobRepository)//
-                .listener(listener)//
-                .start(step00201())//
-                .validator(job002JobParametersValidator())//
-                .next(step00202())//
-                .build();
+            .listener(listener)//
+            .start(step00201())//
+            .validator(job002JobParametersValidator())//
+            .next(step00202())//
+            .build();
     }
 
-    /**
-     * Step1 パラメータから入出力ファイルパスを取得する前処理
-     */
+    /// Step1 パラメータから入出力ファイルパスを取得する前処理
     @Bean
     Step step00201() {
         return new StepBuilder("step002_01", jobRepository)//
-                .tasklet((_, chunkContext) -> {
-                    StepExecution stepExecution = chunkContext.getStepContext().getStepExecution();
-                    String param01 = stepExecution.getJobParameters().getString("param01");
-                    String param02 = stepExecution.getJobParameters().getString("param02");
-                    String inputFileName = stepExecution.getJobParameters().getString("input-file-name",
-                            defaultInputFileName);
-                    appLogger.debug("param01:{}, param02:{}, inputFileName:{}", param01, param02, inputFileName);
-                    ExecutionContext jobExecutionContext = stepExecution.getJobExecution().getExecutionContext();
-                    jobExecutionContext.put("input.file.name", inputFileName);
-                    return RepeatStatus.FINISHED;
-                }, transactionManager).build();
+            .tasklet((_, chunkContext) -> {
+                StepExecution stepExecution = chunkContext.getStepContext().getStepExecution();
+                String param01 = stepExecution.getJobParameters().getString("param01");
+                String param02 = stepExecution.getJobParameters().getString("param02");
+                String inputFileName = stepExecution.getJobParameters().getString("input-file-name",
+                    defaultInputFileName);
+                appLogger.debug("param01:{}, param02:{}, inputFileName:{}", param01, param02,
+                    inputFileName);
+                ExecutionContext jobExecutionContext = stepExecution.getJobExecution()
+                    .getExecutionContext();
+                jobExecutionContext.put("input.file.name", inputFileName);
+                return RepeatStatus.FINISHED;
+            }, transactionManager).build();
     }
 
-    /**
-     * Step2 本処理
-     */
+    /// Step2 本処理
     @Bean
     Step step00202() {
         return new StepBuilder("step002_02", jobRepository)//
-                .<TodoRecord, TodoRecord>chunk(chunkSize)//
-                .transactionManager(transactionManager)//
-                .reader(todoListFileItemReader)//
-                .processor(job002ItemProcessor)//
-                .writer(job002NoOpItemWriter())//
-                .build();
+            .<TodoRecord, TodoRecord>chunk(chunkSize)//
+            .transactionManager(transactionManager)//
+            .reader(todoListFileItemReader)//
+            .processor(job002ItemProcessor)//
+            .writer(job002NoOpItemWriter())//
+            .build();
     }
 
-    /**
-     * 何もしないItemWriter
-     */
+    /// 何もしないItemWriter
     @Bean
     ItemWriter<TodoRecord> job002NoOpItemWriter() {
         return new NoOpItemWriter<>();
