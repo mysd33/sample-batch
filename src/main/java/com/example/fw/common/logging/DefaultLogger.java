@@ -1,16 +1,17 @@
 package com.example.fw.common.logging;
 
+import java.text.MessageFormat;
+import java.util.Arrays;
+import java.util.Locale;
+
 import org.slf4j.Logger;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.util.Assert;
 
-import java.text.MessageFormat;
-import java.util.Arrays;
-import java.util.Locale;
-
 /// ロガーのデフォルト実装
 public class DefaultLogger implements ApplicationLogger, MonitoringLogger, AuditLogger {
+
     private final MessageSource messageSource;
     private final Logger delegateLogger;
 
@@ -63,7 +64,8 @@ public class DefaultLogger implements ApplicationLogger, MonitoringLogger, Audit
     }
 
     @Override
-    public void warn(final String messageId, final String format, final Throwable t, final Object... args) {
+    public void warn(final String messageId, final String format, final Throwable t,
+        final Object... args) {
         if (delegateLogger.isWarnEnabled()) {
             delegateLogger.warn(getMessageWithMessageIdAndFormat(messageId, format, args), t);
         }
