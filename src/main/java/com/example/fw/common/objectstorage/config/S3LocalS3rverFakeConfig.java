@@ -1,18 +1,15 @@
 package com.example.fw.common.objectstorage.config;
 
+import com.example.fw.common.objectstorage.BucketCreateInitializer;
+import com.example.fw.common.objectstorage.ObjectStorageFileAccessor;
+import com.example.fw.common.objectstorage.S3ObjectStorageFileAccessor;
 import java.net.URI;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-
-import com.example.fw.common.objectstorage.BucketCreateInitializer;
-import com.example.fw.common.objectstorage.ObjectStorageFileAccessor;
-import com.example.fw.common.objectstorage.S3ObjectStorageFileAccessor;
-
-import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.http.apache.ApacheHttpClient;
@@ -20,37 +17,29 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3Configuration;
 
-/**
- * 
- * S3が開発環境上でのローカルサーバFake（s3rver）実行に置き換える設定クラス<br>
- * 
- * @deprecated s3verは、現在、Public archiveとなっており、メンテナンスされていないため非推奨とする
- *
- */
+/// S3が開発環境上でのローカルサーバFake（s3rver）実行に置き換える設定クラス<br>
+///
+/// @deprecated s3verは、現在、Public archiveとなっており、メンテナンスされていないため非推奨とする
 @Deprecated(forRemoval = true)
 @Profile("dev")
 @ConditionalOnProperty(prefix = S3ConfigurationProperties.LOCALFAKE_PROPERTY_PREFIX, name = "type", havingValue = "s3rver")
-@EnableConfigurationProperties({ S3ConfigurationProperties.class })
+@EnableConfigurationProperties({S3ConfigurationProperties.class})
 @Configuration
 @RequiredArgsConstructor
 public class S3LocalS3rverFakeConfig {
+
     private static final String S3RVER = "S3RVER";
     private final S3ConfigurationProperties s3ConfigurationProperties;
 
-    /**
-     * オブジェクトストレージアクセスクラス
-     */
-    @Deprecated
+    /// オブジェクトストレージアクセスクラス
+    @Deprecated(forRemoval = true)
     @Bean
     ObjectStorageFileAccessor objectStorageFileAccessor(S3Client s3Client) {
         return new S3ObjectStorageFileAccessor(s3Client, s3ConfigurationProperties.getBucket());
     }
 
-    /**
-     * S3クライアント
-     */
-    @Deprecated
-    @Bean
+    /// S3クライアント
+    @Deprecated(forRemoval = true)
     S3Client s3Client() {
         // ダミーのクレデンシャル
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create(S3RVER, S3RVER);
@@ -58,7 +47,7 @@ public class S3LocalS3rverFakeConfig {
         Region region = Region.of(s3ConfigurationProperties.getRegion());
         // @formatter:off
         return S3Client.builder()
-                .httpClientBuilder((ApacheHttpClient.builder()))
+                .httpClientBuilder(ApacheHttpClient.builder())
                 .region(region)       
                 .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
                 .endpointOverride(URI.create("http://localhost:" + s3ConfigurationProperties.getLocalfake().getPort()))
@@ -71,7 +60,7 @@ public class S3LocalS3rverFakeConfig {
 
     /**
      * バケット初期作成クラス
-     * 
+     *
      */
     @Deprecated
     @Bean
