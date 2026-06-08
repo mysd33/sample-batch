@@ -5,7 +5,8 @@ CREATE TABLE IF NOT EXISTS m_user (
     password VARCHAR(100),
     user_name VARCHAR(100),
     birthday DATE,
-    role VARCHAR(50)
+    role VARCHAR(50),
+    version BIGINT NOT NULL DEFAULT 0
 );
 
 /* ユーザーの一時テーブル */

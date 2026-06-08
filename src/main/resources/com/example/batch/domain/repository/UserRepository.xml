@@ -4,7 +4,7 @@
 
 <mapper namespace="com.example.batch.domain.repository.UserRepository">
 
-    <!-- マッピング定義 -->    
+    <!-- マッピング定義 -->
     <!-- 全件検索（Partitioning Step用） -->
     <select id="findAllForPartitioning" resultType="User">
         SELECT
@@ -12,7 +12,8 @@
             password,
             user_name,
             birthday,
-            role
+            role,
+            version
         FROM
             m_user
         ORDER BY
@@ -22,7 +23,7 @@
         OFFSET
             #{offset}
     </select>
-    
+
     <!-- 件数取得 -->
     <select id="count" resultType="int">
         SELECT
