@@ -1,13 +1,5 @@
 package com.example.batch.job.job001;
 
-import com.example.batch.domain.message.CommonMessageIds;
-import com.example.batch.domain.message.MessageIds;
-import com.example.batch.domain.sharedservice.TodoSharedService;
-import com.example.batch.job.common.record.TodoRecord;
-import com.example.fw.common.logging.ApplicationLogger;
-import com.example.fw.common.logging.LoggerFactory;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -21,6 +13,15 @@ import org.springframework.batch.infrastructure.item.validator.Validator;
 import org.springframework.batch.infrastructure.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import com.example.batch.domain.message.CommonMessageIds;
+import com.example.batch.domain.message.MessageIds;
+import com.example.batch.domain.sharedservice.TodoSharedService;
+import com.example.batch.job.common.mapper.TodoRecordMapper;
+import com.example.batch.job.common.record.TodoRecord;
+import com.example.fw.common.logging.ApplicationLogger;
+import com.example.fw.common.logging.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /// Taskletのサンプル実装。 TodoListのCSVファイルを読み込み、一括でBackendアプリケーションへTodoの登録依頼を実施する。
 @StepScope
@@ -28,14 +29,13 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @RequiredArgsConstructor
 public class Job001Tasklet implements Tasklet {
-
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
     private final FlatFileItemReader<TodoRecord> todoListFileItemReader;
     // 単項目チェック用のValidator
     private final Validator<TodoRecord> validator;
     // 相関項目チェック用のValidator
     private final Validator<TodoRecord> todoRecordSpringValidator;
-
+    private final TodoRecordMapper todoRecordMapper;
     private final TodoSharedService todoSharedService;
 
     // @StepScopeなので、JobParametersを@Valueで受け取れる
@@ -49,15 +49,15 @@ public class Job001Tasklet implements Tasklet {
 
     @Override
     public RepeatStatus execute(@NonNull StepContribution contribution, ChunkContext chunkContext)
-        throws Exception {
+            throws Exception {
         appLogger.debug("Job001Tasklet実行");
 
         appLogger.info(CommonMessageIds.I_CMN_0001);
 
         // StepScopeなので、@Valueでパラメータを受け取る方法のほうが簡単だが、ここではChunkContextから取得する例とする
         StepExecution stepExecution = chunkContext.getStepContext().getStepExecution();
-        String inputFileName = stepExecution.getJobParameters()
-            .getString("input-file-name", defaultInputFileName);
+        String inputFileName =
+                stepExecution.getJobParameters().getString("input-file-name", defaultInputFileName);
         // @formatter:off
         // この例では、param01,param02は@Valueで受け取る例としているが、ChunkContextから取得する場合は以下のようにする
         // String param01 = stepExecution.getJobParameters().getString("param01", "default01");
@@ -65,8 +65,8 @@ public class Job001Tasklet implements Tasklet {
         // @formatter:on
         appLogger.debug("param01:{},param02:{},inputFileName:{}", param01, param02, inputFileName);
 
-        ExecutionContext jobExecutionContext = stepExecution.getJobExecution()
-            .getExecutionContext();
+        ExecutionContext jobExecutionContext =
+                stepExecution.getJobExecution().getExecutionContext();
         jobExecutionContext.put("input.file.name", inputFileName);
         ExecutionContext executionContext = stepExecution.getExecutionContext();
 
@@ -87,7 +87,7 @@ public class Job001Tasklet implements Tasklet {
                     throw e;
                 }
                 // ビジネスロジックの実行
-                todoSharedService.registerTodo(item.getTodoTitle());
+                todoSharedService.registerTodo(todoRecordMapper.recordToModel(item));
             }
         } finally {
             todoListFileItemReader.close();

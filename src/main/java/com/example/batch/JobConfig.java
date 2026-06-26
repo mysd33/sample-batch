@@ -1,13 +1,5 @@
 package com.example.batch;
 
-import com.example.batch.domain.message.MessageIds;
-import com.example.batch.domain.model.User;
-import com.example.batch.domain.model.UserTempInfo;
-import com.example.batch.job.common.record.TodoRecord;
-import com.example.fw.batch.core.config.SpringBatchConfigPackage;
-import com.example.fw.batch.core.exception.DefaultExceptionHandler;
-import com.example.fw.batch.core.exception.ExceptionHandler;
-import com.example.fw.common.utils.JapaneseStringUtils;
 import java.util.Map;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.batch.MyBatisBatchItemWriter;
@@ -29,6 +21,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import com.example.batch.domain.message.MessageIds;
+import com.example.batch.domain.model.User;
+import com.example.batch.domain.model.UserTempInfo;
+import com.example.batch.job.common.record.TodoRecord;
+import com.example.fw.batch.core.config.SpringBatchConfigPackage;
+import com.example.fw.batch.core.exception.DefaultExceptionHandler;
+import com.example.fw.batch.core.exception.ExceptionHandler;
+import com.example.fw.common.utils.JapaneseStringUtils;
 
 /// Job層のSpringBatchの設定クラス
 @Configuration
@@ -39,10 +39,10 @@ public class JobConfig {
     @Bean
     ExceptionHandler defaultExceptionHandler(MessageSource messageSource) {
         return DefaultExceptionHandler.builder()//
-            .messageSource(messageSource)//
-            .inputErrorMessageId(MessageIds.E_EX_9002)//
-            .systemErrorMessageId(MessageIds.E_EX_9001)//
-            .build();
+                .messageSource(messageSource)//
+                .inputErrorMessageId(MessageIds.E_EX_9002)//
+                .systemErrorMessageId(MessageIds.E_EX_9001)//
+                .build();
     }
 
     /// TodoListのFileItemReaderクラス
@@ -51,22 +51,22 @@ public class JobConfig {
     @StepScope
     @Bean
     FlatFileItemReader<TodoRecord> todoListFileItemReader(
-        @Value("#{jobExecutionContext['input.file.name']}") String filePathName) {
+            @Value("#{jobExecutionContext['input.file.name']}") String filePathName) {
         final var tokenizer = new DelimitedLineTokenizer();
         tokenizer.setDelimiter(",");
-        tokenizer.setNames("todoTitle");
+        tokenizer.setNames("userId", "todoTitle");
         final var fieldSetMapper = new BeanWrapperFieldSetMapper<TodoRecord>();
         fieldSetMapper.setTargetType(TodoRecord.class);
         final var lineMapper = new DefaultLineMapper<TodoRecord>();
         lineMapper.setLineTokenizer(tokenizer);
         lineMapper.setFieldSetMapper(fieldSetMapper);
         return new FlatFileItemReaderBuilder<TodoRecord>().name("todoListReader")
-            .resource(new FileSystemResource(filePathName))//
-            .lineMapper((line, lineNumber) -> {
-                // 特殊文字のコードポイント変換を行う
-                String converted = JapaneseStringUtils.convertCodePoints(line);
-                return lineMapper.mapLine(converted, lineNumber);
-            }).encoding("UTF-8").build();
+                .resource(new FileSystemResource(filePathName))//
+                .lineMapper((line, lineNumber) -> {
+                    // 特殊文字のコードポイント変換を行う
+                    String converted = JapaneseStringUtils.convertCodePoints(line);
+                    return lineMapper.mapLine(converted, lineNumber);
+                }).encoding("UTF-8").build();
     }
 
     /// バッチの単項目入力チェック機能のSpring Batch用のValidatorクラス
@@ -102,23 +102,24 @@ public class JobConfig {
     @StepScope
     @Bean
     MyBatisCursorItemReader<User> userTableItemReader(SqlSessionFactory sqlSessionFactory,
-        @Value("#{stepExecutionContext['dataSize']}") Integer dataSize,
-        @Value("#{stepExecutionContext['offset']}") Integer offset) {
+            @Value("#{stepExecutionContext['dataSize']}") Integer dataSize,
+            @Value("#{stepExecutionContext['offset']}") Integer offset) {
         return new MyBatisCursorItemReaderBuilder<User>().sqlSessionFactory(sqlSessionFactory)//
-            .queryId("com.example.batch.domain.repository.UserRepository.findAllForPartitioning")//
-            .parameterValues(Map.of("dataSize", dataSize, "offset", offset))//
-            .build();
+                .queryId(
+                        "com.example.batch.domain.repository.UserRepository.findAllForPartitioning")//
+                .parameterValues(Map.of("dataSize", dataSize, "offset", offset))//
+                .build();
     }
 
     /// ユーザ一時テーブル用ItemWriterクラス
     @StepScope
     @Bean
     MyBatisBatchItemWriter<UserTempInfo> userTempTableItemWriter(
-        SqlSessionFactory sqlSessionFactory) {
+            SqlSessionFactory sqlSessionFactory) {
         return new MyBatisBatchItemWriterBuilder<UserTempInfo>()//
-            .sqlSessionFactory(sqlSessionFactory)//
-            .statementId("com.example.batch.domain.repository.UserTempInfoRepository.insert")//
-            .build();
+                .sqlSessionFactory(sqlSessionFactory)//
+                .statementId("com.example.batch.domain.repository.UserTempInfoRepository.insert")//
+                .build();
     }
 
 }

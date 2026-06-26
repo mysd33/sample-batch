@@ -1,19 +1,21 @@
 package com.example.batch.infra.repository;
 
+import java.net.URI;
+import java.util.Collection;
+import java.util.Optional;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 import com.example.batch.domain.model.Todo;
 import com.example.batch.domain.model.TodoList;
 import com.example.batch.domain.repository.TodoRepository;
 import com.example.batch.infra.httpclient.CircuitBreakerErrorFallback;
-import java.util.Collection;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
-import org.springframework.web.client.RestTemplate;
 
 /// TodoRepositoryの実装 BackendサービスのREST APIを呼び出す
-//WebClient（WebFlux）版のTodoRepository実装を使用しているためコメントアウト
-//@Repository
+// WebClient（WebFlux）版のTodoRepository実装を使用しているためコメントアウト
+// @Repository
 @RequiredArgsConstructor
 public class TodoRepositoryImplForBatchByRestTemplate implements TodoRepository {
 
@@ -36,15 +38,17 @@ public class TodoRepositoryImplForBatchByRestTemplate implements TodoRepository 
     @Override
     public Optional<Todo> findById(String todoId) {
         Todo todo = cbFactory.create("todo_findById").run(
-            () -> restTemplate.getForObject(urlTodoById, Todo.class, todoId),
-            CircuitBreakerErrorFallback.throwBusinessException());
+                () -> restTemplate.getForObject(urlTodoById, Todo.class, todoId),
+                CircuitBreakerErrorFallback.throwBusinessException());
         return Optional.ofNullable(todo);
     }
 
     @Override
-    public Collection<Todo> findAll() {
-        return cbFactory.create("todo_findAll")
-            .run(() -> restTemplate.getForObject(urlTodos, TodoList.class),
+    public Collection<Todo> findAllByUserId(String userId) {
+        URI uri = UriComponentsBuilder.fromUriString(urlTodos).queryParam("userId", userId).build()
+                .toUri();
+        return cbFactory.create("todo_findAll").run(
+                () -> restTemplate.getForObject(uri, TodoList.class),
                 // エラーとせずにFallback処理として空のリストを返却する例
                 _ -> new TodoList());
     }
@@ -52,8 +56,8 @@ public class TodoRepositoryImplForBatchByRestTemplate implements TodoRepository 
     @Override
     public void create(Todo todo) {
         // バッチ処理のサンプル実行向けに件数チェックされない、create APIのURLを呼び出し
-        cbFactory.create("todo_create")
-            .run(() -> restTemplate.postForObject(urlTodosForCreateBatch, todo, Todo.class),
+        cbFactory.create("todo_create").run(
+                () -> restTemplate.postForObject(urlTodosForCreateBatch, todo, Todo.class),
                 CircuitBreakerErrorFallback.throwBusinessException());
     }
 
@@ -66,8 +70,8 @@ public class TodoRepositoryImplForBatchByRestTemplate implements TodoRepository 
     }
 
     @Override
-    public void delete(Todo todo) {
-        cbFactory.create("todo_delete").run(() -> {
+    public boolean delete(Todo todo) {
+        return cbFactory.create("todo_delete").run(() -> {
             restTemplate.delete(urlTodoById, todo.getTodoId());
             return true;
         }, CircuitBreakerErrorFallback.throwBusinessException());

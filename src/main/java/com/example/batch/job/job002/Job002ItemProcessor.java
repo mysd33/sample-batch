@@ -5,13 +5,12 @@ import org.springframework.batch.infrastructure.item.ItemProcessor;
 import org.springframework.batch.infrastructure.item.validator.ValidationException;
 import org.springframework.batch.infrastructure.item.validator.Validator;
 import org.springframework.stereotype.Component;
-
 import com.example.batch.domain.message.MessageIds;
 import com.example.batch.domain.sharedservice.TodoSharedService;
+import com.example.batch.job.common.mapper.TodoRecordMapper;
 import com.example.batch.job.common.record.TodoRecord;
 import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,6 +24,7 @@ public class Job002ItemProcessor implements ItemProcessor<TodoRecord, TodoRecord
     private final Validator<TodoRecord> validator;
     // 相関項目チェック用のValidator
     private final Validator<TodoRecord> todoRecordSpringValidator;
+    private final TodoRecordMapper todoRecordMapper;
     private final TodoSharedService todoSharedService;
 
     @Override
@@ -42,7 +42,7 @@ public class Job002ItemProcessor implements ItemProcessor<TodoRecord, TodoRecord
             throw e;
         }
         // ビジネスロジックの実行
-        todoSharedService.registerTodo(item.getTodoTitle());
+        todoSharedService.registerTodo(todoRecordMapper.recordToModel(item));
         return item;
     }
 

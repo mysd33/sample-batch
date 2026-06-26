@@ -1,16 +1,7 @@
 package com.example.batch.job.job003;
 
-import com.example.batch.domain.message.MessageIds;
-import com.example.batch.domain.sharedservice.TodoSharedService;
-import com.example.batch.job.common.record.TodoRecord;
-import com.example.fw.common.logging.ApplicationLogger;
-import com.example.fw.common.logging.LoggerFactory;
-import com.example.fw.common.objectstorage.DownloadObject;
-import com.example.fw.common.objectstorage.ObjectStorageFileAccessor;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.jspecify.annotations.NonNull;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -24,6 +15,16 @@ import org.springframework.batch.infrastructure.item.validator.ValidationExcepti
 import org.springframework.batch.infrastructure.item.validator.Validator;
 import org.springframework.batch.infrastructure.repeat.RepeatStatus;
 import org.springframework.stereotype.Component;
+import com.example.batch.domain.message.MessageIds;
+import com.example.batch.domain.sharedservice.TodoSharedService;
+import com.example.batch.job.common.mapper.TodoRecordMapper;
+import com.example.batch.job.common.record.TodoRecord;
+import com.example.fw.common.logging.ApplicationLogger;
+import com.example.fw.common.logging.LoggerFactory;
+import com.example.fw.common.objectstorage.DownloadObject;
+import com.example.fw.common.objectstorage.ObjectStorageFileAccessor;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /// Taskletのサンプル実装。 TodoListのCSVファイルを読み込み、一括でBackendアプリケーションへTodoの登録依頼を実施する。
 @StepScope
@@ -39,12 +40,13 @@ public class Job003Tasklet implements Tasklet {
     private final Validator<TodoRecord> validator;
     // 相関項目チェック用のValidator
     private final Validator<TodoRecord> todoRecordSpringValidator;
+    private final TodoRecordMapper todoRecordMapper;
     private final TodoSharedService todoSharedService;
     private final ObjectStorageFileAccessor objectStorageFileAccessor;
 
     @Override
     public RepeatStatus execute(@NonNull StepContribution contribution, ChunkContext chunkContext)
-        throws Exception {
+            throws Exception {
         appLogger.debug("Job003Tasklet実行");
         // ジョブパラメータより、授受したファイルパスを取得
         StepExecution stepExecution = chunkContext.getStepContext().getStepExecution();
@@ -54,11 +56,11 @@ public class Job003Tasklet implements Tasklet {
         DownloadObject downloadObject = objectStorageFileAccessor.download(targetFilePath);
         // ファイルをローカルファイルシステムへ一時保存したファイルとしてへコピー
         Path tempFilePath = Path.of(FileUtils.getTempDirectoryPath(), TEMPDIR_RELATIVE_PATH,
-            downloadObject.getFileName());
+                downloadObject.getFileName());
         FileUtils.copyInputStreamToFile(downloadObject.getInputStream(), tempFilePath.toFile());
         // FlatFileReaderに一時保存ファイルのパスを引き渡す
-        ExecutionContext jobExecutionContext = stepExecution.getJobExecution()
-            .getExecutionContext();
+        ExecutionContext jobExecutionContext =
+                stepExecution.getJobExecution().getExecutionContext();
         jobExecutionContext.put("input.file.name", tempFilePath.toString());
         ExecutionContext executionContext = stepExecution.getExecutionContext();
 
@@ -80,7 +82,7 @@ public class Job003Tasklet implements Tasklet {
                     throw e;
                 }
                 // ビジネスロジックの実行
-                todoSharedService.registerTodo(item.getTodoTitle());
+                todoSharedService.registerTodo(todoRecordMapper.recordToModel(item));
             }
 
         } finally {

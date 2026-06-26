@@ -10,7 +10,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /// Todoクラス
-
 @Data
 @Builder
 @NoArgsConstructor
@@ -18,12 +17,14 @@ import lombok.NoArgsConstructor;
 public class Todo implements Serializable {
     @Serial
     private static final long serialVersionUID = -8221174350955399012L;
-	//ID
-	private String todoId;
-	//タイトル
-	private String todoTitle;
-	//完了したかどうか
-	private boolean finished;
-	//作成日時
-	private Date createdAt;
+    // ID
+    private String todoId;
+    // Todoを所有するユーザID
+    private String userId;
+    // タイトル
+    private String todoTitle;
+    // 完了したかどうか
+    private boolean finished;
+    // 作成日時
+    private Date createdAt;
 }
