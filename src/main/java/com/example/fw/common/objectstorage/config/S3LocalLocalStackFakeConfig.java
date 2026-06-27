@@ -4,6 +4,7 @@ import com.example.fw.common.objectstorage.BucketCreateInitializer;
 import com.example.fw.common.objectstorage.ObjectStorageFileAccessor;
 import com.example.fw.common.objectstorage.S3ObjectStorageFileAccessor;
 import java.net.URI;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -12,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.retry.RetryMode;
 import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -42,17 +44,23 @@ public class S3LocalLocalStackFakeConfig {
             s3ConfigurationProperties.getLocalfake().getSecretAccessKey());
 
         Region region = Region.of(s3ConfigurationProperties.getRegion());
-        // @formatter:off
         return S3Client.builder()
-                .httpClientBuilder(ApacheHttpClient.builder())
-                .region(region)       
-                .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
-                .endpointOverride(URI.create("http://localhost:" + s3ConfigurationProperties.getLocalfake().getPort()))
-                //Path-Styleの設定
-                .serviceConfiguration(S3Configuration.builder()
-                        .pathStyleAccessEnabled(true).build())
-                .build();        
-        // @formatter:on
+            // 標準リトライ戦略
+            .overrideConfiguration(o -> o.retryStrategy(RetryMode.STANDARD))//
+            .httpClientBuilder(ApacheHttpClient.builder()
+                .maxConnections(s3ConfigurationProperties.getMaxConnections())
+                .connectionTimeout(
+                    Duration.ofMillis(s3ConfigurationProperties.getConnectionTimeout()))
+
+            )
+            .region(region)
+            .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
+            .endpointOverride(URI.create(
+                "http://localhost:" + s3ConfigurationProperties.getLocalfake().getPort()))
+            //Path-Styleの設定
+            .serviceConfiguration(S3Configuration.builder()
+                .pathStyleAccessEnabled(true).build())
+            .build();
     }
 
     /// バケット初期作成クラス

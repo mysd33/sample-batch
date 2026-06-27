@@ -40,6 +40,7 @@ public class S3LocalS3rverFakeConfig {
 
     /// S3クライアント
     @Deprecated(forRemoval = true)
+    @Profile("!xray")
     S3Client s3Client() {
         // ダミーのクレデンシャル
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create(S3RVER, S3RVER);
@@ -59,7 +60,7 @@ public class S3LocalS3rverFakeConfig {
     }
 
     /// バケット初期作成クラス
-    @Deprecated
+    @Deprecated(forRemoval = true)
     @Bean
     BucketCreateInitializer bucketCreateInitializer(S3Client s3Client) {
         return new BucketCreateInitializer(s3Client, s3ConfigurationProperties.getBucket());

@@ -185,7 +185,7 @@
             <version>${amazon-sqs-java-messaging-lib.version}</version>
             <type>jar</type>
         </dependency>
-        <!-- AWS SDK Http Client -->
+        <!-- AWS SDK Http Client (for Sync) -->
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>apache-client</artifactId>
@@ -195,6 +195,11 @@
                     <artifactId>commons-logging</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <!-- AWS SDK Http Client (for Async) -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>netty-nio-client</artifactId>
         </dependency>
         <!-- AWS SDK SQS -->
         <dependency>

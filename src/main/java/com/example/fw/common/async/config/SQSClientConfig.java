@@ -12,6 +12,7 @@ import org.springframework.jms.support.converter.MessageConverter;
 public class SQSClientConfig {
 
     /// JMSTemplateの定義
+    ///
     @Bean
     JmsTemplate defaultJmsTemplate(ConnectionFactory connectionFactory,
         MessageConverter jacksonJmsMessageConverter) {
