@@ -10,7 +10,7 @@ spring:
     driver-class-name: org.h2.Driver
     username: sa
     password:
-# WebClient ログ詳細化
+  # WebClient ログ詳細化
   http:
     codecs:
       log-request-details: true
@@ -19,19 +19,19 @@ management:
   endpoints:
     web:
       exposure:
-        include: "*" 
+        include: "*"
   info:
     os:
       enabled: true
     java:
       enabled: true
-# Spring Cloud for AWS Micrometer CloudWatch Integration Enabled if local testing is required
-#  cloudwatch:
-#    metrics:
-#      export:
-#        enabled: true
-        
-    
+        # Spring Cloud for AWS Micrometer CloudWatch Integration Enabled if local testing is required
+        #  cloudwatch:
+        #    metrics:
+        #      export:
+        #        enabled: true
+
+
 logging:
   level:
     org.springframework: INFO
@@ -39,7 +39,7 @@ logging:
     com.example: DEBUG
     # LogAspect 性能ログ出力    
     com.example.fw.batch.aspect.LogAspect: TRACE
-# WebClient ログ詳細化    
+    # WebClient ログ詳細化
     org.springframework.web.reactive.function.client.ExchangeFunctions: TRACE
 
 # 拡張フレームワーク機能の設定
@@ -53,30 +53,33 @@ example:
       port: 18001
   s3:
     localfake:
-#S3 Fake by local file system
+      #S3 Fake by local file system
       type: file
       base-dir: C:\tmp\objectstorage
-#S3 Fake by LocalStack
-#      type: localstack
-#      port: 4566
-#      access-key-id: dummy
-#      secret-access-key: dummy
-#    bucket: mysd33bucket123 
-#S3 Fake by s3rver    
-#      type: s3rver
-#      port: 4568
-#    bucket: mysd33bucket123
-#S3 Fake by MinIO
-#      type: minio
-#      port: 9000
-#      access-key-id: minioadmin
-#      secret-access-key: minioadmin
-#    bucket: mysd33bucket123
+  #S3 Fake by LocalStack
+  #      type: localstack
+  #      port: 4566
+  #      access-key-id: dummy
+  #      secret-access-key: dummy
+  #    bucket: mysd33bucket123
+  #S3 Fake by s3rver
+  #      type: s3rver
+  #      port: 4568
+  #    bucket: mysd33bucket123
+  #S3 Fake by MinIO
+  #      type: minio
+  #      port: 9000
+  #      access-key-id: minioadmin
+  #      secret-access-key: minioadmin
+  #    bucket: mysd33bucket123
 
-# 業務APIの設定
+  # 業務APIの設定
   api:
     backend:
       url: http://localhost:8000
+      basic-auth:
+        username: ${BACKEND_BASIC_AUTH_USERNAME:user}
+        password: ${BACKEND_BASIC_AUTH_PASSWORD:password}
     retry:
       max-attempts: 3
       min-backoff: 200

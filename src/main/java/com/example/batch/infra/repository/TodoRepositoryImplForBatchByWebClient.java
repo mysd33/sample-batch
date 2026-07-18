@@ -1,8 +1,15 @@
 package com.example.batch.infra.repository;
 
+import com.example.batch.domain.model.Todo;
+import com.example.batch.domain.model.TodoList;
+import com.example.batch.domain.repository.TodoRepository;
+import com.example.batch.infra.httpclient.CircuitBreakerErrorFallback;
+import com.example.batch.infra.httpclient.WebClientResponseErrorHandler;
+import com.example.fw.common.exception.BusinessException;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreakerFactory;
 import org.springframework.http.HttpStatusCode;
@@ -10,13 +17,6 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
-import com.example.batch.domain.model.Todo;
-import com.example.batch.domain.model.TodoList;
-import com.example.batch.domain.repository.TodoRepository;
-import com.example.batch.infra.httpclient.CircuitBreakerErrorFallback;
-import com.example.batch.infra.httpclient.WebClientResponseErrorHandler;
-import com.example.fw.common.exception.BusinessException;
-import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 
@@ -24,6 +24,7 @@ import reactor.util.retry.Retry;
 @Repository
 @RequiredArgsConstructor
 public class TodoRepositoryImplForBatchByWebClient implements TodoRepository {
+
     private final WebClient webClient;
     private final WebClientResponseErrorHandler responseErrorHandler;
 
@@ -47,6 +48,14 @@ public class TodoRepositoryImplForBatchByWebClient implements TodoRepository {
     @Value("${example.api.backend.url}/api/v1/todos/{todoId}")
     private String urlTodoById;
 
+    // Basic認証のユーザー名
+    @Value("${example.api.backend.basic-auth.username:}")
+    private String basicAuthUsername;
+
+    // Basic認証のパスワード
+    @Value("${example.api.backend.basic-auth.password:}")
+    private String basicAuthPassword;
+
     // WebClient(WebFlux)版の実装の参考ページ
     // https://news.mynavi.jp/techplus/article/techp5348/
     // https://docs.spring.io/spring-framework/docs/current/reference/html/web-reactive.html#webflux-client
@@ -55,41 +64,44 @@ public class TodoRepositoryImplForBatchByWebClient implements TodoRepository {
 
     @Override
     public Optional<Todo> findById(String todoId) {
-        var todoMono = webClient.get()//
-                .uri(urlTodoById, todoId)//
-                .retrieve()//
-                .onStatus(HttpStatusCode::is4xxClientError,
-                        responseErrorHandler::createClientErrorException)//
-                .onStatus(HttpStatusCode::is5xxServerError,
-                        responseErrorHandler::createServerErrorException) //
-                .bodyToMono(Todo.class)//
-                // エクスポネンシャルバックオフによるリトライ
-                .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff))
-                        .filter(th -> !(th instanceof BusinessException)))//
-                // サーキットブレーカによる処理
-                .transform(it -> cbFactory.create("todo_findById").run(it,
-                        CircuitBreakerErrorFallback.returnMonoBusinessException()));
+        var todoMono = webClient.get().uri(urlTodoById, todoId)//
+            .headers(httpHeaders ->
+                httpHeaders.setBasicAuth(basicAuthUsername, basicAuthPassword))
+            .retrieve()//
+            .onStatus(HttpStatusCode::is4xxClientError,
+                responseErrorHandler::createClientErrorException)//
+            .onStatus(HttpStatusCode::is5xxServerError,
+                responseErrorHandler::createServerErrorException) //
+            .bodyToMono(Todo.class)//
+            // エクスポネンシャルバックオフによるリトライ
+            .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff))
+                .filter(th -> !(th instanceof BusinessException)))//
+            // サーキットブレーカによる処理
+            .transform(it -> cbFactory.create("todo_findById").run(it,
+                CircuitBreakerErrorFallback.returnMonoBusinessException()));
         return todoMono.blockOptional();
     }
 
     @Override
     public Collection<Todo> findAllByUserId(String userId) {
         var uri =
-                UriComponentsBuilder.fromUriString(urlTodos).queryParam("user_id", userId).build();
+            UriComponentsBuilder.fromUriString(urlTodos).queryParam("user_id", userId).build();
         var todoListMono = webClient.get().uri(uri.toUri())//
-                .retrieve()//
-                .onStatus(HttpStatusCode::is4xxClientError,
-                        responseErrorHandler::createClientErrorException)//
-                .onStatus(HttpStatusCode::is5xxServerError,
-                        responseErrorHandler::createServerErrorException) //
-                .bodyToMono(TodoList.class)//
-                // エクスポネンシャルバックオフによるリトライ
-                .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff))
-                        .filter(th -> !(th instanceof BusinessException)))
-                // サーキットブレーカによる処理
-                // Fallback時にエラーとせずに空のリストを例
-                .transform(it -> cbFactory.create("todo_findAll").run(it,
-                        _ -> Mono.just(new TodoList())));
+            .headers(
+                httpHeaders -> httpHeaders.setBasicAuth(basicAuthUsername, basicAuthPassword))//
+            .retrieve()//
+            .onStatus(HttpStatusCode::is4xxClientError,
+                responseErrorHandler::createClientErrorException)//
+            .onStatus(HttpStatusCode::is5xxServerError,
+                responseErrorHandler::createServerErrorException) //
+            .bodyToMono(TodoList.class)//
+            // エクスポネンシャルバックオフによるリトライ
+            .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff))
+                .filter(th -> !(th instanceof BusinessException)))
+            // サーキットブレーカによる処理
+            // Fallback時にエラーとせずに空のリストを例
+            .transform(it -> cbFactory.create("todo_findAll").run(it,
+                _ -> Mono.just(new TodoList())));
         return todoListMono.block();
     }
 
@@ -97,57 +109,63 @@ public class TodoRepositoryImplForBatchByWebClient implements TodoRepository {
     public void create(Todo todo) {
         // バッチ処理のサンプル実行向けに件数チェックされない、create APIのURLを呼び出し
         webClient.post().uri(urlTodosForCreateBatch)//
-                .contentType(MediaType.APPLICATION_JSON).bodyValue(todo)//
-                .retrieve()//
-                .onStatus(HttpStatusCode::is4xxClientError,
-                        responseErrorHandler::createClientErrorException)//
-                .onStatus(HttpStatusCode::is5xxServerError,
-                        responseErrorHandler::createServerErrorException) //
-                .bodyToMono(Todo.class)//
-                // エクスポネンシャルバックオフによるリトライ
-                .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff))
-                        .filter(th -> !(th instanceof BusinessException)))//
-                // サーキットブレーカによる処理
-                .transform(it -> cbFactory.create("todo_create").run(it,
-                        CircuitBreakerErrorFallback.returnMonoBusinessException()))
-                .block();
+            .headers(
+                httpHeaders -> httpHeaders.setBasicAuth(basicAuthUsername, basicAuthPassword))//
+            .contentType(MediaType.APPLICATION_JSON).bodyValue(todo)//
+            .retrieve()//
+            .onStatus(HttpStatusCode::is4xxClientError,
+                responseErrorHandler::createClientErrorException)//
+            .onStatus(HttpStatusCode::is5xxServerError,
+                responseErrorHandler::createServerErrorException) //
+            .bodyToMono(Todo.class)//
+            // エクスポネンシャルバックオフによるリトライ
+            .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff))
+                .filter(th -> !(th instanceof BusinessException)))//
+            // サーキットブレーカによる処理
+            .transform(it -> cbFactory.create("todo_create").run(it,
+                CircuitBreakerErrorFallback.returnMonoBusinessException()))
+            .block();
     }
 
     @Override
     public boolean update(Todo todo) {
         webClient.put().uri(urlTodoById, todo.getTodoId())//
-                .retrieve()//
-                .onStatus(HttpStatusCode::is4xxClientError,
-                        responseErrorHandler::createClientErrorException)//
-                .onStatus(HttpStatusCode::is5xxServerError,
-                        responseErrorHandler::createServerErrorException)//
-                .bodyToMono(Todo.class)//
-                // エクスポネンシャルバックオフによるリトライ
-                .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff))
-                        .filter(th -> !(th instanceof BusinessException)))
-                // サーキットブレーカによる処理
-                .transform(it -> cbFactory.create("todo_update").run(it,
-                        CircuitBreakerErrorFallback.returnMonoBusinessException()))
-                .block();
+            .headers(
+                httpHeaders -> httpHeaders.setBasicAuth(basicAuthUsername, basicAuthPassword))//
+            .retrieve()//
+            .onStatus(HttpStatusCode::is4xxClientError,
+                responseErrorHandler::createClientErrorException)//
+            .onStatus(HttpStatusCode::is5xxServerError,
+                responseErrorHandler::createServerErrorException)//
+            .bodyToMono(Todo.class)//
+            // エクスポネンシャルバックオフによるリトライ
+            .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff))
+                .filter(th -> !(th instanceof BusinessException)))
+            // サーキットブレーカによる処理
+            .transform(it -> cbFactory.create("todo_update").run(it,
+                CircuitBreakerErrorFallback.returnMonoBusinessException()))
+            .block();
         return true;
     }
 
     @Override
     public boolean delete(Todo todo) {
         webClient.delete().uri(urlTodoById, todo.getTodoId())//
-                .retrieve()//
-                .onStatus(HttpStatusCode::is4xxClientError,
-                        responseErrorHandler::createClientErrorException)//
-                .onStatus(HttpStatusCode::is5xxServerError,
-                        responseErrorHandler::createServerErrorException)//
-                .bodyToMono(Void.class)//
-                // エクスポネンシャルバックオフによるリトライ
-                .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff))
-                        .filter(th -> !(th instanceof BusinessException)))
-                // サーキットブレーカによる処理
-                .transform(it -> cbFactory.create("todo_delete").run(it,
-                        CircuitBreakerErrorFallback.returnMonoBusinessException()))
-                .block();
+            .headers(
+                httpHeaders -> httpHeaders.setBasicAuth(basicAuthUsername, basicAuthPassword))//
+            .retrieve()//
+            .onStatus(HttpStatusCode::is4xxClientError,
+                responseErrorHandler::createClientErrorException)//
+            .onStatus(HttpStatusCode::is5xxServerError,
+                responseErrorHandler::createServerErrorException)//
+            .bodyToMono(Void.class)//
+            // エクスポネンシャルバックオフによるリトライ
+            .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff))
+                .filter(th -> !(th instanceof BusinessException)))
+            // サーキットブレーカによる処理
+            .transform(it -> cbFactory.create("todo_delete").run(it,
+                CircuitBreakerErrorFallback.returnMonoBusinessException()))
+            .block();
         return true;
     }
 
