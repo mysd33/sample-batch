@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.6</version>
+        <version>4.1.0</version>
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.example</groupId>
@@ -16,13 +16,13 @@
     <description>Spring Boot Async/Batch Sample</description>
     <properties>
         <java.version>25</java.version>
-        <spring-cloud.version>2025.1.1</spring-cloud.version>
-        <spring-cloud-aws.version>4.0.1</spring-cloud-aws.version>
+        <spring-cloud.version>2025.1.2</spring-cloud.version>
+        <spring-cloud-aws.version>4.1.0</spring-cloud-aws.version>
         <mybatis-spring-boot-starter.version>4.0.1</mybatis-spring-boot-starter.version>
         <amazon-sqs-java-messaging-lib.version>2.1.4</amazon-sqs-java-messaging-lib.version>
         <terasoluna.version>5.11.0.RELEASE</terasoluna.version>
-        <elasticmq.version>1.6.16</elasticmq.version>
-        <commons-io.version>2.21.0</commons-io.version>
+        <elasticmq.version>1.7.1</elasticmq.version>
+        <commons-io.version>2.22.0</commons-io.version>
         <!-- MapStruct -->
         <m2e.apt.activation>jdt_apt</m2e.apt.activation>
         <org.mapstruct.version>1.6.3</org.mapstruct.version>
