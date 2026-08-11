@@ -29,7 +29,7 @@ management:
         #  cloudwatch:
         #    metrics:
         #      export:
-        #        enabled: true
+      #        enabled: true
 
 
 logging:
@@ -78,7 +78,7 @@ example:
     backend:
       url: http://localhost:8000
       basic-auth:
-        username: ${BACKEND_BASIC_AUTH_USERNAME:user}
+        username: ${BACKEND_BASIC_AUTH_USERNAME:systemuser}
         password: ${BACKEND_BASIC_AUTH_PASSWORD:password}
     retry:
       max-attempts: 3

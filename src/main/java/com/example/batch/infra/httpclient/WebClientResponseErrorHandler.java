@@ -8,6 +8,7 @@ import com.example.fw.common.logging.LoggerFactory;
 import com.example.fw.common.message.ResultMessage;
 import com.example.fw.common.message.ResultMessageType;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import reactor.core.publisher.Mono;
@@ -19,11 +20,22 @@ public class WebClientResponseErrorHandler {
 
     /// クライアント起因のエラー（4xx）の場合に例外オブジェクトを作成する
     ///
-    /// @param response レスポンス
+    /// @param response 　レスポンス
     /// @return 例外
     public Mono<Exception> createClientErrorException(ClientResponse response) {
 
         try {
+            // 401、403エラーの場合
+            if (response.statusCode().isSameCodeAs(HttpStatus.UNAUTHORIZED) || //
+                response.statusCode().isSameCodeAs(HttpStatus.FORBIDDEN)) {
+                HttpStatusCode statusCode = response.statusCode();
+                appLogger.warn(MessageIds.W_EX_8001, statusCode.value());
+                return Mono.error(new BusinessException(
+                    ResultMessage.builder().type(ResultMessageType.WARN).code(MessageIds.W_EX_8001)
+                        .args(
+                            new String[]{"ステータスコード:%s".formatted(statusCode.value())})
+                        .build()));
+            }
             // TODO: この中ではblockメソッドが使えない模様。
             // java.lang.IllegalStateException: block()/blockFirst()/blockLast() are
             // blocking, which is not supported in thread reactor-http-nio-2
@@ -47,7 +59,7 @@ public class WebClientResponseErrorHandler {
 
     /// サーバ起因エラー（5xx）の場合に例外オブジェクトを作成する
     ///
-    /// @param response レスポンス
+    /// @param response 　レスポンス
     /// @return 例外
     public Mono<Exception> createServerErrorException(ClientResponse response) {
         try {
