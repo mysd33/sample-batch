@@ -1,6 +1,6 @@
 # SpringBootの非同期/バッチアプリケーションサンプル
 
-## 概要
+## 1. 概要
 * Spring BootでSpring JMS + AWS SQS Messaging Libraryを使って、SQSを介在したメッセージング処理方式で非同期でジョブ実行する、非同期/バッチのサンプルAPである。同期実行処理アプリケーションは、Spring Batchを使用しており、非同期実行依頼メッセージで指定されたジョブIDとパラメータのジョブを実行するようになっている。
 * 開発端末ローカル実行時にAWS SQSがなくても動作するよう、AP起動時にSQSの代わりにSQS互換のFakeとしてElasticMQを組み込みで起動して動作するため、特にAWS環境がなくても単独実行可能である。
 ![実装イメージ](img/sample-batch.png)
@@ -12,37 +12,44 @@
 ![ソフトウェアアーキテクチャ（チャンク）](img/architecture-chunk.png)
 
 
-## プロジェクト構成
-* sample-bff
-    * 別のプロジェクト。当該名称のリポジトリを参照のこと。Spring BootのWebブラウザアプリケーション（Backend for Frontend）で、ユーザがログイン後、TODOやユーザを管理する画面を提供する。また、画面やAPIからsample-batchへの非同期実行依頼も可能である。
+## 2. プロジェクト構成
+* [sample-bff](https://github.com/mysd33/sample-bff)
+    * 別プロジェクト。当該名称のリポジトリを参照のこと。Spring BootのWebブラウザアプリケーション（Backend for Frontend）で、ユーザがログイン後、TODOやユーザを管理する画面を提供する。また、画面やAPIからsample-batchへの非同期実行依頼も可能である。
         * デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、RDB永続化にはH2DBによる組み込みDB、セッション外部化は無効化、SQS接続はsample-batch側で組み込みで起動するElasticMQへ送信するようになっている。
         * プロファイルproductionの場合は、RDB永続化にはPostgreSQL(AWS上はAurora等）、セッション外部化はRedis(ローカル時はRedis on Docker、AWS上はElastiCache for Redis)、SQS接続はSQSへ送信するようになっている。
-* sample-backend（またはsample-backend-dynamodb)
+* [sample-backend](https://github.com/mysd33/sample-backend)（または[sample-backend-dynamodb](https://github.com/mysd33/sample-backend-dynamodb)）
     * 別プロジェクト。当該名称のリポジトリを参照のこと。Spring BootのREST APIアプリケーションで、sample-webやsample-batchが送信したREST APIのメッセージを受信し処理することが可能である。
         * sample-backendは永続化にRDBを使っているが、sample-backend-dynamodbは同じAPのDynamoDB版になっている。
         * デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、RDB永続化にはH2DBによる組み込みDBになっている。また、sample-backend-dynamodbプロジェクトの場合は、AP起動時にDynamoDBの代わりに、DynamoDB Localを組み込みで起動し、接続するようになっている。
         * プロファイルproductionの場合は、RDB永続化にはPostgreSQL（AWS上はAurora等）になっている。また、sample-backend-dynamodbプロジェクトの場合は、DynamoDBに接続するようになっている。
-* sample-batch
+* [sample-batch](https://github.com/mysd33/sample-batch)
     * 本プロジェクト。Spring JMSを使ったSpring Bootの非同期処理アプリケーションで、sample-webやsample-schedulelaunchが送信した非同期実行依頼のメッセージをSQSを介して受信し処理することが可能である。    
         * デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、AP起動時にSQSの代わりにElasticMQを組み込みで起動し、リッスンするようになっている。また、RDB永続化にはH2DBによる組み込みDBになっている。
         * プロファイルproductionの場合は、SQSをリッスンするようになっている。また、RDB永続化にはPostgreSQL（AWS上はAurora等）になっている。
-* sample-schedulelaunch
+* [sample-schedulelaunch](https://github.com/mysd33/sample-schedulelaunch)
     * 別プロジェクト。当該名称のリポジトリを参照のこと。SpringBootのCLIアプリケーションで、実行時に引数または環境変数で指定したスケジュール起動バッチ定義IDに対応するジョブの非同期実行依頼を実施し、SQSを介して、sample-batchアプリケーションのジョブを実行する。スケジュールによるバッチ起動を想定したアプリケーション。
         * デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、SQS接続はsample-batch側で組み込みで起動するElasticMQへ送信するようになっている。
         * プロファイルproductionの場合は、SQS接続はSQSへ送信するようになっている。
-## 事前準備
-* 以下のライブラリを用いているので、EclipseのようなIDEを利用する場合には、プラグインのインストールが必要
+
+* その他、本APとは連携しないので図に掲載がないが、StepFunctionsのステートマシンを使用してジョブの実行順序制御を行うバッチAPのサンプルプロジェクトとして以下があるので、参考にするとよい。
+    * [sample-batch-jobflow](https://github.com/mysd33/sample-batch-jobflow)
+
+## 3. 事前準備
+* 以下のライブラリを用いているので、EclipseやIntelliJのようなIDEを利用する場合には、プラグインのインストールが必要
     * [Lombok](https://projectlombok.org/)
         * [Eclipseへのプラグインインストール](https://projectlombok.org/setup/eclipse)
         * [IntelliJへのプラグインインストール](https://projectlombok.org/setup/intellij)
     * [Mapstruct](https://mapstruct.org/)
         * [EclipseやIntelliJへのプラグインインストール](https://mapstruct.org/documentation/ide-support/)
 
-## 通常の動作手順
-- 通常の、SQSのメッセージ送信によるディレード処理方式をベースとした動作手順を示す。
+## 4. IDEでのアプリ起動
+* EclipseやIntelliJ等のIDEで、Spring Bootアプリケーションを起動する。
 
-1. Backend AP（sample-backend）の起動
-    * sample-backendをSpringBoot Applicationとして起動。
+### 4.1. 通常の動作手順
+* 通常の、SQSのメッセージ送信によるディレード処理方式をベースとした動作手順を示す。
+
+1. Backend AP（sample-backendまたはsample-backend-dynamodb）の起動
+    * sample-backend（またはsample-backend-dynamodb）をSpringBoot Applicationとして起動。
 
 1. Web AP（sample-bff）の起動
     * sample-bffをSpringBoot Applicationとして起動。
@@ -121,15 +128,16 @@
             * job002は、チャンクモデルでjob001と同じ処理を実装している。
 
 
-## コマンド実行によるジョブ起動
-- 通常の、SQSのメッセージ送信によるディレード処理方式をベースとしたジョブの起動だけなく、コマンドラインでのジョブの起動も可能である。
-- これにより、例えば、ECSやAWS Batchでのコンテナでのjavaコマンドによるジョブの起動が可能となる。
-- 応用することで、Step Functionsでジョブフローの制御を行い、ステートとしてAWS Batchを呼ぶことで、コンテナでのコマンド実行も可能となる。
+### 4.2. コマンド実行によるジョブ起動
+* 通常の、SQSのメッセージ送信によるディレード処理方式をベースとしたジョブの起動だけなく、コマンドラインでのジョブの起動も可能である。
+* これにより、例えば、ECSやAWS Batchでのコンテナでのjavaコマンドによるジョブの起動が可能となる。
+* 応用することで、Step Functionsでジョブの実行順序制御（ジョブフローの制御）を行い、ステートとしてAWS Batchを呼ぶことで、コンテナでのコマンド実行も可能となる。
+* StepFunctionsによるジョブ実行されるバッチAPのサンプルとして、[sample-batch-jobflow](https://github.com/mysd33/sample-batch-jobflow)を参照のこと。
 
 ![コマンド実行](img/sample-batch-commandline.png)
 
 
-### 動作手順
+#### 4.2.1. 動作手順
 1. SampleBatchApplication.javaの「@SpringBootApplication」をコメントアウトして無効化
 
 1. SampleBatchApplicationForStandardBatch.javaの「@SpringBootApplication」をコメントインして有効化
@@ -149,14 +157,20 @@
     -Dspring.profiles.active=dev,log_default,command -Dspring.batch.job.name=job001
     ```
 
-### （検証）Spring Batchのコマンドライン実行の標準機能でのジョブの二重実行防止
-- ジョブ名（ジョブID）とジョブパラメータが同じ値のもの（＝同一ジョブインスタンス）を、2度指定してコマンド実行した場合の挙動は以下の通り。
-    - 対象ジョブインスタンスが成功し完了済（COMPLETED）の場合は、ジョブが実行済となり終了する。
-        - IllegalStateExceptionがスローされる。causeにはJobInstanceAlreadyCompleteExceptionが含まれる。
-        - javaコマンド実行での終了コードは「1」になった
-    - 対象ジョブインスタンスが失敗（FAILED）の場合は、同じジョブ名、パラメータを渡すと再実行してくれる。
+#### 4.2.2. （検証）Spring Batchのコマンドライン実行の標準機能でのジョブの二重実行防止
+* ジョブ名（ジョブID）とジョブパラメータが同じ値のもの（＝同一ジョブインスタンス）を、2度指定してコマンド実行した場合の挙動は以下の通り。
+    * 対象ジョブインスタンスが既に成功し完了済（COMPLETED）の場合は、ジョブが実行済となり終了する。
+        * IllegalStateExceptionがスローされる。causeにはJobInstanceAlreadyCompleteExceptionが含まれる。
+        * javaコマンド実行での終了コードは「1」になった
+    * 対象ジョブインスタンスが前回実行時に失敗（FAILED）だった場合は、同じジョブ名、パラメータを渡すと再実行してくれる。
 
-## PostgreSQLのローカル起動
+## 5. プロファイル「production」でのローカル実行
+* 「production」に切り替えるには、例えばJVM引数を「-Dspring.profiles.active=production」に変更するか、環境変数「SPRING_PROFILES_ACTIVE=production」を設定する等で起動する。
+
+> [!WARNING]
+> 以降の手順が、最新化できていないので、今後見直し予定。
+
+### 5.1. PostgreSQLのローカル起動
 * Profileが「dev」でSpringBootアプリケーションを実行する場合、H2DBが起動するので、何もしなくてよい。
 * Profileが「production」に切り替えてSpringBootアプリケーションを実行する場合、DBがPostgreSQLで動作する設定になっているため、事前にPostgreSQLを起動する必要がある。
     * AWS上でAPを起動する場合はAurora for PostgreSQLや、RDS for PostgreSQLを起動しておくことを想定している。
@@ -172,16 +186,24 @@ docker exec -i -t test-postgres /bin/bash
 postgres> CREATE DATABASE testdb;
 ```
 
-## SQSの設定
+## 6. SQSの設定
 * デフォルトでは、「spring.profiles.active」プロパティが「dev」になっていて、プロファイルdevの場合、ElasticMQを使用するようになっている。
-* Profileが「dev」でSpringBootアプリケーションを実行する場合、ElasitqMQが起動し、「SampleQueue」という名前のキューを作成するので、何もしなくてよい。
-* Profileが「production」に切り替えてSpringBootアプリケーションを実行する場合、事前にAWS上にSQSのバケットを作成する必要がある。
-    * 「production」に切り替えるには、例えばJVM引数を「-Dspring.profiles.active=production」に変更するか、環境変数「SPRING_PROFILES_ACTIVE=production」を設定する等して、sample-bff、sample-batchの両方のプロジェクトのプロファイルを「production」に変えて実行する。
-    * 「SampleQueue」という名前のキューを作成すればよいが、キュー名を変更したい場合はapplication-production.ymlの「delayed.batch.queue」プロパティを作成したキュー名に変更する。
-        * 「sample-batch」アプリケーション側も変更が必要
+* Spring BootのProfileが「dev」でSpringBootアプリケーションを実行する場合、「sample-batch」アプリケーション側で、ElasticMQが起動し、「SampleQueue」という名前のキューを作成し、それを使ってメッセージ送信するので、何もしなくてよい。
+* Profileが「production」に切り替えてSpringBootアプリケーションを実行する場合、事前にSQSを起動しておく必要がある。
+    * AWS上でAPを起動する場合は、SQSのキューを作成する必要がある。
     * APがSQSにアクセスする権限が必要なので、開発端末上でローカル実行する場合はSQSのアクセス権限をもったIAMユーザのクレデンシャル情報が「%USERPROFILE%/.aws/credentials」や「~/.aws/credentials」に格納されている、もしくはEC2やECS等のAWS上のラインタイム環境で実行する場合は対象のAWSリソースにSQSのアクセス権限を持ったIAMロールが付与されている必要がある。
 
-## S3の設定
+* Profile「production」でAPをローカル実行する場合は、ローカルでDockerでElasticMQを起動しておく必要がある。
+
+> [!WARNING]
+> TBD: DockerでのElasticMQ起動方法
+
+* キューの作成
+    * 「SampleQueue」という名前のキューを作成すればよいが、キュー名を変更したい場合はapplication-production.ymlの「example.sqs.listener.queue-name」プロパティを作成したキュー名に変更する。
+        * 「sample-bff」アプリケーション側も変更が必要
+
+
+## 7. S3の設定
 * Profileが「dev」でSpringBootアプリケーションを実行する場合、S3アクセスは無効化し、ローカルのファイルシステムアクセスする設定になっている。
     * application-dev.ymlの「example.s3.localfake.type」が「file」であり、「example.s3.localfake.base-dir」を一時保存するファイルシステムのディレクトリパスが現状、C:\tmpになっているので、フォルダの変更が必要な場合は、変更する。
         * 「sample-bff」アプリケーション側も変更が必要
@@ -291,12 +313,18 @@ postgres> CREATE DATABASE testdb;
                 bucket: mysd33bucket123
             ```
 
-* Profileが「production」に切り替えてSpringBootアプリケーションを実行する場合、S3を使用する設定になっているため、事前にAWS上に、S3のバケットを作成する必要がある。
-    * application-production.ymlの「aws.s3.bucket」プロパティを作成したバケット名に変更する。
-    * APがS3にアクセスする権限が必要なので、開発端末上でローカル実行する場合はS3のアクセス権限をもったIAMユーザのクレデンシャル情報が「%USERPROFILE%/.aws/credentials」や「~/.aws/credentials」に格納されている、もしくはEC2やECS等のAWS上のラインタイム環境で実行する場合は対象のAWSリソースにSQSのアクセス権限を持ったIAMロールが付与されている必要がある。
+* Profileが「production」に切り替えてSpringBootアプリケーションを実行する場合、S3を使用する設定になっているため、事前にS3のバケットを作成しておく必要がある。
+    * application-production.ymlの「example.s3.bucket」プロパティを作成したバケット名に変更する。
+    * APがS3にアクセスする権限が必要なので、開発端末上でローカル実行する場合はS3のアクセス権限をもったIAMユーザのクレデンシャル情報が「%USERPROFILE%/.aws/credentials」や「~/.aws/credentials」に格納されている、もしくはEC2やECS等のAWS上のラインタイム環境で実行する場合は対象のAWSリソースにS3のアクセス権限を持ったIAMロールが付与されている必要がある。
+
+* Profileが「production」でローカル実行する場合、上に「dev」の場合の記載の手順同様に、MinIO等のS3のFakeをローカルで起動しておく必要がある。
 
 
-## Dockerでのアプリ起動
+## 8. Dockerでのアプリ起動
+
+> [!WARNING]
+> 以降の手順が、最新化できていないので、今後見直し予定。
+ 
 * Mavenビルド
 ```sh
 #Windows
@@ -309,6 +337,8 @@ postgres> CREATE DATABASE testdb;
 docker build -t XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-batch:latest .
 ```
 
+### 8.1. ローカルでDocker実行（Profileを「dev」でSpringBoot実行）の場合
+
 * ローカルでDocker実行（Profileを「dev」でSpringBoot実行）
 ```sh
 docker run -d -p 8001:8001 --name samplebatch --env SPRING_PROFILES_ACTIVE=dev,log_default --env SERVER_PORT=8001 --env SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/testdb --env API_BACKEND_URL=http://host.docker.internal:8000 XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-batch:latest
@@ -316,6 +346,9 @@ docker run -d -p 8001:8001 --name samplebatch --env SPRING_PROFILES_ACTIVE=dev,l
 #logをjson形式に変更する場合
 docker run -d -p 8001:8001 --name samplebatch --env SPRING_PROFILES_ACTIVE=dev,log_container --env SERVER_PORT=8001 --env SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/testdb --env API_BACKEND_URL=http://host.docker.internal:8000 XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-batch:latest
 ```
+
+
+### 8.2. ローカルでDocker実行（Profileを「production」でSpringBoot実行）　の場合
 
 * ローカルでDocker実行（Profileを「production」でSpringBoot実行）　
     * ※Redisのローカル起動、PostgreSQLのローカル起動も必要
@@ -325,14 +358,18 @@ docker run -d -p 8001:8001 -v %USERPROFILE%\.aws\:/home/app/.aws/ --name sampleb
 #logをjson形式に変更する場合
 docker run -d -p 8001:8001 -v %USERPROFILE%\.aws\:/home/app/.aws/ --name samplebatch --env SPRING_PROFILES_ACTIVE=production,log_container --env SERVER_PORT=8001 --env API_BACKEND_URL=http://host.docker.internal:8000 --env SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/testdb XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-batch:latest
 ```
+## 9. ECRプッシュ
+* AWS上でECSやEKS等で動作させる場合は、事前にECRへDockerイメージをプッシュしておく必要がある。
 
-* ECRプッシュ
 ```sh
 aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com
 docker push XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-batch:latest
 ```
 
-## ソフトウェアフレームワーク
+## 10. AWS上でのアプリ起動
+* SpringBoot APをECS/Fargate等で動作させる場合は、[ecs-on-fargate-adot-cfn-demo](https://github.com/mysd33/ecs-on-fargate-adot-cfn-demo)を参照する。
+
+## 11. ソフトウェアフレームワーク
 * 本サンプルアプリケーションでは、ソフトウェアフレームワーク実装例も同梱している。簡単のため、アプリケーションと同じプロジェクトでソース管理している。
 * ソースコードはcom.example.fwパッケージ配下に格納されている。    
     * 本格的な開発を実施する場合には、業務アプリケーションと別のGitリポジトリとして管理し、CodeArtifactやSonatype NEXUSといったライブラリリポジトリサーバでjarを管理し、pom.xmlから参照するようにすべきであるし、テストやCI/CD等もちゃんとすべきであるが、ここでは、あえて同じプロジェクトに格納してノウハウを簡単に参考にしてもらいやすいようにしている。
