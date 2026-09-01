@@ -3,10 +3,11 @@ package com.example.batch.domain.model;
 import com.example.batch.domain.rule.CalendarRules;
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 /// ユーザクラス
 @Data
@@ -21,11 +22,12 @@ public class User implements Serializable {
     private static final String ROLE_ADMIN = "ROLE_ADMIN";
 
     private String userId;
+    @ToString.Exclude
     private String password;
     private String userName;
-    private Date birthday;
+    private LocalDate birthday;
     private String role;
-    private String version;
+    private long version;
 
     public int getAge() {
         return CalendarRules.calcAge(birthday);
