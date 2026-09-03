@@ -1,10 +1,11 @@
 package com.example.batch;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /// 純バッチの場合のmainメソッドの定義<br>
 /// 参考: https://spring.io/guides/gs/batch-processing
-//@SpringBootApplication
+@SpringBootApplication
 public class SampleBatchApplicationForCommandLine {
 
     public static void main(String[] args) {
