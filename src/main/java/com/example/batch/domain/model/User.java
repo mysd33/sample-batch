@@ -1,6 +1,5 @@
 package com.example.batch.domain.model;
 
-import com.example.batch.domain.rule.CalendarRules;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -28,10 +27,6 @@ public class User implements Serializable {
     private LocalDate birthday;
     private String role;
     private long version;
-
-    public int getAge() {
-        return CalendarRules.calcAge(birthday);
-    }
 
     public void setAdmin(boolean admin) {
         setRole(admin ? ROLE_ADMIN : ROLE_GENERAL);

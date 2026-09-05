@@ -1,5 +1,14 @@
 package com.example.batch.job.job001;
 
+import com.example.batch.domain.message.CommonMessageIds;
+import com.example.batch.domain.message.MessageIds;
+import com.example.batch.domain.sharedservice.TodoSharedService;
+import com.example.batch.job.common.mapper.TodoRecordMapper;
+import com.example.batch.job.common.record.TodoRecord;
+import com.example.fw.common.logging.ApplicationLogger;
+import com.example.fw.common.logging.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -13,15 +22,6 @@ import org.springframework.batch.infrastructure.item.validator.Validator;
 import org.springframework.batch.infrastructure.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import com.example.batch.domain.message.CommonMessageIds;
-import com.example.batch.domain.message.MessageIds;
-import com.example.batch.domain.sharedservice.TodoSharedService;
-import com.example.batch.job.common.mapper.TodoRecordMapper;
-import com.example.batch.job.common.record.TodoRecord;
-import com.example.fw.common.logging.ApplicationLogger;
-import com.example.fw.common.logging.LoggerFactory;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 /// Taskletのサンプル実装。 TodoListのCSVファイルを読み込み、一括でBackendアプリケーションへTodoの登録依頼を実施する。
 @StepScope
@@ -29,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class Job001Tasklet implements Tasklet {
+
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
     private final FlatFileItemReader<TodoRecord> todoListFileItemReader;
     // 単項目チェック用のValidator
@@ -49,7 +50,7 @@ public class Job001Tasklet implements Tasklet {
 
     @Override
     public RepeatStatus execute(@NonNull StepContribution contribution, ChunkContext chunkContext)
-            throws Exception {
+        throws Exception {
         appLogger.debug("Job001Tasklet実行");
 
         appLogger.info(CommonMessageIds.I_CMN_0001);
@@ -57,7 +58,7 @@ public class Job001Tasklet implements Tasklet {
         // StepScopeなので、@Valueでパラメータを受け取る方法のほうが簡単だが、ここではChunkContextから取得する例とする
         StepExecution stepExecution = chunkContext.getStepContext().getStepExecution();
         String inputFileName =
-                stepExecution.getJobParameters().getString("input-file-name", defaultInputFileName);
+            stepExecution.getJobParameters().getString("input-file-name", defaultInputFileName);
         // @formatter:off
         // この例では、param01,param02は@Valueで受け取る例としているが、ChunkContextから取得する場合は以下のようにする
         // String param01 = stepExecution.getJobParameters().getString("param01", "default01");
@@ -66,28 +67,28 @@ public class Job001Tasklet implements Tasklet {
         appLogger.debug("param01:{},param02:{},inputFileName:{}", param01, param02, inputFileName);
 
         ExecutionContext jobExecutionContext =
-                stepExecution.getJobExecution().getExecutionContext();
+            stepExecution.getJobExecution().getExecutionContext();
         jobExecutionContext.put("input.file.name", inputFileName);
         ExecutionContext executionContext = stepExecution.getExecutionContext();
 
-        TodoRecord item;
+        TodoRecord todoRecord;
         try {
             todoListFileItemReader.open(executionContext);
-            while ((item = todoListFileItemReader.read()) != null) {
-                log.debug(item.toString());
+            while ((todoRecord = todoListFileItemReader.read()) != null) {
+                log.debug(todoRecord.toString());
                 // 入力チェック
                 try {
                     // 単項目チェック
-                    validator.validate(item);
+                    validator.validate(todoRecord);
                     // 相関項目チェック
-                    todoRecordSpringValidator.validate(item);
+                    todoRecordSpringValidator.validate(todoRecord);
                 } catch (ValidationException e) {
                     // 入力チェックエラーの場合は、レコードの何行目でエラーが発生したかをログを出しリスロー
-                    appLogger.warn(MessageIds.W_EX_2001, inputFileName, item.getCount());
+                    appLogger.warn(MessageIds.W_EX_2001, inputFileName, todoRecord.getCount());
                     throw e;
                 }
                 // ビジネスロジックの実行
-                todoSharedService.registerTodo(todoRecordMapper.recordToModel(item));
+                todoSharedService.registerTodo(todoRecordMapper.recordToModel(todoRecord));
             }
         } finally {
             todoListFileItemReader.close();
