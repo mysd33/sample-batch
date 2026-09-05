@@ -7,7 +7,7 @@ import com.example.batch.job.common.record.TodoRecord;
 import com.example.fw.batch.core.config.SpringBatchConfigPackage;
 import com.example.fw.batch.core.exception.DefaultExceptionHandler;
 import com.example.fw.batch.core.exception.ExceptionHandler;
-import com.example.fw.common.systemdate.config.SystemDateConfig;
+import com.example.fw.common.systemdate.config.SystemDateConfigPackage;
 import com.example.fw.common.utils.JapaneseStringUtils;
 import java.util.Map;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -27,17 +27,14 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 /// Job層のSpringBatchの設定クラス
 @Configuration
-// バッチAP実行制御機能の追加
-@ComponentScan(basePackageClasses = SpringBatchConfigPackage.class)
-// システム日時機能の追加
-@Import({SystemDateConfig.class})
+// バッチAP実行制御機能、システム日時機能の追加
+@ComponentScan(basePackageClasses = {SpringBatchConfigPackage.class, SystemDateConfigPackage.class})
 public class JobConfig {
 
     /// 集約例外ハンドリングクラス
